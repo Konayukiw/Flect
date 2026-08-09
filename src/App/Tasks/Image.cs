@@ -144,12 +144,8 @@ internal sealed class ImageStripMetadata(TaskRequest request) : ImageTask(reques
 
     protected override void Transform(IMagickImage<byte> frame)
     {
-        // Orientation lives in the metadata about to be discarded, so it has to be
-        // baked into the pixels first or the picture comes out rotated.
         frame.AutoOrient();
 
-        // The colour profile is not personal information, and dropping it shifts
-        // the colours of anything not already in sRGB.
         var colorProfile = frame.GetColorProfile();
         frame.Strip();
         if (colorProfile is not null) frame.SetProfile(colorProfile);
@@ -158,19 +154,14 @@ internal sealed class ImageStripMetadata(TaskRequest request) : ImageTask(reques
 
 internal sealed class ImageChromaKey(TaskRequest request) : ImageTask(request)
 {
-    /// <summary>
-    /// How far a pixel may sit from the key colour and still be treated as
-    /// background. Loose enough to catch the shading and compression noise of a
-    /// real green screen, tight enough to leave green clothing alone.
-    /// </summary>
     private static readonly Percentage Tolerance = new(25);
 
     private static readonly MagickColor Key = MagickColors.Lime;
 
     public override string Title => "Remove Green Screen";
+    
     protected override string Suffix => "_keyed";
 
-    // Transparency needs a format that can hold it, whatever the source was.
     protected override string? OutputExtension => ".png";
 
     protected override void Transform(IMagickImage<byte> frame)

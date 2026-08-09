@@ -34,9 +34,6 @@ internal sealed class PdfMerge(TaskRequest request) : TaskBase(request)
         progress.Indeterminate();
         progress.Status("Merging");
 
-        // Explorer hands the selection over in its own order, which is rarely the
-        // order on screen. Sorting by name the way Explorer displays it keeps the
-        // result predictable.
         var sources = Request.Paths
             .OrderBy(Path.GetFileName, StringComparer.CurrentCultureIgnoreCase)
             .ToArray();

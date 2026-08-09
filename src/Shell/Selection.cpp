@@ -23,16 +23,11 @@ constexpr FormatMapping kVideoExtensions[] = {
     {L"avi", L"AVI"}, {L"webm", L"WEBM"}, {L"flv", L"FLV"},
 };
 
-// m4a is deliberately absent: it stays classified as video, so that selecting one
-// keeps the menu it has always had. It is still offered as a conversion target.
 constexpr FormatMapping kAudioExtensions[] = {
     {L"mp3", L"MP3"}, {L"wav", L"WAV"}, {L"aif", L"AIF"}, {L"aiff", L"AIFF"},
     {L"aac", L"AAC"}, {L"ogg", L"OGG"}, {L"wma", L"WMA"},
 };
 
-// Text extensions whose format is worth telling apart, because something can
-// actually be converted to or from them. Everything else in kTextExtensions is
-// still text, it just has no meaningful conversion.
 constexpr FormatMapping kTextFormats[] = {
     {L"txt", L"TXT"},   {L"text", L"TXT"},  {L"json", L"JSON"}, {L"csv", L"CSV"},
     {L"xml", L"XML"},   {L"ini", L"INI"},   {L"cfg", L"CFG"},   {L"conf", L"CFG"},
@@ -126,8 +121,6 @@ const std::vector<std::wstring>& Sel::VideoFormats() {
   return formats;
 }
 
-// Conversion targets, which is why M4A appears here even though an m4a file is
-// classified as video.
 const std::vector<std::wstring>& Sel::AudioFormats() {
   static const std::vector<std::wstring> formats = {L"MP3", L"M4A", L"WAV", L"AIF",
                                                     L"AIFF", L"AAC", L"OGG", L"WMA"};

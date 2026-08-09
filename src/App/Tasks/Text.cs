@@ -78,14 +78,8 @@ internal sealed class TextLineEndings(TaskRequest request) : BatchTask(request)
 
     protected override Task ProcessAsync(string path, ITaskProgress progress) => Task.Run(() =>
     {
-        // The encoding is read back and written out again unchanged: changing the
-        // line endings should not quietly re-encode the file as well.
         var text = TextFile.Read(path, out var encoding);
-
         var ending = _target == "LF" ? "\n" : "\r\n";
-
-        // Normalising to bare newlines first means mixed files land on one style
-        // rather than gaining stray carriage returns.
         var normalised = text.Replace("\r\n", "\n").Replace('\r', '\n');
         var converted = ending == "\n" ? normalised : normalised.Replace("\n", ending);
 

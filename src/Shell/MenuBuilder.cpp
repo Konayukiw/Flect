@@ -72,7 +72,6 @@ std::vector<MenuNode> BuildPdf(const SelectionInfo& selection) {
   if (selection.paths.size() == 1) {
     items.push_back(Leaf(Label::kPreview, L"pdf.preview"));
   }
-  // Nothing to join when only one document is selected.
   if (selection.paths.size() > 1) {
     items.push_back(Leaf(Label::kMerge, L"pdf.merge"));
   }
@@ -128,8 +127,6 @@ std::vector<MenuNode> BuildVideo(const SelectionInfo& selection) {
   convert.push_back(Leaf(Label::kToPrefix + std::wstring(L"GIF"), L"video.convert?to=GIF"));
   items.push_back(Popup(Label::kConvert, std::move(convert)));
 
-  // Every audio container is offered, including one matching the source, since
-  // the point is to end up with the sound on its own.
   std::vector<MenuNode> extract;
   for (const std::wstring& format : Sel::AudioFormats()) {
     extract.push_back(Leaf(Label::kToPrefix + format,
@@ -149,15 +146,11 @@ std::vector<MenuNode> BuildAudio(const SelectionInfo& selection) {
   return items;
 }
 
-// Text formats do not all describe the same kind of data, so only the pairs that
-// mean something are offered. Anything absent from here simply has no conversion.
 std::vector<std::wstring> TextTargets(const std::wstring& from) {
   if (from == L"CSV") return {L"JSON", L"XML", L"HTML", L"MD"};
   if (from == L"JSON") return {L"CSV", L"XML"};
   if (from == L"XML") return {L"JSON"};
   if (from == L"INI") return {L"JSON", L"XML"};
-  // No structure to read, so the only honest offer is the same bytes under a
-  // name that opens in a plain editor.
   if (from == L"CSS" || from == L"CFG") return {L"TXT"};
   return {};
 }
@@ -165,7 +158,6 @@ std::vector<std::wstring> TextTargets(const std::wstring& from) {
 std::vector<MenuNode> BuildText(const SelectionInfo& selection) {
   std::vector<MenuNode> items;
 
-  // A mixed selection has no single source format to convert from.
   if (selection.formats.size() == 1) {
     std::vector<MenuNode> convert;
     for (const std::wstring& target : TextTargets(*selection.formats.begin())) {

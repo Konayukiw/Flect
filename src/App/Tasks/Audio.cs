@@ -2,17 +2,12 @@ using Optimizer.Main;
 
 namespace Optimizer.Tasks;
 
-/// <summary>
-/// Everything the audio formats have in common: how a target name maps onto an
-/// ffmpeg encoder, and what its file extension should be.
-/// </summary>
 internal static class AudioFormat
 {
     public const int LossyKbps = 192;
 
     public static string Extension(string target) => "." + target.ToLowerInvariant();
 
-    /// <summary>Encoder arguments for a target format.</summary>
     public static string[] Encoder(string target) => target switch
     {
         "MP3" => ["-c:a", "libmp3lame", "-b:a", $"{LossyKbps}k"],
@@ -25,10 +20,6 @@ internal static class AudioFormat
         _ => ["-c:a", "aac", "-b:a", $"{LossyKbps}k"],
     };
 
-    /// <summary>
-    /// The codec ffprobe reports when a file already holds exactly what the target
-    /// container wants, which means the stream can be copied instead of re-encoded.
-    /// </summary>
     public static string? CopyableFrom(string target) => target switch
     {
         "MP3" => "mp3",
@@ -83,8 +74,6 @@ internal sealed class VideoExtractAudio(TaskRequest request) : BatchTask(request
         var output = OutputPath.Derive(path, string.Empty, AudioFormat.Extension(_target));
         using var working = new WorkingFile(output);
 
-        // Lifting the existing stream out untouched is both instant and lossless, so
-        // it is worth trying whenever the codec already suits the target container.
         var copyable = AudioFormat.CopyableFrom(_target);
         if (copyable is not null && string.Equals(info.AudioCodec, copyable,
                                                   StringComparison.OrdinalIgnoreCase))
@@ -99,7 +88,6 @@ internal sealed class VideoExtractAudio(TaskRequest request) : BatchTask(request
             }
             catch (InvalidOperationException)
             {
-                // Some containers refuse a straight copy. Fall through and encode.
                 OutputPath.SafeDelete(output);
             }
         }

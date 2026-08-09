@@ -185,9 +185,6 @@ internal sealed class FolderRename(TaskRequest request) : TaskBase(request)
                              .ToList();
             int width = files.Count.ToString().Length;
 
-            // Without a counter every file in the group wants the same name, so the
-            // taken ones are tracked and later duplicates pick up " (2)", " (3)" the
-            // way the rest of the program disambiguates.
             var taken = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
             var plan = new List<(FileInfo Source, string Target)>();

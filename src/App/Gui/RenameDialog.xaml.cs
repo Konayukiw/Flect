@@ -4,10 +4,6 @@ using Optimizer.Main;
 
 namespace Optimizer.Gui;
 
-/// <summary>
-/// What the user asked the rename to do. <see cref="Name"/> is only meaningful
-/// when <see cref="Numbered"/> is false.
-/// </summary>
 internal sealed record RenamePlan(string Prefix, string Name, string Suffix, bool Numbered);
 
 public partial class RenameDialog : Window
@@ -41,8 +37,6 @@ public partial class RenameDialog : Window
 
     private void OnNumberingChanged(object sender, RoutedEventArgs e) => ApplyNumberingState();
 
-    /// <summary>The name is supplied by the counter while numbering is on, so the
-    /// box is greyed out rather than silently ignored.</summary>
     private void ApplyNumberingState()
     {
         if (!_ready) return;
@@ -57,8 +51,6 @@ public partial class RenameDialog : Window
         var middle = Numbering ? "001" : NameBox.Text;
         var first = $"{PrefixBox.Text}{middle}{SuffixBox.Text}{_sampleExtension}";
 
-        // Without a counter every file competes for one name, so showing the second
-        // one makes the disambiguation visible before it happens.
         PreviewText.Text = Numbering
             ? first
             : $"{first}   {PrefixBox.Text}{middle}{SuffixBox.Text} (2){_sampleExtension}";

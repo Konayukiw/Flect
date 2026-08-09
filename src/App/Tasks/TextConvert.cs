@@ -7,17 +7,8 @@ using Optimizer.Main;
 
 namespace Optimizer.Tasks;
 
-/// <summary>
-/// Converts between the text formats that actually describe the same shape of
-/// data. Everything goes through one intermediate tree rather than a reader and
-/// writer per pair, so the formats compose instead of multiplying.
-///
-/// Formats with no shared shape — css, cfg — are only ever copied to .txt.
-/// </summary>
 internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
 {
-    /// <summary>Excel reads a UTF-8 csv as the local codepage unless it sees a BOM,
-    /// which mangles anything non-ASCII. Nothing else here benefits from one.</summary>
     private static readonly UTF8Encoding CsvEncoding = new(encoderShouldEmitUTF8Identifier: true);
     private static readonly UTF8Encoding PlainEncoding = new(encoderShouldEmitUTF8Identifier: false);
 
@@ -35,32 +26,24 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
     {
         var text = TextFile.Read(path);
         var source = Path.GetExtension(path).TrimStart('.').ToUpperInvariant();
-
-        // "to TXT" is a change of name, not of content: the formats offering it
-        // have no structure to reinterpret.
-        var converted = _target == "TXT" ? text : Render(Parse(source, text));
-
+        var converted = _target == "TXT" ? text : Render(Parse(source, text, progress, path));
         var output = OutputPath.Derive(path, string.Empty, "." + _target.ToLowerInvariant());
         using var working = new WorkingFile(output);
         File.WriteAllText(output, converted, _target == "CSV" ? CsvEncoding : PlainEncoding);
         working.Keep();
     }, progress.Token);
 
-    private static JsonNode Parse(string source, string text) => source switch
+    private static JsonNode Parse(string source, string text, ITaskProgress progress,
+                                  string path) => source switch
     {
         "JSON" => JsonNode.Parse(text)
                   ?? throw new InvalidOperationException("This file is empty."),
-        "CSV" => FromCsv(text),
+        "CSV" => FromCsv(text, progress, path),
         "XML" => FromXml(text),
         "INI" or "CONF" => FromIni(text),
         _ => throw new InvalidOperationException($"{source} files cannot be converted."),
     };
 
-    /// <summary>
-    /// The default encoder escapes every non-ASCII character, which turns Japanese
-    /// into a wall of \uXXXX. The relaxed encoder is only "unsafe" for text pasted
-    /// straight into html or script; this is a .json file on disk.
-    /// </summary>
     private static readonly JsonSerializerOptions JsonLayout = new()
     {
         WriteIndented = true,
@@ -77,13 +60,60 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
         _ => throw new InvalidOperationException($"Cannot write {_target}."),
     };
 
-    // ---- csv ------------------------------------------------------------
+    private static readonly char[] Delimiters = [',', ';', '\t', '|'];
 
-    /// <summary>
-    /// Splits on RFC 4180 rules: fields may be quoted, quotes are doubled to
-    /// escape themselves, and a quoted field may span lines.
-    /// </summary>
-    private static List<List<string>> SplitCsv(string text)
+    private const int DetectionWindow = 64 * 1024;
+
+    private static char DetectDelimiter(string text)
+    {
+        var window = text.Length > DetectionWindow ? text[..DetectionWindow] : text;
+
+        var consistent = Delimiters
+            .Select(candidate => (candidate, columns: ConsistentColumns(window, candidate)))
+            .Where(result => result.columns > 1)
+            .ToList();
+
+        var quoted = QuoteVote(window);
+        if (quoted is char c && consistent.Any(result => result.candidate == c)) return c;
+
+        return consistent.Count > 0
+            ? consistent.MaxBy(result => result.columns).candidate
+            : ',';
+    }
+
+    private static char? QuoteVote(string text)
+    {
+        var votes = new Dictionary<char, int>();
+        bool inQuotes = false;
+
+        for (int i = 0; i < text.Length; i++)
+        {
+            if (text[i] != '"') continue;
+            if (!inQuotes) { inQuotes = true; continue; }
+            if (i + 1 < text.Length && text[i + 1] == '"') { i++; continue; }
+
+            inQuotes = false;
+            if (i + 1 < text.Length && Delimiters.Contains(text[i + 1]))
+            {
+                votes[text[i + 1]] = votes.GetValueOrDefault(text[i + 1]) + 1;
+            }
+        }
+        return votes.Count == 0 ? null : votes.MaxBy(vote => vote.Value).Key;
+    }
+
+    private static int ConsistentColumns(string text, char delimiter)
+    {
+        var rows = SplitCsv(text, delimiter)
+            .Where(row => !(row.Count == 1 && row[0].Length == 0))
+            .Take(10)
+            .ToList();
+
+        if (rows.Count == 0) return 0;
+        int columns = rows[0].Count;
+        return rows.All(row => row.Count == columns) ? columns : 0;
+    }
+
+    private static List<List<string>> SplitCsv(string text, char delimiter)
     {
         var rows = new List<List<string>>();
         var row = new List<string>();
@@ -103,30 +133,30 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
                 continue;
             }
 
-            switch (c)
+            if (c == '"')
             {
-                case '"':
-                    quoted = true;
-                    any = true;
-                    break;
-                case ',':
-                    row.Add(field.ToString());
-                    field.Clear();
-                    any = true;
-                    break;
-                case '\r':
-                    break;
-                case '\n':
-                    row.Add(field.ToString());
-                    field.Clear();
-                    rows.Add(row);
-                    row = [];
-                    any = false;
-                    break;
-                default:
-                    field.Append(c);
-                    any = true;
-                    break;
+                quoted = true;
+                any = true;
+            }
+            else if (c == delimiter)
+            {
+                row.Add(field.ToString());
+                field.Clear();
+                any = true;
+            }
+            else if (c is '\r' or '\n')
+            {
+                if (c == '\r' && i + 1 < text.Length && text[i + 1] == '\n') i++;
+                row.Add(field.ToString());
+                field.Clear();
+                rows.Add(row);
+                row = [];
+                any = false;
+            }
+            else
+            {
+                field.Append(c);
+                any = true;
             }
         }
 
@@ -138,11 +168,17 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
         return rows;
     }
 
-    /// <summary>The first row names the columns, which is what makes a csv a table
-    /// rather than a list of lists.</summary>
-    private static JsonNode FromCsv(string text)
+    private static JsonNode FromCsv(string text, ITaskProgress progress, string path)
     {
-        var rows = SplitCsv(text);
+        var delimiter = DetectDelimiter(text);
+        if (delimiter != ',')
+        {
+
+            var shown = delimiter == '\t' ? "tab" : delimiter.ToString();
+            progress.Info($"{Path.GetFileName(path)} — read as {shown}-separated.");
+        }
+
+        var rows = SplitCsv(text, delimiter);
         if (rows.Count == 0) throw new InvalidOperationException("This file is empty.");
 
         var headers = rows[0];
@@ -150,7 +186,6 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
 
         foreach (var row in rows.Skip(1))
         {
-            // A trailing newline leaves one empty field behind; that is not a row.
             if (row.Count == 1 && row[0].Length == 0) continue;
 
             var record = new JsonObject();
@@ -160,6 +195,12 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
                 record[name] = column < row.Count ? row[column] : string.Empty;
             }
             table.Add(record);
+        }
+
+        if (table.Count == 0)
+        {
+            throw new InvalidOperationException(
+                "No data rows were found below the header row.");
         }
         return table;
     }
@@ -175,7 +216,6 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
 
     private static IReadOnlyList<string> ColumnsOf(JsonArray rows)
     {
-        // Union in first-seen order, so ragged records still line up sensibly.
         var columns = new List<string>();
         var seen = new HashSet<string>(StringComparer.Ordinal);
         foreach (var row in rows.OfType<JsonObject>())
@@ -210,8 +250,6 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
                 ? '"' + value.Replace("\"", "\"\"") + '"'
                 : value;
     }
-
-    // ---- html and markdown ----------------------------------------------
 
     private static string ToHtml(JsonArray rows)
     {
@@ -253,12 +291,10 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
         }
         return markdown.ToString();
 
-        // A bar would end the cell early, and a newline would end the row.
         static string Escape(string value) =>
             value.Replace("|", "\\|").Replace("\r", " ").Replace("\n", " ");
     }
 
-    // ---- xml ------------------------------------------------------------
 
     private static string ToXml(JsonNode tree)
     {
@@ -287,7 +323,6 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
                     }
                     break;
 
-                // Arrays have no names of their own, so each entry repeats one.
                 case JsonArray a:
                     foreach (var item in a)
                     {
@@ -309,17 +344,11 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
         }
     }
 
-    /// <summary>
-    /// A StringWriter holds utf-16, and XmlWriter believes the writer when it
-    /// declares an encoding. Left alone it stamps encoding="utf-16" onto a document
-    /// that is then saved as utf-8, so the declaration would be a lie.
-    /// </summary>
     private sealed class Utf8StringWriter : StringWriter
     {
         public override Encoding Encoding => Encoding.UTF8;
     }
 
-    /// <summary>Json keys are free-form, xml element names are not.</summary>
     private static string SafeName(string key)
     {
         var name = new StringBuilder();
@@ -351,7 +380,6 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
                 node["@" + attribute.Name.LocalName] = JsonValue.Create(attribute.Value);
             }
 
-            // Repeated names are the xml way of writing a list.
             foreach (var group in children.GroupBy(child => child.Name.LocalName))
             {
                 var items = group.ToList();
@@ -367,8 +395,6 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
         }
     }
 
-    // ---- ini ------------------------------------------------------------
-
     private static JsonNode FromIni(string text)
     {
         var root = new JsonObject();
@@ -382,7 +408,6 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
             if (line[0] == '[' && line[^1] == ']')
             {
                 var section = line[1..^1].Trim();
-                // A repeated section header continues the one already started.
                 if (root[section] is JsonObject existing) { current = existing; continue; }
 
                 current = [];

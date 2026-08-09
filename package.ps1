@@ -49,9 +49,6 @@ if (-not $iscc) {
 New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
 Write-Host "Packaging $brand $Version" -ForegroundColor Cyan
 
-# Built as one array and splatted once. Appending to an array keeps it an array,
-# whereas assigning a single-element array from an if would collapse it to a
-# string, and splatting a string feeds the command one character per argument.
 $isccArgs = @(
     "/DBrandName=$brand"
     "/DAppId=$appId"
@@ -60,7 +57,6 @@ $isccArgs = @(
     "/DOutputDir=$outputDir"
 )
 
-# The installer only gets an icon once one has been drawn.
 $icon = Join-Path $repoRoot 'src\App\Assets\flect.ico'
 if (Test-Path $icon) { $isccArgs += "/DIconFile=$icon" }
 
