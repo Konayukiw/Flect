@@ -20,7 +20,7 @@ internal sealed class TextEncode(TaskRequest request) : BatchTask(request)
 
     protected override Task ProcessAsync(string path, ITaskProgress progress) => Task.Run(() =>
     {
-        var text = TextFile.Read(path);
+        var text = Text.Read(path);
         var output = OutputPath.Derive(path, Suffix());
         using var working = new WorkingFile(output);
 
@@ -41,7 +41,7 @@ internal sealed class TextEncode(TaskRequest request) : BatchTask(request)
         {
             OutputPath.SafeDelete(output);
             File.WriteAllText(output, text, Encoding.GetEncoding(ShiftJisCodePage));
-            progress.Warn($"{Path.GetFileName(path)} — some characters have no Shift_JIS " +
+            progress.Warn($"{Path.GetFileName(path)} — Some characters have no Shift_JIS " +
                           "equivalent and were replaced.");
         }
         working.Keep();
@@ -78,7 +78,7 @@ internal sealed class TextLineEndings(TaskRequest request) : BatchTask(request)
 
     protected override Task ProcessAsync(string path, ITaskProgress progress) => Task.Run(() =>
     {
-        var text = TextFile.Read(path, out var encoding);
+        var text = Text.Read(path, out var encoding);
         var ending = _target == "LF" ? "\n" : "\r\n";
         var normalised = text.Replace("\r\n", "\n").Replace('\r', '\n');
         var converted = ending == "\n" ? normalised : normalised.Replace("\n", ending);

@@ -35,7 +35,7 @@ internal static class Ffmpeg
             catch (ProcessFailure failure)
                 when (failure.Crashed && attempt < rungs.Count - 1)
             {
-                progress.Status($"{label} — retrying on {rungs[attempt + 1]} threads");
+                progress.Status($"{label} — Retrying on {rungs[attempt + 1]} threads");
             }
         }
     }

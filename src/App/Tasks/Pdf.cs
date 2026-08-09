@@ -15,7 +15,7 @@ internal sealed class PdfPreview(TaskRequest request) : TaskBase(request)
 
     public override Task RunAsync(ITaskProgress progress) => Task.CompletedTask;
 
-    public override void Present() => new PdfPreviewWindow(Request.Paths[0]).Show();
+    public override void Present() => new Gui.PdfPreview(Request.Paths[0]).Show();
 }
 
 internal sealed class PdfMerge(TaskRequest request) : TaskBase(request)
@@ -26,7 +26,7 @@ internal sealed class PdfMerge(TaskRequest request) : TaskBase(request)
 
     public override string? Summary => _output is null
         ? null
-        : $"Merged {Formatting.Count(Request.Paths.Count)} document(s) into " +
+        : $"Merged {Formatting.Plural(Request.Paths.Count, "document")} into " +
           Path.GetFileName(_output);
 
     public override Task RunAsync(ITaskProgress progress) => Task.Run(() =>
@@ -105,7 +105,7 @@ internal sealed class PdfConvert(TaskRequest request) : BatchTask(request)
         for (int index = 0; index < pages; index++)
         {
             progress.Token.ThrowIfCancellationRequested();
-            progress.Status($"{name} — page {index + 1} of {pages}");
+            progress.Status($"{name} — Page {index + 1} of {pages}");
 
             var suffix = pages == 1 ? string.Empty : $"_p{(index + 1).ToString().PadLeft(width, '0')}";
             var output = OutputPath.Derive(path, suffix, extension);

@@ -23,6 +23,9 @@ internal static class Formatting
 
     public static string Count(long value) => value.ToString("N0", CultureInfo.CurrentCulture);
 
+    public static string Plural(long count, string singular, string? plural = null) =>
+        $"{Count(count)} {(count == 1 ? singular : plural ?? singular + "s")}";
+
     public static string Percent(double fraction) =>
         (fraction * 100).ToString(fraction >= 0.1 ? "0.0" : "0.00", CultureInfo.InvariantCulture) + "%";
 

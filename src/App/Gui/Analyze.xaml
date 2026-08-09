@@ -1,4 +1,4 @@
-<Window x:Class="Optimizer.Gui.AnalyzeWindow"
+<Window x:Class="Optimizer.Gui.Analyze"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Width="820" Height="700" MinWidth="520" MinHeight="400"

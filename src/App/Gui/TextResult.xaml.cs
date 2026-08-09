@@ -2,9 +2,9 @@ using System.Windows;
 
 namespace Optimizer.Gui;
 
-public partial class TextResultWindow : Window
+public partial class TextResult : Window
 {
-    public TextResultWindow(string heading, string text)
+    public TextResult(string heading, string text)
     {
         InitializeComponent();
         Title = $"{Branding.Name} — {heading}";

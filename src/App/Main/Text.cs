@@ -3,7 +3,7 @@ using UtfUnknown;
 
 namespace Optimizer.Main;
 
-internal static class TextFile
+internal static class Text
 {
     public static string Read(string path) => Read(path, out _);
 

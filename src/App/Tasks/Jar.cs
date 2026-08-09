@@ -11,7 +11,7 @@ internal sealed class JarDecompile(TaskRequest request) : BatchTask(request)
         var destination = OutputPath.DeriveDirectory(path);
         Directory.CreateDirectory(destination);
 
-        progress.Status($"{Path.GetFileName(path)} — decompiling");
+        progress.Status($"{Path.GetFileName(path)} — Decompiling");
 
         bool finished = false;
         try

@@ -48,7 +48,7 @@ internal static class FileScanner
                                                Extension(file.Name)));
                 if (scan.Files.Count % 4096 == 0)
                 {
-                    progress.Status($"Scanning — {Formatting.Count(scan.Files.Count)} files");
+                    progress.Status($"Scanning — {Formatting.Plural(scan.Files.Count, "file")}");
                 }
             }
 
@@ -125,7 +125,7 @@ internal static class FileScanner
                                .ToList();
         if (unverified.Count == 0) return confirmed;
 
-        progress.Status($"Verifying {Formatting.Count(unverified.Count)} candidates");
+        progress.Status($"Verifying {Formatting.Plural(unverified.Count, "candidate")}");
         confirmed.AddRange(HashGroups(unverified, long.MaxValue, progress));
         return confirmed;
     }

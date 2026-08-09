@@ -88,13 +88,13 @@ internal sealed class VideoResize(TaskRequest request) : VideoTask(request)
             if (double.TryParse(scale, out var value) && value > 0) _percent = value;
             return true;
         }
-        _pixels = PixelsDialog.Ask();
+        _pixels = Pixels.Ask();
         return _pixels is not null;
     }
 
     protected override async Task ProcessAsync(string path, ITaskProgress progress)
     {
-        var info = await MediaProbe.ReadAsync(path, progress.Token);
+        var info = await Media.ReadAsync(path, progress.Token);
         RequireVideo(info);
 
         var output = OutputPath.Derive(path, "_resized");
@@ -137,7 +137,7 @@ internal sealed class VideoRotate(TaskRequest request) : VideoTask(request)
 
     protected override async Task ProcessAsync(string path, ITaskProgress progress)
     {
-        var info = await MediaProbe.ReadAsync(path, progress.Token);
+        var info = await Media.ReadAsync(path, progress.Token);
         RequireVideo(info);
 
         var output = OutputPath.Derive(path, "_rotated");
@@ -169,7 +169,7 @@ internal sealed class VideoConvert(TaskRequest request) : VideoTask(request)
 
     protected override async Task ProcessAsync(string path, ITaskProgress progress)
     {
-        var info = await MediaProbe.ReadAsync(path, progress.Token);
+        var info = await Media.ReadAsync(path, progress.Token);
 
         if (_target == "GIF")
         {
@@ -254,7 +254,7 @@ internal sealed class VideoCompress(TaskRequest request) : VideoTask(request)
         var bytes = Request["bytes"];
         if (string.Equals(bytes, "custom", StringComparison.OrdinalIgnoreCase))
         {
-            var answer = TargetBytesDialog.Ask(LargestSelected());
+            var answer = TargetBytes.Ask(LargestSelected());
             if (answer is null) return false;
             _target = answer.Value;
             return true;
@@ -272,7 +272,7 @@ internal sealed class VideoCompress(TaskRequest request) : VideoTask(request)
             return;
         }
 
-        var info = await MediaProbe.ReadAsync(path, progress.Token);
+        var info = await Media.ReadAsync(path, progress.Token);
         if (info.DurationSeconds <= 0)
         {
             throw new InvalidOperationException("Could not read the duration of this file.");
@@ -292,7 +292,7 @@ internal sealed class VideoCompress(TaskRequest request) : VideoTask(request)
 
         if (outcome.Bytes > _target)
         {
-            progress.Warn($"{Path.GetFileName(path)} — landed at " +
+            progress.Warn($"{Path.GetFileName(path)} — Landed at " +
                           $"{Formatting.Bytes(outcome.Bytes)}, over the " +
                           $"{Formatting.Bytes(_target)} target.");
         }

@@ -10,12 +10,12 @@ public sealed record LargeFileRow(string Size, string Path);
 public sealed record TypeRow(string Extension, string Size, string Share, string Count,
                              double BarWidth);
 
-public partial class AnalyzeWindow : Window
+public partial class Analyze : Window
 {
     private const double BarMaxWidth = 138;
     private const int MaxEmptyListed = 60;
 
-    internal AnalyzeWindow(AnalyzeReport report)
+    internal Analyze(AnalyzeReport report)
     {
         InitializeComponent();
         Title = $"{Branding.Name} — Analyze";
@@ -24,10 +24,10 @@ public partial class AnalyzeWindow : Window
 
         Tiles.ItemsSource = new[]
         {
-            new StatTile(Formatting.Bytes(report.TotalBytes), "total size"),
-            new StatTile(Formatting.Count(report.FileCount), "files"),
-            new StatTile(Formatting.Count(report.DirectoryCount), "folders"),
-            new StatTile($"{report.Elapsed.TotalSeconds:0.0}s", "scan time"),
+            new StatTile(Formatting.Bytes(report.TotalBytes), "Total size"),
+            new StatTile(Formatting.Count(report.FileCount), "Files"),
+            new StatTile(Formatting.Count(report.DirectoryCount), "Folders"),
+            new StatTile($"{report.Elapsed.TotalSeconds:0.0}s", "Scan time"),
         };
 
         LargestList.ItemsSource = report.Largest
@@ -38,13 +38,13 @@ public partial class AnalyzeWindow : Window
 
         DuplicateText.Text = report.DuplicateGroups == 0
             ? "None found."
-            : $"{Formatting.Count(report.DuplicateGroups)} group(s) · " +
-              $"{Formatting.Count(report.DuplicateFiles)} files · " +
+            : $"{Formatting.Plural(report.DuplicateGroups, "group")} · " +
+              $"{Formatting.Plural(report.DuplicateFiles, "file")} · " +
               $"{Formatting.Bytes(report.ReclaimableBytes)} reclaimable by keeping one copy of each.";
 
         EmptyText.Text = report.EmptyDirectories.Count == 0
             ? "None found."
-            : $"{Formatting.Count(report.EmptyDirectories.Count)} folder(s).";
+            : $"{Formatting.Plural(report.EmptyDirectories.Count, "folder")}.";
         EmptyList.ItemsSource = report.EmptyDirectories.Take(MaxEmptyListed).ToList();
     }
 
@@ -62,7 +62,7 @@ public partial class AnalyzeWindow : Window
             share.Extension,
             Formatting.Bytes(share.Bytes),
             Formatting.Percent(share.Bytes / total),
-            $"{Formatting.Count(share.Count)} files",
+            Formatting.Plural(share.Count, "file"),
             Math.Max(2, share.Bytes / largest * BarMaxWidth))).ToList();
 
         if (rest.Count > 0)

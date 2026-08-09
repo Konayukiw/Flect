@@ -6,13 +6,13 @@ namespace Optimizer.Gui;
 
 internal sealed record RenamePlan(string Prefix, string Name, string Suffix, bool Numbered);
 
-public partial class RenameDialog : Window
+public partial class Rename : Window
 {
     private readonly string _sampleExtension;
 
     private bool _ready;
 
-    private RenameDialog(string sampleExtension)
+    private Rename(string sampleExtension)
     {
         _sampleExtension = sampleExtension;
         InitializeComponent();
@@ -24,7 +24,7 @@ public partial class RenameDialog : Window
 
     internal static RenamePlan? Ask(string sampleExtension)
     {
-        var dialog = new RenameDialog(sampleExtension);
+        var dialog = new Rename(sampleExtension);
         if (dialog.ShowDialog() != true) return null;
 
         return new RenamePlan(dialog.PrefixBox.Text, dialog.NameBox.Text, dialog.SuffixBox.Text,

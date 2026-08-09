@@ -30,7 +30,7 @@ internal sealed class FolderRemoveDuplicate(TaskRequest request) : TaskBase(requ
             return;
         }
 
-        var mode = DuplicateDialog.Ask(groups);
+        var mode = Duplicate.Ask(groups);
         if (mode is null) throw new OperationCanceledException();
 
         var doomed = DuplicatePlan.ToDelete(groups, mode.Value);
@@ -42,12 +42,12 @@ internal sealed class FolderRemoveDuplicate(TaskRequest request) : TaskBase(requ
 
         long reclaimed = doomed.Sum(file => file.Size);
         progress.Indeterminate();
-        progress.Status($"Moving {Formatting.Count(doomed.Count)} files to the Recycle Bin");
+        progress.Status($"Moving {Formatting.Plural(doomed.Count, "file")} to the Recycle Bin");
 
         var paths = doomed.Select(file => file.Path).ToList();
         await Task.Run(() => Recycler.Delete(paths), progress.Token);
 
-        _summary = $"Moved {Formatting.Count(doomed.Count)} file(s) to the Recycle Bin, " +
+        _summary = $"Moved {Formatting.Plural(doomed.Count, "file")} to the Recycle Bin, " +
                    $"reclaiming {Formatting.Bytes(reclaimed)}.";
     }
 }
@@ -74,13 +74,13 @@ internal sealed class FolderRemoveEmpty(TaskRequest request) : TaskBase(request)
         var targets = FileScanner.Outermost(scan.EmptyDirectories);
 
         var answer = MessageBox.Show(
-            $"Move {Formatting.Count(scan.EmptyDirectories.Count)} empty folder(s) " +
+            $"Move {Formatting.Plural(scan.EmptyDirectories.Count, "empty folder")} " +
             "to the Recycle Bin?\n\n" + Preview(targets),
             Branding.Name, MessageBoxButton.OKCancel, MessageBoxImage.Question);
         if (answer != MessageBoxResult.OK) throw new OperationCanceledException();
 
         await Task.Run(() => Recycler.Delete(targets), progress.Token);
-        _summary = $"Moved {Formatting.Count(scan.EmptyDirectories.Count)} empty folder(s) " +
+        _summary = $"Moved {Formatting.Plural(scan.EmptyDirectories.Count, "empty folder")} " +
                    "to the Recycle Bin.";
     }
 
@@ -132,7 +132,7 @@ internal sealed class FolderTree(TaskRequest request) : TaskBase(request)
         _output = builder.ToString();
     }
 
-    public override void Present() => new TextResultWindow("tree /f", _output).Show();
+    public override void Present() => new TextResult("tree /f", _output).Show();
 }
 
 internal sealed class FolderRename(TaskRequest request) : TaskBase(request)
@@ -141,7 +141,7 @@ internal sealed class FolderRename(TaskRequest request) : TaskBase(request)
     private int _renamed;
 
     public override string Title => "Rename";
-    public override string? Summary => $"Renamed {Formatting.Count(_renamed)} file(s).";
+    public override string? Summary => $"Renamed {Formatting.Plural(_renamed, "file")}.";
 
     public override bool Configure()
     {
@@ -151,7 +151,7 @@ internal sealed class FolderRename(TaskRequest request) : TaskBase(request)
             .Select(Path.GetExtension)
             .FirstOrDefault(extension => !string.IsNullOrEmpty(extension));
 
-        var answer = RenameDialog.Ask(sample ?? ".png");
+        var answer = Rename.Ask(sample ?? ".png");
         if (answer is null) return false;
 
         _plan = answer;
@@ -266,6 +266,6 @@ internal sealed class FolderAnalyze(TaskRequest request) : TaskBase(request)
 
     public override void Present()
     {
-        if (_report is not null) new AnalyzeWindow(_report).Show();
+        if (_report is not null) new Analyze(_report).Show();
     }
 }

@@ -11,7 +11,7 @@ public sealed record LogEntry(LogSeverity Severity, string Message);
 
 internal enum TaskOutcome { Succeeded, Cancelled, Failed }
 
-public partial class ProgressWindow : Window, ITaskProgress
+public partial class Progress : Window, ITaskProgress
 {
     private readonly CancellationTokenSource _cancellation = new();
     private readonly ObservableCollection<LogEntry> _log = [];
@@ -19,7 +19,7 @@ public partial class ProgressWindow : Window, ITaskProgress
     private int _errorCount;
     private int _messageCount;
 
-    public ProgressWindow(string title)
+    public Progress(string title)
     {
         InitializeComponent();
         Title = $"{Branding.Name} — {title}";
@@ -59,7 +59,7 @@ public partial class ProgressWindow : Window, ITaskProgress
         StatusText.Text = summary ?? outcome switch
         {
             TaskOutcome.Succeeded when _errorCount > 0 =>
-                $"Finished with {Formatting.Count(_errorCount)} problem(s).",
+                $"Finished with {Formatting.Plural(_errorCount, "problem")}.",
             TaskOutcome.Succeeded => "Done.",
             TaskOutcome.Cancelled => "Cancelled.",
             _ => "Failed.",

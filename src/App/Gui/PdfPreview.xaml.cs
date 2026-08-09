@@ -6,13 +6,13 @@ using SkiaSharp;
 
 namespace Optimizer.Gui;
 
-public partial class PdfPreviewWindow : Window
+public partial class PdfPreview : Window
 {
     private readonly string _path;
     private readonly int _pageCount;
     private int _page;
 
-    public PdfPreviewWindow(string path)
+    public PdfPreview(string path)
     {
         InitializeComponent();
         _path = path;

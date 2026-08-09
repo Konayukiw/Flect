@@ -6,14 +6,14 @@ namespace Optimizer.Gui;
 
 public sealed record DuplicateRow(string Note, string Text, bool IsHeader, bool IsRemoving);
 
-public partial class DuplicateDialog : Window
+public partial class Duplicate : Window
 {
     private readonly IReadOnlyList<List<ScannedFile>> _groups;
     private readonly ObservableCollection<DuplicateRow> _rows = [];
 
     private bool _ready;
 
-    private DuplicateDialog(IReadOnlyList<List<ScannedFile>> groups)
+    private Duplicate(IReadOnlyList<List<ScannedFile>> groups)
     {
         _groups = groups;
         InitializeComponent();
@@ -23,7 +23,7 @@ public partial class DuplicateDialog : Window
         int copies = groups.Sum(group => group.Count);
         long reclaimable = groups.Sum(group => group.Sum(file => file.Size) - group[0].Size);
         FoundText.Text =
-            $"{Formatting.Count(groups.Count)} group(s), {Formatting.Count(copies)} files, " +
+            $"{Formatting.Plural(groups.Count, "group")}, {Formatting.Plural(copies, "file")}, " +
             $"up to {Formatting.Bytes(reclaimable)} reclaimable.";
 
         _ready = true;
@@ -32,7 +32,7 @@ public partial class DuplicateDialog : Window
 
     internal static DuplicateMode? Ask(IReadOnlyList<List<ScannedFile>> groups)
     {
-        var dialog = new DuplicateDialog(groups);
+        var dialog = new Duplicate(groups);
         return dialog.ShowDialog() == true ? dialog.SelectedMode : null;
     }
 
@@ -58,13 +58,14 @@ public partial class DuplicateDialog : Window
             index++;
             _rows.Add(new DuplicateRow(
                 string.Empty,
-                $"{Formatting.Count(group.Count)} identical files · {Formatting.Bytes(group[0].Size)} each",
+                $"{Formatting.Plural(group.Count, "identical file")} · " +
+                $"{Formatting.Bytes(group[0].Size)} each",
                 IsHeader: true, IsRemoving: false));
 
             foreach (var file in group.OrderBy(file => file.LastWrite))
             {
                 bool removing = doomed.Contains(file.Path);
-                _rows.Add(new DuplicateRow(removing ? "remove" : "keep", file.Path,
+                _rows.Add(new DuplicateRow(removing ? "Remove" : "Keep", file.Path,
                                            IsHeader: false, removing));
             }
         }
@@ -72,7 +73,7 @@ public partial class DuplicateDialog : Window
         long freed = _groups.SelectMany(group => group)
                             .Where(file => doomed.Contains(file.Path))
                             .Sum(file => file.Size);
-        PlanText.Text = $"{Formatting.Count(doomed.Count)} file(s) · {Formatting.Bytes(freed)}";
+        PlanText.Text = $"{Formatting.Plural(doomed.Count, "file")} · {Formatting.Bytes(freed)}";
         AcceptButton.IsEnabled = doomed.Count > 0;
     }
 

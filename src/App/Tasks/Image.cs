@@ -56,7 +56,7 @@ internal sealed class ImageResize(TaskRequest request) : ImageTask(request)
             if (double.TryParse(scale, out var value) && value > 0) _percent = value;
             return true;
         }
-        _pixels = PixelsDialog.Ask();
+        _pixels = Pixels.Ask();
         return _pixels is not null;
     }
 
@@ -187,7 +187,7 @@ internal sealed class ImageCompress(TaskRequest request) : BatchTask(request)
         var bytes = Request["bytes"];
         if (string.Equals(bytes, "custom", StringComparison.OrdinalIgnoreCase))
         {
-            var answer = TargetBytesDialog.Ask(LargestSelected());
+            var answer = TargetBytes.Ask(LargestSelected());
             if (answer is null) return false;
             _target = answer.Value;
             return true;

@@ -35,7 +35,7 @@ internal static class TaskRunner
             return;
         }
 
-        var window = new ProgressWindow(task.Title);
+        var window = new Progress(task.Title);
         window.Show();
 
         try

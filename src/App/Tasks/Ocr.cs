@@ -17,7 +17,7 @@ internal sealed class ImageOcr(TaskRequest request) : BatchTask(request)
 
     public override bool Configure()
     {
-        OcrNoticeDialog.ShowOnce(AvailableLanguages());
+        OcrNotice.ShowOnce(AvailableLanguages());
         return true;
     }
 
@@ -33,7 +33,7 @@ internal sealed class ImageOcr(TaskRequest request) : BatchTask(request)
         var text = string.Join(Environment.NewLine, result.Lines.Select(Join));
         if (text.Trim().Length == 0)
         {
-            progress.Warn($"{Path.GetFileName(path)} — no text found.");
+            progress.Warn($"{Path.GetFileName(path)} — No text found.");
             return;
         }
 

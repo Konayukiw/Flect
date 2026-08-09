@@ -5,9 +5,9 @@ namespace Optimizer.Gui;
 
 internal sealed record PixelTarget(uint Width, uint Height, bool KeepAspect);
 
-public partial class PixelsDialog : Window
+public partial class Pixels : Window
 {
-    private PixelsDialog()
+    private Pixels()
     {
         InitializeComponent();
         Title = $"{Branding.Name} — Resize";
@@ -16,7 +16,7 @@ public partial class PixelsDialog : Window
 
     internal static PixelTarget? Ask()
     {
-        var dialog = new PixelsDialog();
+        var dialog = new Pixels();
         if (dialog.ShowDialog() != true) return null;
 
         return new PixelTarget(Read(dialog.WidthBox.Text), Read(dialog.HeightBox.Text),

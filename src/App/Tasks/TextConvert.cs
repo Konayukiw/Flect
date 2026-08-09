@@ -24,7 +24,7 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
 
     protected override Task ProcessAsync(string path, ITaskProgress progress) => Task.Run(() =>
     {
-        var text = TextFile.Read(path);
+        var text = Text.Read(path);
         var source = Path.GetExtension(path).TrimStart('.').ToUpperInvariant();
         var converted = _target == "TXT" ? text : Render(Parse(source, text, progress, path));
         var output = OutputPath.Derive(path, string.Empty, "." + _target.ToLowerInvariant());
@@ -175,7 +175,7 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
         {
 
             var shown = delimiter == '\t' ? "tab" : delimiter.ToString();
-            progress.Info($"{Path.GetFileName(path)} — read as {shown}-separated.");
+            progress.Info($"{Path.GetFileName(path)} — Read as {shown}-separated.");
         }
 
         var rows = SplitCsv(text, delimiter);

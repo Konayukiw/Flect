@@ -3,9 +3,9 @@ using Optimizer.Main;
 
 namespace Optimizer.Gui;
 
-public partial class OcrNoticeDialog : Window
+public partial class OcrNotice : Window
 {
-    private OcrNoticeDialog(IReadOnlyList<string> languages)
+    private OcrNotice(IReadOnlyList<string> languages)
     {
         InitializeComponent();
         Title = $"{Branding.Name} — Text recognition";
@@ -16,10 +16,10 @@ public partial class OcrNoticeDialog : Window
 
     internal static void ShowOnce(IReadOnlyList<string> languages)
     {
-        var settings = UserSettings.Load();
+        var settings = Settings.Load();
         if (settings.SuppressOcrLanguageNotice) return;
 
-        var dialog = new OcrNoticeDialog(languages);
+        var dialog = new OcrNotice(languages);
         bool accepted = dialog.ShowDialog() == true;
 
         if (!accepted || !dialog.SuppressBox.IsChecked.GetValueOrDefault()) return;

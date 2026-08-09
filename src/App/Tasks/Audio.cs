@@ -14,7 +14,6 @@ internal static class AudioFormat
         "M4A" or "AAC" => ["-c:a", "aac", "-b:a", $"{LossyKbps}k"],
         "OGG" => ["-c:a", "libvorbis", "-b:a", $"{LossyKbps}k"],
         "WMA" => ["-c:a", "wmav2", "-b:a", $"{LossyKbps}k"],
-        // WAV and AIFF are uncompressed containers, so a bitrate would mean nothing.
         "WAV" => ["-c:a", "pcm_s16le"],
         "AIF" or "AIFF" => ["-c:a", "pcm_s16be"],
         _ => ["-c:a", "aac", "-b:a", $"{LossyKbps}k"],
@@ -43,7 +42,7 @@ internal sealed class AudioConvert(TaskRequest request) : BatchTask(request)
 
     protected override async Task ProcessAsync(string path, ITaskProgress progress)
     {
-        var info = await MediaProbe.ReadAsync(path, progress.Token);
+        var info = await Media.ReadAsync(path, progress.Token);
         var output = OutputPath.Derive(path, string.Empty, AudioFormat.Extension(_target));
 
         using var working = new WorkingFile(output);
@@ -68,7 +67,7 @@ internal sealed class VideoExtractAudio(TaskRequest request) : BatchTask(request
 
     protected override async Task ProcessAsync(string path, ITaskProgress progress)
     {
-        var info = await MediaProbe.ReadAsync(path, progress.Token);
+        var info = await Media.ReadAsync(path, progress.Token);
         if (!info.HasAudio) throw new InvalidOperationException("This file has no audio track.");
 
         var output = OutputPath.Derive(path, string.Empty, AudioFormat.Extension(_target));

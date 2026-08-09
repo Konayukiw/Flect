@@ -4,7 +4,7 @@ An Explorer context-menu extension for Windows. Right-click files or folders and
 
 ## Installation
 
-Run `Flect-Setup-(version).exe`. Then right-click a file or folder and choose **Show more options** (or press `Shift+F10`) to reach the menu.
+Download and run `Flect-Setup.exe` from [Releases](https://github.com/Konayukiw/Flect/releases/latest). Then right-click a file or folder and choose **Show more options** (or press `Shift+F10`) to reach the menu.
 
 Nothing needs administrator rights: it installs to `%LOCALAPPDATA%\Flect` and registers under `HKCU`. It appears in **Settings › Apps** for removal.
 

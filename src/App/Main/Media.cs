@@ -29,7 +29,7 @@ internal sealed record MediaInfo(
         Container.Contains("m4a", StringComparison.OrdinalIgnoreCase);
 }
 
-internal static class MediaProbe
+internal static class Media
 {
     public static async Task<MediaInfo> ReadAsync(string path, CancellationToken token)
     {

@@ -4,11 +4,11 @@ using Optimizer.Main;
 
 namespace Optimizer.Gui;
 
-public partial class TargetBytesDialog : Window
+public partial class TargetBytes : Window
 {
     private bool _ready;
 
-    private TargetBytesDialog(long largestSelected)
+    private TargetBytes(long largestSelected)
     {
         InitializeComponent();
         _ready = true;
@@ -22,7 +22,7 @@ public partial class TargetBytesDialog : Window
 
     internal static long? Ask(long largestSelected)
     {
-        var dialog = new TargetBytesDialog(largestSelected);
+        var dialog = new TargetBytes(largestSelected);
         if (dialog.ShowDialog() != true) return null;
         return Formatting.TryParseBytes(dialog.SizeBox.Text, out var bytes) ? bytes : null;
     }
@@ -31,7 +31,7 @@ public partial class TargetBytesDialog : Window
     {
         if (!_ready) return;
         EchoText.Text = Formatting.TryParseBytes(SizeBox.Text, out var bytes)
-            ? $"= {Formatting.Count(bytes)} bytes"
+            ? $"= {Formatting.Plural(bytes, "byte")}"
             : string.Empty;
     }
 
