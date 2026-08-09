@@ -1,5 +1,6 @@
 #include "ContextMenu.h"
 
+#include "Config.h"
 #include "Launcher.h"
 #include "Module.h"
 #include "Resource.h"
@@ -116,7 +117,7 @@ IFACEMETHODIMP ContextMenu::QueryContextMenu(HMENU menu, UINT indexMenu, UINT id
                                              UINT idCmdLast, UINT flags) {
   if (flags & CMF_DEFAULTONLY) return MAKE_HRESULT(SEVERITY_SUCCESS, 0, 0);
 
-  tree_ = MenuBuilder::Build(selection_);
+  tree_ = MenuBuilder::Build(selection_, Config::Get());
   commands_.clear();
   if (tree_.empty()) return MAKE_HRESULT(SEVERITY_SUCCESS, 0, 0);
 

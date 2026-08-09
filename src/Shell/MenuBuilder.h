@@ -1,9 +1,11 @@
 #pragma once
 
+#include "Config.h"
 #include "Selection.h"
 #include "framework.h"
 
 struct MenuNode {
+  std::wstring id;
   std::wstring label;
   std::wstring verb;
   std::vector<MenuNode> children;
@@ -11,6 +13,6 @@ struct MenuNode {
 
 namespace MenuBuilder {
 
-std::vector<MenuNode> Build(const SelectionInfo& selection);
+std::vector<MenuNode> Build(const SelectionInfo& selection, const ShellConfig& config);
 
 }

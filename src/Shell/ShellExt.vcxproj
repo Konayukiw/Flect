@@ -70,6 +70,7 @@
 
   <ItemGroup>
     <ClCompile Include="ClassFactory.cpp" />
+    <ClCompile Include="Config.cpp" />
     <ClCompile Include="ContextMenu.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="GifProbe.cpp" />
@@ -81,6 +82,7 @@
 
   <ItemGroup>
     <ClInclude Include="ClassFactory.h" />
+    <ClInclude Include="Config.h" />
     <ClInclude Include="ContextMenu.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GifProbe.h" />
