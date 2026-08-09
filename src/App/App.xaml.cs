@@ -1,5 +1,6 @@
 using System.Text;
 using System.Windows;
+using Optimizer.Gui;
 using Optimizer.Main;
 
 namespace Optimizer;
@@ -13,7 +14,10 @@ public partial class App : Application
         ShutdownMode = ShutdownMode.OnExplicitShutdown;
 
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        Theme.Apply(this);
+
+        var settings = Settings.Current;
+        Loc.Use(settings.General.Language);
+        Theme.Apply(this, settings.General.Theme);
         AppIcon.Register();
 
         Dispatcher.UnhandledException += (_, args) =>
@@ -30,12 +34,16 @@ public partial class App : Application
     {
         try
         {
+            if (args.Length == 0)
+            {
+                SettingsWindow.Open();
+                return;
+            }
+
             var request = TaskRequest.Parse(args);
             if (request is null)
             {
-                Report.Info(
-                    $"{Branding.Name} runs from the Explorer context menu.\n\n" +
-                    "Usage: --task <verb> --input <selection-file>");
+                Report.Error(Loc.F("msg.unknownCommand", string.Join(' ', args)));
                 Shutdown();
                 return;
             }

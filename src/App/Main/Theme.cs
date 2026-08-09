@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.Win32;
@@ -6,24 +7,42 @@ namespace Optimizer.Main;
 
 internal static class Theme
 {
-    public static void Apply(Application application)
+    private static readonly (string Key, string Light, string Dark)[] Palette =
+    [
+        ("Brush.Window", "#FFF6F6F6", "#FF1F1F1F"),
+        ("Brush.Surface", "#FFFFFFFF", "#FF2B2B2B"),
+        ("Brush.Border", "#FFD8D8D8", "#FF3D3D3D"),
+        ("Brush.Text", "#FF1B1B1B", "#FFF2F2F2"),
+        ("Brush.TextMuted", "#FF6B6B6B", "#FFA0A0A0"),
+        ("Brush.Accent", "#FF0F6CBD", "#FF4CA0E0"),
+        ("Brush.AccentText", "#FFFFFFFF", "#FF10202C"),
+        ("Brush.Danger", "#FFC42B1C", "#FFFF6B5E"),
+        ("Brush.Success", "#FF0F7B0F", "#FF6CCB6C"),
+        ("Brush.Hover", "#FFEAEAEA", "#FF3A3A3A"),
+    ];
+
+    public static bool IsDark { get; private set; }
+
+    public static void Apply(Application application) =>
+        Apply(application, Settings.Current.General.Theme);
+
+    public static void Apply(Application application, AppTheme mode)
     {
-        if (!IsDark()) return;
+        IsDark = mode switch
+        {
+            AppTheme.Light => false,
+            AppTheme.Dark => true,
+            _ => WindowsPrefersDark(),
+        };
 
         var resources = application.Resources;
-        resources["Brush.Window"] = Fill("#FF1F1F1F");
-        resources["Brush.Surface"] = Fill("#FF2B2B2B");
-        resources["Brush.Border"] = Fill("#FF3D3D3D");
-        resources["Brush.Text"] = Fill("#FFF2F2F2");
-        resources["Brush.TextMuted"] = Fill("#FFA0A0A0");
-        resources["Brush.Accent"] = Fill("#FF4CA0E0");
-        resources["Brush.AccentText"] = Fill("#FF10202C");
-        resources["Brush.Danger"] = Fill("#FFFF6B5E");
-        resources["Brush.Success"] = Fill("#FF6CCB6C");
-        resources["Brush.Hover"] = Fill("#FF3A3A3A");
+        foreach (var (key, light, dark) in Palette)
+        {
+            resources[key] = Fill(IsDark ? dark : light);
+        }
     }
 
-    private static bool IsDark()
+    private static bool WindowsPrefersDark()
     {
         try
         {
@@ -43,4 +62,30 @@ internal static class Theme
         brush.Freeze();
         return brush;
     }
+}
+
+internal static class ColorText
+{
+    public static Color Parse(string? text, Color fallback)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return fallback;
+
+        var value = text.Trim().TrimStart('#');
+        if (value.Length == 8) value = value[2..];
+        if (value.Length == 3)
+        {
+            value = string.Concat(value[0], value[0], value[1], value[1], value[2], value[2]);
+        }
+        if (value.Length != 6) return fallback;
+
+        return uint.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var rgb)
+            ? Color.FromRgb((byte)(rgb >> 16), (byte)(rgb >> 8), (byte)rgb)
+            : fallback;
+    }
+
+    public static string Format(Color color) =>
+        $"#{color.R:X2}{color.G:X2}{color.B:X2}";
+
+    public static string ForFfmpeg(string? text) =>
+        "0x" + Format(Parse(text, Colors.Black))[1..];
 }

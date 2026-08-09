@@ -89,7 +89,12 @@
     <ClInclude Include="MenuBuilder.h" />
     <ClInclude Include="Module.h" />
     <ClInclude Include="Registry.h" />
+    <ClInclude Include="Resource.h" />
     <ClInclude Include="Selection.h" />
+  </ItemGroup>
+
+  <ItemGroup Condition="Exists('$(RepoRoot)src\App\Assets\flect.ico')">
+    <ResourceCompile Include="ShellExt.rc" />
   </ItemGroup>
 
   <ItemGroup>

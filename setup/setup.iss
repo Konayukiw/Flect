@@ -45,9 +45,15 @@ WizardStyle=modern
 
 [Messages]
 FinishedLabelNoIcons=Setup is done.%n%nRight-click a file or folder and choose "Show more options" (Shift+F10) to find {#BrandName}.
+FinishedLabel=Setup is done.%n%nRight-click a file or folder and choose "Show more options" (Shift+F10) to find {#BrandName}.%n%n{#BrandName} is in your app list: open it to change settings.
 
 [Files]
 Source: "{#DistDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+
+; Running the executable without a task opens the settings window, so the app list entry is
+; the settings app.
+[Icons]
+Name: "{userprograms}\{#BrandName}"; Filename: "{app}\{#WorkerExe}"; Comment: "{#BrandName} settings"
 
 [Code]
 const

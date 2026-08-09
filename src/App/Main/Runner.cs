@@ -22,7 +22,7 @@ internal static class TaskRunner
         var task = TaskFactory.Create(request);
         if (task is null)
         {
-            Report.Error($"Unrecognised command: {request.Id}");
+            Report.Error($"Unrecognized command: {request.Id}");
             return;
         }
 

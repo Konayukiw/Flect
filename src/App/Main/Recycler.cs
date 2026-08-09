@@ -28,17 +28,18 @@ internal static class Recycler
     [DllImport("shell32.dll", CharSet = CharSet.Unicode, SetLastError = false)]
     private static extern int SHFileOperationW(ref ShFileOpStruct operation);
 
-    public static void Delete(IReadOnlyList<string> paths)
+    public static void Delete(IReadOnlyList<string> paths,
+                              DeleteMethod method = DeleteMethod.RecycleBin)
     {
         const int chunkSize = 512;
         for (int offset = 0; offset < paths.Count; offset += chunkSize)
         {
             var chunk = paths.Skip(offset).Take(chunkSize).ToList();
-            DeleteChunk(chunk);
+            DeleteChunk(chunk, method);
         }
     }
 
-    private static void DeleteChunk(IReadOnlyList<string> paths)
+    private static void DeleteChunk(IReadOnlyList<string> paths, DeleteMethod method)
     {
         int size = Marshal.SizeOf<ShFileOpStruct>();
         if (size != NativeStructSize)
@@ -51,11 +52,14 @@ internal static class Recycler
         var from = Marshal.StringToHGlobalUni(buffer);
         try
         {
+            ushort flags = FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT;
+            if (method == DeleteMethod.RecycleBin) flags |= FOF_ALLOWUNDO;
+
             var operation = new ShFileOpStruct
             {
                 wFunc = FO_DELETE,
                 pFrom = from,
-                fFlags = FOF_ALLOWUNDO | FOF_NOCONFIRMATION | FOF_NOERRORUI | FOF_SILENT,
+                fFlags = flags,
             };
 
             int result = SHFileOperationW(ref operation);

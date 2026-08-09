@@ -14,7 +14,7 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
 
     private string _target = "JSON";
 
-    public override string Title => "Convert";
+    public override string Title => Loc.T("menu.text.convert");
 
     public override bool Configure()
     {
@@ -37,11 +37,11 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
                                   string path) => source switch
     {
         "JSON" => JsonNode.Parse(text)
-                  ?? throw new InvalidOperationException("This file is empty."),
+                  ?? throw new InvalidOperationException(Loc.T("msg.emptyFile")),
         "CSV" => FromCsv(text, progress, path),
         "XML" => FromXml(text),
-        "INI" or "CONF" => FromIni(text),
-        _ => throw new InvalidOperationException($"{source} files cannot be converted."),
+        "INI" or "CONF" or "CFG" => FromIni(text),
+        _ => throw new InvalidOperationException(Loc.F("msg.cannotConvertFrom", source)),
     };
 
     private static readonly JsonSerializerOptions JsonLayout = new()
@@ -57,7 +57,7 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
         "CSV" => ToCsv(AsTable(tree)),
         "HTML" => ToHtml(AsTable(tree)),
         "MD" => ToMarkdown(AsTable(tree)),
-        _ => throw new InvalidOperationException($"Cannot write {_target}."),
+        _ => throw new InvalidOperationException(Loc.F("msg.cannotConvertTo", _target)),
     };
 
     private static readonly char[] Delimiters = [',', ';', '\t', '|'];
@@ -174,12 +174,12 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
         if (delimiter != ',')
         {
 
-            var shown = delimiter == '\t' ? "tab" : delimiter.ToString();
-            progress.Info($"{Path.GetFileName(path)} — Read as {shown}-separated.");
+            var shown = delimiter == '\t' ? Loc.T("msg.separator.tab") : delimiter.ToString();
+            progress.Info(Loc.F("msg.readAsSeparated", Path.GetFileName(path), shown));
         }
 
         var rows = SplitCsv(text, delimiter);
-        if (rows.Count == 0) throw new InvalidOperationException("This file is empty.");
+        if (rows.Count == 0) throw new InvalidOperationException(Loc.T("msg.emptyFile"));
 
         var headers = rows[0];
         var table = new JsonArray();
@@ -199,8 +199,7 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
 
         if (table.Count == 0)
         {
-            throw new InvalidOperationException(
-                "No data rows were found below the header row.");
+            throw new InvalidOperationException(Loc.T("msg.noDataRows"));
         }
         return table;
     }
@@ -209,9 +208,7 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
     {
         if (tree is JsonArray array && array.All(item => item is JsonObject)) return array;
 
-        throw new InvalidOperationException(
-            "Only an array of flat objects can become a table. This file is shaped " +
-            "differently, so there are no rows and columns to write.");
+        throw new InvalidOperationException(Loc.T("msg.notATable"));
     }
 
     private static IReadOnlyList<string> ColumnsOf(JsonArray rows)
@@ -363,7 +360,7 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
     private static JsonNode FromXml(string text)
     {
         var document = XDocument.Parse(text);
-        if (document.Root is null) throw new InvalidOperationException("This file has no root element.");
+        if (document.Root is null) throw new InvalidOperationException(Loc.T("msg.noRootElement"));
         return Convert(document.Root);
 
         static JsonNode Convert(XElement element)

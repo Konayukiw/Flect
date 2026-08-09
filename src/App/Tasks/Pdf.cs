@@ -9,7 +9,7 @@ namespace Optimizer.Tasks;
 
 internal sealed class PdfPreview(TaskRequest request) : TaskBase(request)
 {
-    public override string Title => "Preview";
+    public override string Title => Loc.T("menu.pdf.preview");
 
     public override bool ShowsProgress => false;
 
@@ -22,17 +22,17 @@ internal sealed class PdfMerge(TaskRequest request) : TaskBase(request)
 {
     private string? _output;
 
-    public override string Title => "Merge";
+    public override string Title => Loc.T("menu.pdf.merge");
 
     public override string? Summary => _output is null
         ? null
-        : $"Merged {Formatting.Plural(Request.Paths.Count, "document")} into " +
-          Path.GetFileName(_output);
+        : Loc.F("msg.mergedInto", Loc.N("count.document", Request.Paths.Count),
+                Path.GetFileName(_output));
 
     public override Task RunAsync(ITaskProgress progress) => Task.Run(() =>
     {
         progress.Indeterminate();
-        progress.Status("Merging");
+        progress.Status(Loc.T("msg.merging"));
 
         var sources = Request.Paths
             .OrderBy(Path.GetFileName, StringComparer.CurrentCultureIgnoreCase)
@@ -54,7 +54,7 @@ internal sealed class PdfConvert(TaskRequest request) : BatchTask(request)
 {
     private string _target = "PNG";
 
-    public override string Title => "Convert";
+    public override string Title => Loc.T("menu.pdf.convert");
 
     public override bool Configure()
     {
@@ -97,7 +97,7 @@ internal sealed class PdfConvert(TaskRequest request) : BatchTask(request)
             : (SKEncodedImageFormat.Png, ".png", 100);
 
         int pages = PdfRenderer.PageCount(path);
-        if (pages == 0) throw new InvalidOperationException("This document has no pages.");
+        if (pages == 0) throw new InvalidOperationException(Loc.T("msg.noPages"));
 
         int width = pages.ToString().Length;
         var name = Path.GetFileName(path);
@@ -105,7 +105,7 @@ internal sealed class PdfConvert(TaskRequest request) : BatchTask(request)
         for (int index = 0; index < pages; index++)
         {
             progress.Token.ThrowIfCancellationRequested();
-            progress.Status($"{name} — Page {index + 1} of {pages}");
+            progress.Status(Loc.F("msg.pageOf", name, index + 1, pages));
 
             var suffix = pages == 1 ? string.Empty : $"_p{(index + 1).ToString().PadLeft(width, '0')}";
             var output = OutputPath.Derive(path, suffix, extension);

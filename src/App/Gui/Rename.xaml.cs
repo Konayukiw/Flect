@@ -9,14 +9,23 @@ internal sealed record RenamePlan(string Prefix, string Name, string Suffix, boo
 public partial class Rename : Window
 {
     private readonly string _sampleExtension;
+    private readonly int _digits;
+    private readonly int _start;
 
     private bool _ready;
 
     private Rename(string sampleExtension)
     {
         _sampleExtension = sampleExtension;
+
+        var rename = Settings.Current.Folder.Rename;
+        _digits = rename.DigitCount;
+        _start = rename.StartNumber;
+
         InitializeComponent();
-        Title = $"{Branding.Name} — Rename";
+        Title = $"{Branding.Name} — {Loc.T("dialog.rename.title")}";
+        NumberBox.IsChecked = rename.UseNumbering;
+
         _ready = true;
         ApplyNumberingState();
         PrefixBox.Focus();
@@ -48,7 +57,10 @@ public partial class Rename : Window
     private void UpdatePreview()
     {
         if (!_ready) return;
-        var middle = Numbering ? "001" : NameBox.Text;
+
+        var middle = Numbering
+            ? _start.ToString().PadLeft(_digits > 0 ? _digits : 3, '0')
+            : NameBox.Text;
         var first = $"{PrefixBox.Text}{middle}{SuffixBox.Text}{_sampleExtension}";
 
         PreviewText.Text = Numbering
@@ -61,14 +73,12 @@ public partial class Rename : Window
         var name = PrefixBox.Text + (Numbering ? "1" : NameBox.Text) + SuffixBox.Text;
         if (name.Trim().Length == 0)
         {
-            Report.Error(Numbering
-                ? "Give at least a prefix or a suffix."
-                : "Give a custom name, or turn numbering on.");
+            Report.Error(Loc.T(Numbering ? "dialog.rename.needAffix" : "dialog.rename.needName"));
             return;
         }
         if (name.IndexOfAny(Path.GetInvalidFileNameChars()) >= 0)
         {
-            Report.Error("A name cannot contain \\ / : * ? \" < > |");
+            Report.Error(Loc.T("dialog.rename.invalidChars"));
             return;
         }
         DialogResult = true;

@@ -28,20 +28,24 @@ internal static class Command
     ];
 
     public static string[] SinglePass(string input, string output, Plan plan,
-                                      int videoKbps, int threads) =>
-    [
-        .. Ffmpeg.Preamble, "-i", input,
-        .. TrackMaps,
-        .. VideoFilter(plan),
-        "-threads", threads.ToString(CultureInfo.InvariantCulture),
-        "-c:v", "libx264",
-        "-b:v", $"{videoKbps}k",
-        "-preset", plan.Profile.Preset,
-        "-pix_fmt", "yuv420p",
-        .. AudioCodec(plan),
-        .. FastStart,
-        output,
-    ];
+                                      int videoKbps, int threads)
+    {
+        var video = Settings.Current.Video;
+        var encoder = Encoders.Preferred(video.Codec, video.Hardware);
+
+        return
+        [
+            .. Ffmpeg.Preamble, "-i", input,
+            .. TrackMaps,
+            .. VideoFilter(plan),
+            "-threads", threads.ToString(CultureInfo.InvariantCulture),
+            .. Encoders.Bitrate(encoder, videoKbps, video.Priority),
+            .. Encoders.PixelFormat(encoder),
+            .. AudioCodec(plan),
+            .. FastStart,
+            output,
+        ];
+    }
 
     public static string[] AudioOnlySource(string input, string output, int audioKbps) =>
     [

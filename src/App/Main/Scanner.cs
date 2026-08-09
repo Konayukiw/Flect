@@ -1,5 +1,6 @@
 using System.Buffers;
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.IO;
 using System.IO.Hashing;
 
@@ -16,24 +17,44 @@ internal sealed class TreeScan
     public long TotalBytes => Files.Sum(file => file.Size);
 }
 
+internal sealed record ScanOptions(ExclusionFilter Exclusions, EmptyFolderSettings Empty)
+{
+    public static ScanOptions From(FolderSettings folder) =>
+        new(ExclusionFilter.From(folder.ScanExclusions), folder.Empty);
+
+    public static ScanOptions From(FolderSettings folder, ExclusionRules extra) =>
+        new(ExclusionFilter.From(Merge(folder.ScanExclusions, extra)), folder.Empty);
+
+    private static ExclusionRules Merge(ExclusionRules first, ExclusionRules second) => new()
+    {
+        Folders = Join(first.Folders, second.Folders),
+        Files = Join(first.Files, second.Files),
+        Extensions = Join(first.Extensions, second.Extensions),
+    };
+
+    private static string Join(string first, string second) =>
+        string.Join('\n', ExclusionFilter.Split(first).Concat(ExclusionFilter.Split(second)));
+}
+
 internal static class FileScanner
 {
     private const int HeadHashBytes = 64 * 1024;
 
-    public static TreeScan Scan(IEnumerable<string> roots, ITaskProgress progress)
+    public static TreeScan Scan(IEnumerable<string> roots, ITaskProgress progress,
+                                ScanOptions options)
     {
         var scan = new TreeScan();
         foreach (var root in roots)
         {
             progress.Token.ThrowIfCancellationRequested();
             if (!Directory.Exists(root)) continue;
-            Walk(new DirectoryInfo(root), scan, progress, isRoot: true);
+            Walk(new DirectoryInfo(root), scan, progress, options, isRoot: true);
         }
         return scan;
     }
 
     private static bool Walk(DirectoryInfo directory, TreeScan scan, ITaskProgress progress,
-                             bool isRoot)
+                             ScanOptions options, bool isRoot)
     {
         progress.Token.ThrowIfCancellationRequested();
 
@@ -43,19 +64,22 @@ internal static class FileScanner
             foreach (var file in directory.EnumerateFiles())
             {
                 if ((file.Attributes & FileAttributes.System) != 0) continue;
-                hasFiles = true;
+
+                if (!Ignorable(file, options.Empty)) hasFiles = true;
+                if (options.Exclusions.ExcludesFile(file.Name)) continue;
+
                 scan.Files.Add(new ScannedFile(file.FullName, file.Length, file.LastWriteTime,
                                                Extension(file.Name)));
                 if (scan.Files.Count % 4096 == 0)
                 {
-                    progress.Status($"Scanning — {Formatting.Plural(scan.Files.Count, "file")}");
+                    progress.Status(Loc.F("msg.scanningCount", Loc.N("count.file", scan.Files.Count)));
                 }
             }
 
-            foreach (var child in SafeSubdirectories(directory))
+            foreach (var child in SafeSubdirectories(directory, options.Exclusions))
             {
                 scan.DirectoryCount++;
-                if (Walk(child, scan, progress, isRoot: false)) hasFiles = true;
+                if (Walk(child, scan, progress, options, isRoot: false)) hasFiles = true;
             }
         }
         catch (UnauthorizedAccessException)
@@ -71,7 +95,20 @@ internal static class FileScanner
         return hasFiles;
     }
 
-    private static IEnumerable<DirectoryInfo> SafeSubdirectories(DirectoryInfo directory)
+    private static bool Ignorable(FileInfo file, EmptyFolderSettings empty)
+    {
+        if (empty.IgnoreZeroByteFiles && file.Length == 0) return true;
+        if (empty.IgnoreDesktopIni &&
+            string.Equals(file.Name, "desktop.ini", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+        return empty.IgnoreThumbsDb &&
+               string.Equals(file.Name, "Thumbs.db", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static IEnumerable<DirectoryInfo> SafeSubdirectories(DirectoryInfo directory,
+                                                                 ExclusionFilter exclusions)
     {
         List<DirectoryInfo> children;
         try
@@ -86,6 +123,7 @@ internal static class FileScanner
         foreach (var child in children)
         {
             if ((child.Attributes & FileAttributes.ReparsePoint) != 0) continue;
+            if (exclusions.ExcludesFolder(child.Name)) continue;
             yield return child;
         }
     }
@@ -109,28 +147,60 @@ internal static class FileScanner
     }
 
     public static List<List<ScannedFile>> FindDuplicates(IReadOnlyList<ScannedFile> files,
-                                                         ITaskProgress progress)
+                                                         ITaskProgress progress,
+                                                         DuplicateSettings settings)
     {
-        var candidates = files.GroupBy(file => file.Size)
-                              .Where(group => group.Count() > 1)
-                              .SelectMany(group => group)
-                              .ToList();
+        var eligible = files
+            .Where(file => !(settings.IgnoreEmptyFiles && file.Size == 0))
+            .Where(file => file.Size >= settings.MinimumBytes)
+            .ToList();
+
+        var candidates = eligible.GroupBy(file => Identity(file, settings))
+                                 .Where(group => group.Count() > 1)
+                                 .SelectMany(group => group)
+                                 .ToList();
         if (candidates.Count == 0) return [];
 
-        progress.Status($"Comparing {Formatting.Count(candidates.Count)} same-size files");
-        var byHead = HashGroups(candidates, HeadHashBytes, progress);
+        if (settings.Strictness == DuplicateStrictness.SizeOnly)
+        {
+            return candidates.GroupBy(file => Identity(file, settings))
+                             .Select(group => group.ToList())
+                             .ToList();
+        }
+
+        progress.Status(Loc.F("msg.comparing", Loc.N("count.file", candidates.Count)));
+        var byHead = HashGroups(candidates, HeadHashBytes, settings, progress);
+
+        if (settings.Strictness == DuplicateStrictness.HeadHash) return byHead;
+
         var confirmed = byHead.Where(group => group[0].Size <= HeadHashBytes).ToList();
         var unverified = byHead.Where(group => group[0].Size > HeadHashBytes)
                                .SelectMany(group => group)
                                .ToList();
         if (unverified.Count == 0) return confirmed;
 
-        progress.Status($"Verifying {Formatting.Plural(unverified.Count, "candidate")}");
-        confirmed.AddRange(HashGroups(unverified, long.MaxValue, progress));
+        progress.Status(Loc.F("msg.verifying", Loc.N("count.candidate", unverified.Count)));
+        confirmed.AddRange(HashGroups(unverified, long.MaxValue, settings, progress));
         return confirmed;
     }
 
+    private static string Identity(ScannedFile file, DuplicateSettings settings)
+    {
+        var key = file.Size.ToString(CultureInfo.InvariantCulture);
+
+        if (settings.MatchName)
+        {
+            key += "|" + Path.GetFileName(file.Path).ToLowerInvariant();
+        }
+        if (settings.MatchTimestamp)
+        {
+            key += "|" + file.LastWrite.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+        }
+        return key;
+    }
+
     private static List<List<ScannedFile>> HashGroups(IReadOnlyList<ScannedFile> files, long limit,
+                                                      DuplicateSettings settings,
                                                       ITaskProgress progress)
     {
         var hashes = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
@@ -161,7 +231,7 @@ internal static class FileScanner
         });
 
         return files.Where(file => hashes.ContainsKey(file.Path))
-                    .GroupBy(file => (file.Size, hashes[file.Path]))
+                    .GroupBy(file => (Identity(file, settings), hashes[file.Path]))
                     .Where(group => group.Count() > 1)
                     .Select(group => group.ToList())
                     .ToList();

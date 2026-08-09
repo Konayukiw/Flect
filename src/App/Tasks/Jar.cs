@@ -4,14 +4,14 @@ namespace Optimizer.Tasks;
 
 internal sealed class JarDecompile(TaskRequest request) : BatchTask(request)
 {
-    public override string Title => "Decompile";
+    public override string Title => Loc.T("menu.jar.decompile");
 
     protected override async Task ProcessAsync(string path, ITaskProgress progress)
     {
         var destination = OutputPath.DeriveDirectory(path);
         Directory.CreateDirectory(destination);
 
-        progress.Status($"{Path.GetFileName(path)} — Decompiling");
+        progress.Status(Loc.F("msg.decompiling", Path.GetFileName(path)));
 
         bool finished = false;
         try
@@ -25,7 +25,7 @@ internal sealed class JarDecompile(TaskRequest request) : BatchTask(request)
 
             if (!Directory.EnumerateFileSystemEntries(destination).Any())
             {
-                throw new InvalidOperationException("The decompiler produced no output.");
+                throw new InvalidOperationException(Loc.T("msg.decompileEmpty"));
             }
             finished = true;
         }

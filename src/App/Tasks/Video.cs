@@ -7,19 +7,17 @@ namespace Optimizer.Tasks;
 
 internal abstract class VideoTask(TaskRequest request) : BatchTask(request)
 {
-    protected static string[] VideoCodec(string extension) => extension switch
-    {
-        ".webm" => ["-c:v", "libvpx-vp9"],
-        ".avi" => ["-c:v", "mpeg4"],
-        _ => ["-c:v", "libx264", "-preset", "medium", "-pix_fmt", "yuv420p"],
-    };
+    protected static VideoSettings Preferences => Settings.Current.Video;
 
-    protected static string[] VideoEncoder(string extension) => extension switch
+    protected static string[] VideoEncoder(string extension)
     {
-        ".webm" => [.. VideoCodec(extension), "-crf", "32", "-b:v", "0"],
-        ".avi" => [.. VideoCodec(extension), "-qscale:v", "3"],
-        _ => [.. VideoCodec(extension), "-crf", "20"],
-    };
+        var encoder = Encoders.ForContainer(extension, Preferences);
+        return
+        [
+            .. Encoders.Quality(encoder, Preferences.Priority),
+            .. Encoders.PixelFormat(encoder),
+        ];
+    }
 
     protected static string[] AudioCodec(string extension) => extension switch
     {
@@ -58,7 +56,7 @@ internal abstract class VideoTask(TaskRequest request) : BatchTask(request)
 
     protected static void RequireVideo(MediaInfo info)
     {
-        if (!info.HasVideo) throw new InvalidOperationException("This file has no video stream.");
+        if (!info.HasVideo) throw new InvalidOperationException(Loc.T("msg.noVideoStream"));
     }
 
     protected long LargestSelected()
@@ -78,7 +76,7 @@ internal sealed class VideoResize(TaskRequest request) : VideoTask(request)
     private PixelTarget? _pixels;
     private double _percent = 50;
 
-    public override string Title => "Resize";
+    public override string Title => Loc.T("menu.video.resize");
 
     public override bool Configure()
     {
@@ -98,7 +96,7 @@ internal sealed class VideoResize(TaskRequest request) : VideoTask(request)
         RequireVideo(info);
 
         var output = OutputPath.Derive(path, "_resized");
-        await FilterAsync(path, output, ScaleFilter(), info, progress, "Resizing");
+        await FilterAsync(path, output, ScaleFilter(), info, progress, Loc.T("label.resizing"));
     }
 
     private string ScaleFilter()
@@ -127,7 +125,7 @@ internal sealed class VideoRotate(TaskRequest request) : VideoTask(request)
 {
     private int _degrees = 90;
 
-    public override string Title => "Rotate";
+    public override string Title => Loc.T("menu.video.rotate");
 
     public override bool Configure()
     {
@@ -141,7 +139,7 @@ internal sealed class VideoRotate(TaskRequest request) : VideoTask(request)
         RequireVideo(info);
 
         var output = OutputPath.Derive(path, "_rotated");
-        await FilterAsync(path, output, RotateFilter(), info, progress, "Rotating");
+        await FilterAsync(path, output, RotateFilter(), info, progress, Loc.T("label.rotating"));
     }
 
     private string RotateFilter() => _degrees switch
@@ -149,17 +147,16 @@ internal sealed class VideoRotate(TaskRequest request) : VideoTask(request)
         90 => $"transpose=1,{Ffmpeg.EvenDimensions}",
         180 => $"transpose=1,transpose=1,{Ffmpeg.EvenDimensions}",
         _ => $"rotate={_degrees}*PI/180:ow=rotw({_degrees}*PI/180):oh=roth({_degrees}*PI/180):" +
-             $"fillcolor=black,{Ffmpeg.EvenDimensions}",
+             $"fillcolor={ColorText.ForFfmpeg(Preferences.RotateFillColor)}," +
+             Ffmpeg.EvenDimensions,
     };
 }
 
 internal sealed class VideoConvert(TaskRequest request) : VideoTask(request)
 {
-    private const string GifChain = "fps=15,scale='min(640,iw)':-2:flags=lanczos";
-
     private string _target = "MP4";
 
-    public override string Title => "Convert";
+    public override string Title => Loc.T("menu.video.convert");
 
     public override bool Configure()
     {
@@ -195,7 +192,7 @@ internal sealed class VideoConvert(TaskRequest request) : VideoTask(request)
         try
         {
             await Ffmpeg.RunAsync([.. Ffmpeg.Preamble, "-i", path, .. copyArgs, output], progress,
-                                  "Remuxing", info.DurationSeconds);
+                                  Loc.T("label.remuxing"), info.DurationSeconds);
             working.Keep();
             return;
         }
@@ -204,28 +201,43 @@ internal sealed class VideoConvert(TaskRequest request) : VideoTask(request)
             OutputPath.SafeDelete(output);
         }
 
-        await Ffmpeg.RunEncodeAsync(Build, progress, "Converting", info.DurationSeconds, info.Height);
+        await Ffmpeg.RunEncodeAsync(Build, progress, Loc.T("label.converting"), info.DurationSeconds,
+                                    info.Height);
         working.Keep();
     }
+
+    private static string GifChain()
+    {
+        var video = Preferences;
+        return $"fps={video.GifFps}," +
+               $"scale='min({video.GifMaxWidth},iw)':-2:flags=lanczos";
+    }
+
+    private static string PaletteUse() => Preferences.GifDither switch
+    {
+        GifDither.None => "paletteuse=dither=none:diff_mode=rectangle",
+        GifDither.FloydSteinberg => "paletteuse=dither=floyd_steinberg:diff_mode=rectangle",
+        _ => "paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle",
+    };
 
     private static async Task ToGifAsync(string path, MediaInfo info, ITaskProgress progress)
     {
         var output = OutputPath.Derive(path, string.Empty, ".gif");
         var palette = OutputPath.Scratch(output, ".png");
+        var chain = GifChain();
 
         using var working = new WorkingFile(output);
         try
         {
             await Ffmpeg.RunAsync(
-                [.. Ffmpeg.Preamble, "-i", path, "-vf", $"{GifChain},palettegen=stats_mode=diff",
+                [.. Ffmpeg.Preamble, "-i", path, "-vf", $"{chain},palettegen=stats_mode=diff",
                  palette],
-                progress, "Building palette", info.DurationSeconds);
+                progress, Loc.T("label.buildingPalette"), info.DurationSeconds);
 
             await Ffmpeg.RunAsync(
                 [.. Ffmpeg.Preamble, "-i", path, "-i", palette, "-lavfi",
-                 $"{GifChain}[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle",
-                 "-loop", "0", output],
-                progress, "Writing GIF", info.DurationSeconds);
+                 $"{chain}[x];[x][1:v]{PaletteUse()}", "-loop", "0", output],
+                progress, Loc.T("label.writingGif"), info.DurationSeconds);
         }
         finally
         {
@@ -237,17 +249,15 @@ internal sealed class VideoConvert(TaskRequest request) : VideoTask(request)
 
 internal sealed class VideoCompress(TaskRequest request) : VideoTask(request)
 {
-    private const long Mebibyte = 1024 * 1024;
-
     private long _target;
 
-    public override string Title => "Compress";
+    public override string Title => Loc.T("menu.video.compress");
 
     public override bool Configure()
     {
         if (string.Equals(Request["preset"], "discord", StringComparison.OrdinalIgnoreCase))
         {
-            _target = 10 * Mebibyte;
+            _target = Preferences.Presets.CompressDiscord;
             return true;
         }
 
@@ -267,15 +277,15 @@ internal sealed class VideoCompress(TaskRequest request) : VideoTask(request)
         long original = new FileInfo(path).Length;
         if (original <= Bitrate.SafeTarget(_target))
         {
-            progress.Info(
-                $"{Path.GetFileName(path)} is already {Formatting.Bytes(original)} — left alone.");
+            progress.Info(Loc.F("msg.alreadySmall", Path.GetFileName(path),
+                                Formatting.Bytes(original)));
             return;
         }
 
         var info = await Media.ReadAsync(path, progress.Token);
         if (info.DurationSeconds <= 0)
         {
-            throw new InvalidOperationException("Could not read the duration of this file.");
+            throw new InvalidOperationException(Loc.T("msg.noDuration"));
         }
 
         var plan = Planner.Build(info, _target);
@@ -292,9 +302,8 @@ internal sealed class VideoCompress(TaskRequest request) : VideoTask(request)
 
         if (outcome.Bytes > _target)
         {
-            progress.Warn($"{Path.GetFileName(path)} — Landed at " +
-                          $"{Formatting.Bytes(outcome.Bytes)}, over the " +
-                          $"{Formatting.Bytes(_target)} target.");
+            progress.Warn(Loc.F("msg.overTarget", Path.GetFileName(path),
+                                Formatting.Bytes(outcome.Bytes), Formatting.Bytes(_target)));
         }
     }
 }

@@ -103,7 +103,7 @@ std::vector<MenuNode> BuildImage(const SelectionInfo& selection) {
   }
   items.push_back(Leaf(Label::kOcr, L"image.ocr"));
   items.push_back(Leaf(Label::kRemoveMetadata, L"image.strip"));
-  items.push_back(Leaf(Label::kRemoveGreenScreen, L"image.chromakey"));
+  items.push_back(Leaf(Label::kRemoveBackground, L"image.chromakey"));
   return items;
 }
 
@@ -147,12 +147,19 @@ std::vector<MenuNode> BuildAudio(const SelectionInfo& selection) {
 }
 
 std::vector<std::wstring> TextTargets(const std::wstring& from) {
-  if (from == L"CSV") return {L"JSON", L"XML", L"HTML", L"MD"};
-  if (from == L"JSON") return {L"CSV", L"XML"};
-  if (from == L"XML") return {L"JSON"};
-  if (from == L"INI") return {L"JSON", L"XML"};
-  if (from == L"CSS" || from == L"CFG") return {L"TXT"};
-  return {};
+  std::vector<std::wstring> targets;
+  if (from != L"TXT") targets.push_back(L"TXT");
+
+  if (from == L"CSV") {
+    targets.insert(targets.end(), {L"JSON", L"XML", L"HTML", L"MD"});
+  } else if (from == L"JSON") {
+    targets.insert(targets.end(), {L"CSV", L"XML"});
+  } else if (from == L"XML") {
+    targets.push_back(L"JSON");
+  } else if (from == L"INI" || from == L"CFG") {
+    targets.insert(targets.end(), {L"JSON", L"XML"});
+  }
+  return targets;
 }
 
 std::vector<MenuNode> BuildText(const SelectionInfo& selection) {

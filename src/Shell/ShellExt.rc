@@ -1,0 +1,3 @@
+#include "Resource.h"
+
+IDI_FLECT ICON "..\\App\\Assets\\flect.ico"

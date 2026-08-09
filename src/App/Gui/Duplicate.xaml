@@ -1,6 +1,7 @@
 <Window x:Class="Optimizer.Gui.Duplicate"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:Optimizer.Main"
         Width="760" Height="560" MinWidth="520" MinHeight="380"
         WindowStartupLocation="CenterScreen" ShowInTaskbar="False">
   <Grid Margin="18">
@@ -12,18 +13,18 @@
     </Grid.RowDefinitions>
 
     <StackPanel Grid.Row="0">
-      <TextBlock Style="{StaticResource Text.Heading}" Text="Remove Duplicate" />
+      <TextBlock Style="{StaticResource Text.Heading}" Text="{loc:T menu.folder.removeDuplicate}" />
       <TextBlock x:Name="FoundText" Style="{StaticResource Text.Muted}" Margin="0,0,0,14" />
     </StackPanel>
 
     <Border Grid.Row="1" Style="{StaticResource Panel.Card}" Margin="0,0,0,12">
       <StackPanel>
         <RadioButton x:Name="KeepOldestOption" GroupName="Mode" IsChecked="True"
-                     Content="Keep the oldest copy" Checked="OnModeChanged" />
+                     Content="{loc:T dialog.duplicate.keepOldest}" Checked="OnModeChanged" />
         <RadioButton x:Name="KeepNewestOption" GroupName="Mode"
-                     Content="Keep the newest copy" Checked="OnModeChanged" />
+                     Content="{loc:T dialog.duplicate.keepNewest}" Checked="OnModeChanged" />
         <RadioButton x:Name="DeleteAllOption" GroupName="Mode"
-                     Content="Delete every copy" Checked="OnModeChanged" />
+                     Content="{loc:T dialog.duplicate.deleteAll}" Checked="OnModeChanged" />
       </StackPanel>
     </Border>
 
@@ -81,8 +82,8 @@
       <TextBlock x:Name="PlanText" VerticalAlignment="Center"
                  Style="{StaticResource Text.Muted}" />
       <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-        <Button Content="Cancel" IsCancel="True" Margin="0,0,8,0" Click="OnCancel" />
-        <Button x:Name="AcceptButton" Content="Move to Recycle Bin" IsDefault="True"
+        <Button Content="{loc:T common.cancel}" IsCancel="True" Margin="0,0,8,0" Click="OnCancel" />
+        <Button x:Name="AcceptButton" IsDefault="True"
                 Style="{StaticResource Button.Primary}" Click="OnAccept" />
       </StackPanel>
     </Grid>

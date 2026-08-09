@@ -1,3 +1,5 @@
+using System.Text;
+using System.Windows;
 using ImageMagick;
 using Optimizer.Main;
 using Optimizer.Gui;
@@ -11,41 +13,95 @@ internal sealed class ImageOcr(TaskRequest request) : BatchTask(request)
 {
     private const uint ComfortableEdge = 1600;
 
-    private static readonly System.Text.UTF8Encoding Utf8Bom = new(encoderShouldEmitUTF8Identifier: true);
+    private readonly StringBuilder _collected = new();
 
-    public override string Title => "OCR";
+    private OcrSettings _settings = new();
+    private string? _summary;
+
+    public override string Title => Loc.T("menu.image.ocr");
+
+    public override string? Summary => _summary;
 
     public override bool Configure()
     {
-        OcrNotice.ShowOnce(AvailableLanguages());
+        _settings = Settings.Current.Ocr;
+        OcrNotice.ShowOnce(OcrLanguages.Installed().Select(language => language.Display).ToList());
         return true;
     }
 
     protected override async Task ProcessAsync(string path, ITaskProgress progress)
     {
-        var engine = OcrEngine.TryCreateFromUserProfileLanguages()
+        var engine = OcrLanguages.Create(_settings.Language)
             ?? throw new InvalidOperationException(
-                "Windows has no text recogniser installed for your languages. " +
-                "Add the language under Settings > Time & Language > Language & Region.");
+                string.IsNullOrWhiteSpace(_settings.Language)
+                    ? Loc.T("msg.ocrNoEngine")
+                    : Loc.F("msg.ocrNoLanguage", _settings.Language));
 
         using var bitmap = await ReadForRecognitionAsync(path, progress.Token);
         var result = await engine.RecognizeAsync(bitmap);
         var text = string.Join(Environment.NewLine, result.Lines.Select(Join));
+
         if (text.Trim().Length == 0)
         {
-            progress.Warn($"{Path.GetFileName(path)} — No text found.");
+            progress.Warn(Loc.F("msg.noTextFound", Path.GetFileName(path)));
+            return;
+        }
+
+        if (_settings.Output != OcrOutput.TextFile)
+        {
+            Collect(path, text);
             return;
         }
 
         var output = OutputPath.Derive(path, "_ocr", ".txt");
         using var working = new WorkingFile(output);
-        await File.WriteAllTextAsync(output, text, Utf8Bom, progress.Token);
+        await File.WriteAllTextAsync(output, text, FileEncoding(_settings.Encoding), progress.Token);
         working.Keep();
     }
 
+    public override void Present()
+    {
+        if (_settings.Output == OcrOutput.TextFile || _collected.Length == 0) return;
+
+        var text = _collected.ToString();
+        if (_settings.Output == OcrOutput.Clipboard)
+        {
+            try
+            {
+                Clipboard.SetText(text);
+                _summary = Loc.T("msg.ocrCopied");
+            }
+            catch (Exception)
+            {
+                _summary = Loc.T("common.copyFailed");
+            }
+        }
+
+        new TextResult(Title, text).Show();
+    }
+
+    private void Collect(string path, string text)
+    {
+        if (Request.Paths.Count > 1)
+        {
+            if (_collected.Length > 0) _collected.AppendLine().AppendLine();
+            _collected.AppendLine($"== {Path.GetFileName(path)} ==");
+        }
+        _collected.AppendLine(text);
+    }
+
+    private static Encoding FileEncoding(TextEncodingChoice choice) => choice switch
+    {
+        TextEncodingChoice.Utf8 => new UTF8Encoding(encoderShouldEmitUTF8Identifier: false),
+        TextEncodingChoice.Utf16 =>
+            new System.Text.UnicodeEncoding(bigEndian: false, byteOrderMark: true),
+        TextEncodingChoice.ShiftJis => Encoding.GetEncoding(932),
+        _ => new UTF8Encoding(encoderShouldEmitUTF8Identifier: true),
+    };
+
     private static string Join(OcrLine line)
     {
-        var text = new System.Text.StringBuilder();
+        var text = new StringBuilder();
         foreach (var word in line.Words)
         {
             if (word.Text.Length == 0) continue;
@@ -64,7 +120,7 @@ internal sealed class ImageOcr(TaskRequest request) : BatchTask(request)
         >= '぀' and <= 'ヿ' => true,   // Hiragana and Katakana
         >= '㐀' and <= '䶿' => true,   // CJK extension A
         >= '一' and <= '鿿' => true,   // CJK unified ideographs
-        >= '豈' and <= '﫿' => true,   // CJK compatibility ideographs
+        >= '豈' and <= '﫿' => true,   // CJK compatibility ideographs
         >= '＀' and <= '￯' => true,   // Fullwidth forms
         _ => false,
     };
@@ -108,19 +164,5 @@ internal sealed class ImageOcr(TaskRequest request) : BatchTask(request)
 
         image.Format = MagickFormat.Bmp;
         return image.ToByteArray();
-    }
-
-    private static IReadOnlyList<string> AvailableLanguages()
-    {
-        try
-        {
-            return OcrEngine.AvailableRecognizerLanguages
-                .Select(language => $"{language.DisplayName} ({language.LanguageTag})")
-                .ToList();
-        }
-        catch (Exception)
-        {
-            return [];
-        }
     }
 }

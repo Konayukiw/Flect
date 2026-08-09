@@ -31,4 +31,6 @@ class ContextMenu : public IShellExtInit, public IContextMenu {
   SelectionInfo selection_;
   std::vector<MenuNode> tree_;
   std::vector<const MenuNode*> commands_;
+
+  HBITMAP icon_ = nullptr;
 };

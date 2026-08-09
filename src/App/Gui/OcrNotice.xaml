@@ -1,29 +1,26 @@
 <Window x:Class="Optimizer.Gui.OcrNotice"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:Optimizer.Main"
         Width="440" SizeToContent="Height" ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen" ShowInTaskbar="False">
   <StackPanel Margin="18">
-    <TextBlock Style="{StaticResource Text.Heading}" Text="Text recognition" />
+    <TextBlock Style="{StaticResource Text.Heading}" Text="{loc:T dialog.ocr.title}" />
     <TextBlock Style="{StaticResource Text.Muted}" TextWrapping="Wrap" Margin="0,0,0,14"
-               Text="Flect reads text using the recognition built into Windows, which can only
-                     read a language whose recognizer is installed on this PC. There is no way
-                     to tell which language you are about to scan, so it is worth checking." />
+               Text="{loc:T dialog.ocr.body}" />
 
-    <TextBlock Text="Installed on this PC" Margin="0,0,0,4" />
+    <TextBlock Text="{loc:T dialog.ocr.installedHere}" Margin="0,0,0,4" />
     <Border Style="{StaticResource Panel.Card}" Padding="12,10">
       <TextBlock x:Name="LanguagesText" TextWrapping="Wrap" FontSize="12" />
     </Border>
 
     <TextBlock Style="{StaticResource Text.Muted}" TextWrapping="Wrap" Margin="0,10,0,0"
-               Text="To add one, install the language under Settings › Time &amp; language ›
-                     Language &amp; region. The recognizer arrives with the language's optional
-                     features." />
+               Text="{loc:T dialog.ocr.howto}" />
 
-    <CheckBox x:Name="SuppressBox" Content="Do not show this again" Margin="0,16,0,0" />
+    <CheckBox x:Name="SuppressBox" Content="{loc:T dialog.ocr.suppress}" Margin="0,16,0,0" />
 
     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
-      <Button Content="OK" IsDefault="True"
+      <Button Content="{loc:T common.ok}" IsDefault="True"
               Style="{StaticResource Button.Primary}" Click="OnAccept" />
     </StackPanel>
   </StackPanel>

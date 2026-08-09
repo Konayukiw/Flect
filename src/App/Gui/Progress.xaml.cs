@@ -24,6 +24,7 @@ public partial class Progress : Window, ITaskProgress
         InitializeComponent();
         Title = $"{Branding.Name} — {title}";
         HeadingText.Text = title;
+        ActionButton.Content = Loc.T("common.cancel");
         LogList.ItemsSource = _log;
     }
 
@@ -53,22 +54,31 @@ public partial class Progress : Window, ITaskProgress
     {
         _finished = true;
         Bar.IsIndeterminate = false;
-        ActionButton.Content = "Close";
+        ActionButton.Content = Loc.T("common.close");
         ActionButton.IsEnabled = true;
 
         StatusText.Text = summary ?? outcome switch
         {
             TaskOutcome.Succeeded when _errorCount > 0 =>
-                $"Finished with {Formatting.Plural(_errorCount, "problem")}.",
-            TaskOutcome.Succeeded => "Done.",
-            TaskOutcome.Cancelled => "Cancelled.",
-            _ => "Failed.",
+                Loc.F("progress.problems", Loc.N("count.problem", _errorCount)),
+            TaskOutcome.Succeeded => Loc.T("progress.done"),
+            TaskOutcome.Cancelled => Loc.T("progress.cancelled"),
+            _ => Loc.T("progress.failed"),
         };
 
-        if (outcome == TaskOutcome.Succeeded && _errorCount == 0 && _messageCount == 0)
+        if (ClosesItself(outcome)) Close();
+    }
+
+    private bool ClosesItself(TaskOutcome outcome)
+    {
+        var general = Settings.Current.General;
+
+        return outcome switch
         {
-            Close();
-        }
+            TaskOutcome.Succeeded => general.CloseOnSuccess && _errorCount == 0 && _messageCount == 0,
+            TaskOutcome.Cancelled => general.CloseOnCancel,
+            _ => general.CloseOnFailure,
+        };
     }
 
     private void Append(LogSeverity severity, string message)
@@ -96,7 +106,7 @@ public partial class Progress : Window, ITaskProgress
             return;
         }
         ActionButton.IsEnabled = false;
-        StatusText.Text = "Cancelling...";
+        StatusText.Text = Loc.T("progress.cancelling");
         _cancellation.Cancel();
     }
 

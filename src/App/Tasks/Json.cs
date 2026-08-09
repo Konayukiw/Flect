@@ -20,44 +20,18 @@ internal sealed class JsonFormat(TaskRequest request, bool sortKeys) : BatchTask
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
     };
 
-    public override string Title => sortKeys ? "Sort Keys" : "Pretty Print";
+    public override string Title => Loc.T(sortKeys ? "menu.json.sort" : "menu.json.pretty");
 
     protected override Task ProcessAsync(string path, ITaskProgress progress) => Task.Run(() =>
     {
         var node = JsonNode.Parse(File.ReadAllText(path), nodeOptions: null, ParseOptions)
-            ?? throw new InvalidOperationException("This file is empty.");
+            ?? throw new InvalidOperationException(Loc.T("msg.emptyFile"));
 
-        var formatted = sortKeys ? Sorted(node) ?? node : node;
+        var formatted = sortKeys ? JsonSorter.Sort(node, Settings.Current.Text.JsonSort) : node;
 
         var output = OutputPath.Derive(path, sortKeys ? "_sorted" : "_pretty");
         using var working = new WorkingFile(output);
         File.WriteAllText(output, formatted.ToJsonString(WriteOptions), new UTF8Encoding(false));
         working.Keep();
     }, progress.Token);
-
-    private static JsonNode? Sorted(JsonNode? node)
-    {
-        switch (node)
-        {
-            case JsonObject source:
-            {
-                var result = new JsonObject();
-                foreach (var member in source.OrderBy(member => member.Key, StringComparer.Ordinal))
-                {
-                    result[member.Key] = Sorted(member.Value?.DeepClone());
-                }
-                return result;
-            }
-
-            case JsonArray source:
-            {
-                var result = new JsonArray();
-                foreach (var item in source) result.Add(Sorted(item?.DeepClone()));
-                return result;
-            }
-
-            default:
-                return node?.DeepClone();
-        }
-    }
 }

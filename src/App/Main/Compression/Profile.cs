@@ -2,10 +2,7 @@ namespace Optimizer.Main.Compression;
 
 internal static class Profile
 {
-    private const double BppDirectAdopt = 0.05;
     private const double BppSampleTest = 0.03;
-
-    private const string BalancedPreset = "fast";
 
     private readonly record struct Candidate(int Width, int Height, double Fps);
 
@@ -29,7 +26,7 @@ internal static class Profile
     }
 
     private static EncodingProfile Prof(Candidate candidate, int videoKbps, int audioKbps) =>
-        new(candidate.Width, candidate.Height, candidate.Fps, videoKbps, audioKbps, BalancedPreset);
+        new(candidate.Width, candidate.Height, candidate.Fps, videoKbps, audioKbps);
 
     private static List<Candidate> Candidates(MediaInfo source)
     {

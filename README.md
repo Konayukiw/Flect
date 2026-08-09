@@ -4,14 +4,11 @@ An Explorer context-menu extension for Windows. Right-click files or folders and
 
 ## Installation
 
-Download and run `Flect-Setup.exe` from [Releases](https://github.com/Konayukiw/Flect/releases/latest). Then right-click a file or folder and choose **Show more options** (or press `Shift+F10`) to reach the menu.
+Download and run `Flect-Setup.exe` from [Releases](https://github.com/Konayukiw/Flect/releases/latest). 
 
-Nothing needs administrator rights: it installs to `%LOCALAPPDATA%\Flect` and registers under `HKCU`. It appears in **Settings › Apps** for removal.
+Then right-click a file or folder, choose **Show more options** and you will see Flect.
 
-Requires the [.NET 10 Desktop Runtime (x64)](https://dotnet.microsoft.com/download/dotnet/10.0). 
-Setup checks for it and leads to the download page if it is missing.
-
-Explorer loads the handler into itself and keeps it open, so installing over a version that has already been used restarts Explorer once. Setup does that on its own, and only when the file is genuinely locked.
+For detailed settings, open **Flect** from app list in the start menu.
 
 ## How to build
 
@@ -25,8 +22,6 @@ Explorer loads the handler into itself and keeps it open, so installing over a v
 - If blocked, insert `powershell -ExecutionPolicy RemoteSigned -File ` at the top of command.
 - `package.ps1` needs Inno Setup (`winget install JRSoftware.InnoSetup`).
 
-For development, `install.ps1` and `uninstall.ps1` register `dist\` in place and skip the packaging step. `build.ps1 -SelfContained` bundles a private .NET runtime instead of requiring the shared one.
-
 ## Description
 
 - **Output** — every conversion, resize, compression and rotation writes a new file beside the original. Sources are never modified or replaced. Name collisions get an `(2)` suffix like Explorer.
@@ -34,19 +29,24 @@ For development, `install.ps1` and `uninstall.ps1` register `dist\` in place and
 - **Duplicates** — Matched on size, a 64 KB head hash, then full contents. Files are only ever called duplicates once their bytes match.
 - **Menu implement** — Classic `IContextMenu` handler, so on Windows 11 it lives under "Show more options" rather than the short menu. 
 - **Menu improvement** — To show Flect menu by only one click, run `reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve & taskkill /f /im explorer.exe & start "" explorer.exe` on terminal.
-- **Interrupted work** — Process that fails or is cancelled deletes what it was being written. Video compression stages through a hidden scratch directory beside the destination, so the output only appears once it is complete. Forcely killed process cannot clean up after itself, so leftovers older than an hour are swept on the next run in that folder.
+- **Settings** — Open **Flect** from the Start menu. Theme, language (English / 日本語 / 简体中文), which menu entries appear, duplicate-matching rules, scan exclusions, encoder choice, and OCR language all live there. Settings are stored in `%APPDATA%\Flect\settings.json`; the handful the Explorer menu needs are mirrored to `HKCU\Software\Flect`.
+- **Interrupted task** — Process that fails or is cancelled deletes what it was being written. Video compression stages through a hidden scratch directory beside the destination, so the output only appears once it is complete. Forcely killed process cannot clean up after itself, so leftovers older than an hour are swept on the next run in that folder.
+
+Installer downloads Flect to `%LOCALAPPDATA%\Flect` and registers app under `HKCU`.
+
+Explorer loads the handler into itself and keeps it open, so installing over a version that has already been used restarts Explorer once. Setup does that on its own, and only when the file is genuinely locked.
 
 ## Video compression
 
 Size-target compression works down a ladder, stopping at the first rung that gets under the target: repackage the streams, re-encode only the audio, then re-encode the picture — and after that, correct the bitrate from the size the first attempt actually produced and try once more.
 
-Flect is built for easy usage, so it does not support detailed output settings. Consider using [Compressor web](https://github.com/Konayukiw/Compressor) instead if you want edit settings for compression.
+The menu itself stays deliberately short. The depth lives in the settings app instead: codec, hardware acceleration (NVENC / Quick Sync / AMF), and whether compression may trade resolution or frame rate for size. For per-file, per-encode control, [Compressor web](https://github.com/Konayukiw/Compressor) is still the better tool.
 
 ### HEIC conversion
 
 There's no free-to-use encoder for HEIC. ImageMagick's Windows build, libheif's own releases and ffmpeg all read it and none of them write it, because an HEVC encoder cannot ship under those licences. ImageMagick does not even fail when asked — it silently writes a PNG under a `.heic` name.
 
-Windows does have an encoder, in the **HEVC Video Extensions**, and WPF can reach it through WIC. So `to HEIC` is routed there ([`ImageIo`](src/App/Core/ImageIo.cs)) and everything else stays in ImageMagick. On a machine without that codec installed, `to HEIC` fails with a message saying so. Reading HEIC works everywhere.
+Windows does have an encoder, in the **HEVC Video Extensions**, and WPF can reach it through WIC. So `to HEIC` is routed there ([`ImageIo`](src/App/Main/ImageIo.cs)) and everything else stays in ImageMagick. On a machine without that codec installed, `to HEIC` fails with a message saying so. Reading HEIC works everywhere.
 
 
 ## Dependencies

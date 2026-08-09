@@ -32,7 +32,7 @@ internal sealed class AudioConvert(TaskRequest request) : BatchTask(request)
 {
     private string _target = "MP3";
 
-    public override string Title => "Convert";
+    public override string Title => Loc.T("menu.audio.convert");
 
     public override bool Configure()
     {
@@ -48,7 +48,7 @@ internal sealed class AudioConvert(TaskRequest request) : BatchTask(request)
         using var working = new WorkingFile(output);
         await Ffmpeg.RunAsync(
             [.. Ffmpeg.Preamble, "-i", path, "-vn", .. AudioFormat.Encoder(_target), output],
-            progress, $"Converting to {_target}", info.DurationSeconds);
+            progress, Loc.F("label.convertingTo", _target), info.DurationSeconds);
         working.Keep();
     }
 }
@@ -57,7 +57,7 @@ internal sealed class VideoExtractAudio(TaskRequest request) : BatchTask(request
 {
     private string _target = "MP3";
 
-    public override string Title => "Extract Audio";
+    public override string Title => Loc.T("menu.video.extractAudio");
 
     public override bool Configure()
     {
@@ -68,7 +68,7 @@ internal sealed class VideoExtractAudio(TaskRequest request) : BatchTask(request
     protected override async Task ProcessAsync(string path, ITaskProgress progress)
     {
         var info = await Media.ReadAsync(path, progress.Token);
-        if (!info.HasAudio) throw new InvalidOperationException("This file has no audio track.");
+        if (!info.HasAudio) throw new InvalidOperationException(Loc.T("msg.noAudioTrack"));
 
         var output = OutputPath.Derive(path, string.Empty, AudioFormat.Extension(_target));
         using var working = new WorkingFile(output);
@@ -81,7 +81,7 @@ internal sealed class VideoExtractAudio(TaskRequest request) : BatchTask(request
             {
                 await Ffmpeg.RunAsync(
                     [.. Ffmpeg.Preamble, "-i", path, "-vn", "-c:a", "copy", output],
-                    progress, $"Extracting {_target}", info.DurationSeconds);
+                    progress, Loc.F("label.extracting", _target), info.DurationSeconds);
                 working.Keep();
                 return;
             }
@@ -93,7 +93,7 @@ internal sealed class VideoExtractAudio(TaskRequest request) : BatchTask(request
 
         await Ffmpeg.RunAsync(
             [.. Ffmpeg.Preamble, "-i", path, "-vn", .. AudioFormat.Encoder(_target), output],
-            progress, $"Extracting {_target}", info.DurationSeconds);
+            progress, Loc.F("label.extracting", _target), info.DurationSeconds);
         working.Keep();
     }
 }

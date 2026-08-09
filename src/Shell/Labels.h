@@ -34,7 +34,7 @@ inline constexpr const wchar_t* kOcr = L"OCR";
 inline constexpr const wchar_t* kExtractAudio = L"Extract Audio";
 inline constexpr const wchar_t* kMerge = L"Merge";
 inline constexpr const wchar_t* kRemoveMetadata = L"Remove Metadata";
-inline constexpr const wchar_t* kRemoveGreenScreen = L"Remove Green Screen";
+inline constexpr const wchar_t* kRemoveBackground = L"Remove Background";
 
 inline constexpr const wchar_t* kLineEndings = L"Line Endings";
 inline constexpr const wchar_t* kToCrlf = L"to CRLF (Windows)";

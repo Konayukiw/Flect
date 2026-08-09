@@ -1,0 +1,132 @@
+<UserControl x:Class="Optimizer.Gui.GeneralPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:Optimizer.Main">
+
+  <UserControl.Resources>
+    <BooleanToVisibilityConverter x:Key="Show" />
+
+    <Style x:Key="Twisty" TargetType="ToggleButton">
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Focusable" Value="False" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="ToggleButton">
+            <Border Background="Transparent" Width="16" Height="18">
+              <Path x:Name="Glyph" HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Width="5" Height="8" Stretch="Uniform"
+                    Fill="{DynamicResource Brush.TextMuted}" Data="M 0,0 L 5,4 L 0,8 Z"
+                    RenderTransformOrigin="0.5,0.5" />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsChecked" Value="True">
+                <Setter TargetName="Glyph" Property="RenderTransform">
+                  <Setter.Value>
+                    <RotateTransform Angle="90" />
+                  </Setter.Value>
+                </Setter>
+              </Trigger>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Glyph" Property="Fill" Value="{DynamicResource Brush.Text}" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <DataTemplate x:Key="MenuNode">
+      <StackPanel>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="16" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+
+          <ToggleButton Grid.Column="0" Style="{StaticResource Twisty}" VerticalAlignment="Top"
+                        Margin="0,2,0,0"
+                        IsChecked="{Binding IsExpanded, Mode=TwoWay}"
+                        Visibility="{Binding HasChildren, Converter={StaticResource Show}}" />
+
+          <CheckBox Grid.Column="1" Margin="2,1" Content="{Binding Label}"
+                    IsChecked="{Binding IsChecked, Mode=TwoWay}" IsThreeState="False" />
+        </Grid>
+
+        <ItemsControl Margin="19,0,0,0" ItemsSource="{Binding Children}"
+                      ItemTemplate="{DynamicResource MenuNode}"
+                      Visibility="{Binding IsExpanded, Converter={StaticResource Show}}" />
+      </StackPanel>
+    </DataTemplate>
+  </UserControl.Resources>
+
+  <StackPanel>
+
+    <Border Style="{StaticResource Settings.Section}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource Settings.SectionTitle}"
+                   Text="{loc:T settings.general.appearance}" />
+
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="140" />
+            <ColumnDefinition Width="260" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+
+          <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource Settings.Label}"
+                     Text="{loc:T settings.general.theme}" />
+          <ComboBox Grid.Row="0" Grid.Column="1" x:Name="ThemeBox" Margin="0,0,0,8" />
+
+          <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Settings.Label}"
+                     Text="{loc:T settings.general.language}" />
+          <ComboBox Grid.Row="1" Grid.Column="1" x:Name="LanguageBox" />
+        </Grid>
+
+        <TextBlock Style="{StaticResource Settings.Hint}" Margin="0,10,0,0"
+                   Text="{loc:T settings.general.language.hint}" />
+      </StackPanel>
+    </Border>
+
+    <Border Style="{StaticResource Settings.Section}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource Settings.SectionTitle}"
+                   Text="{loc:T settings.general.dialog}" />
+        <TextBlock Style="{StaticResource Settings.Hint}"
+                   Text="{loc:T settings.general.dialog.hint}" />
+
+        <CheckBox x:Name="CloseOnSuccessBox" Content="{loc:T settings.general.dialog.success}" />
+        <CheckBox x:Name="CloseOnFailureBox" Content="{loc:T settings.general.dialog.failure}" />
+        <CheckBox x:Name="CloseOnCancelBox" Content="{loc:T settings.general.dialog.cancel}" />
+      </StackPanel>
+    </Border>
+
+    <Border Style="{StaticResource Settings.Section}">
+      <StackPanel>
+        <Grid>
+          <TextBlock Style="{StaticResource Settings.SectionTitle}" VerticalAlignment="Center"
+                     Text="{loc:T settings.general.menu}" />
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,0,10">
+            <Button Content="{loc:T settings.general.menu.all}" Click="OnCheckAll"
+                    MinWidth="0" Padding="10,4" FontSize="12" />
+            <Button Content="{loc:T settings.general.menu.none}" Click="OnCheckNone"
+                    MinWidth="0" Padding="10,4" FontSize="12" Margin="6,0,0,0" />
+          </StackPanel>
+        </Grid>
+
+        <TextBlock Style="{StaticResource Settings.Hint}"
+                   Text="{loc:T settings.general.menu.hint}" />
+
+        <Border BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1" CornerRadius="5"
+                Background="{DynamicResource Brush.Window}" Padding="10,8">
+          <ScrollViewer MaxHeight="300" VerticalScrollBarVisibility="Auto">
+            <ItemsControl x:Name="MenuTree" ItemTemplate="{DynamicResource MenuNode}" />
+          </ScrollViewer>
+        </Border>
+      </StackPanel>
+    </Border>
+
+  </StackPanel>
+</UserControl>

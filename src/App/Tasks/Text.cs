@@ -1,6 +1,5 @@
 using System.Text;
 using Optimizer.Main;
-using UtfUnknown;
 
 namespace Optimizer.Tasks;
 
@@ -10,7 +9,7 @@ internal sealed class TextEncode(TaskRequest request) : BatchTask(request)
 
     private string _target = "UTF8";
 
-    public override string Title => "Format";
+    public override string Title => Loc.T("menu.text.encode");
 
     public override bool Configure()
     {
@@ -40,12 +39,33 @@ internal sealed class TextEncode(TaskRequest request) : BatchTask(request)
         catch (EncoderFallbackException)
         {
             OutputPath.SafeDelete(output);
-            File.WriteAllText(output, text, Encoding.GetEncoding(ShiftJisCodePage));
-            progress.Warn($"{Path.GetFileName(path)} — Some characters have no Shift_JIS " +
-                          "equivalent and were replaced.");
+            WriteWithFallback(output, text, path, progress);
         }
         working.Keep();
     }, progress.Token);
+
+    private static void WriteWithFallback(string output, string text, string source,
+                                          ITaskProgress progress)
+    {
+        var settings = Settings.Current.Text;
+        if (settings.SjisFallback == SjisFallback.Fail)
+        {
+            throw new InvalidOperationException(Loc.T("msg.sjisFailed"));
+        }
+
+        var encoding = settings.SjisFallback == SjisFallback.Substitute
+            ? Encoding.GetEncoding(ShiftJisCodePage,
+                                   new EncoderReplacementFallback(settings.SjisSubstitute),
+                                   DecoderFallback.ReplacementFallback)
+            : Encoding.GetEncoding(ShiftJisCodePage);
+
+        File.WriteAllText(output, text, encoding);
+
+        if (settings.SjisFallback == SjisFallback.ReplaceAndWarn)
+        {
+            progress.Warn(Loc.F("msg.sjisReplaced", Path.GetFileName(source)));
+        }
+    }
 
     private Encoding Target() => _target switch
     {
@@ -68,7 +88,7 @@ internal sealed class TextLineEndings(TaskRequest request) : BatchTask(request)
 {
     private string _target = "CRLF";
 
-    public override string Title => "Line Endings";
+    public override string Title => Loc.T("menu.text.lineEndings");
 
     public override bool Configure()
     {

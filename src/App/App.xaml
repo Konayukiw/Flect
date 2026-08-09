@@ -4,6 +4,10 @@
   <Application.Resources>
     <ResourceDictionary>
 
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="Gui/Controls.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+
       <SolidColorBrush x:Key="Brush.Window"     Color="#FFF6F6F6" />
       <SolidColorBrush x:Key="Brush.Surface"    Color="#FFFFFFFF" />
       <SolidColorBrush x:Key="Brush.Border"     Color="#FFD8D8D8" />
@@ -94,19 +98,6 @@
         <Setter Property="FontSize" Value="13" />
         <Setter Property="Padding" Value="7,5" />
         <Setter Property="BorderThickness" Value="1" />
-      </Style>
-
-      <Style TargetType="RadioButton">
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
-        <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}" />
-        <Setter Property="FontSize" Value="13" />
-        <Setter Property="Margin" Value="0,4" />
-      </Style>
-
-      <Style TargetType="CheckBox">
-        <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
-        <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}" />
-        <Setter Property="FontSize" Value="13" />
       </Style>
 
       <Style TargetType="ProgressBar">

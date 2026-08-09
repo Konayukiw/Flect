@@ -6,6 +6,8 @@ namespace Optimizer.Tasks;
 
 internal abstract class ImageTask(TaskRequest request) : BatchTask(request)
 {
+    protected static ImageSettings Preferences => Settings.Current.Image;
+
     protected abstract string Suffix { get; }
     protected virtual string? OutputExtension => null;
 
@@ -45,7 +47,7 @@ internal sealed class ImageResize(TaskRequest request) : ImageTask(request)
     private PixelTarget? _pixels;
     private double _percent = 50;
 
-    public override string Title => "Resize";
+    public override string Title => Loc.T("menu.image.resize");
     protected override string Suffix => "_resized";
 
     public override bool Configure()
@@ -84,7 +86,7 @@ internal sealed class ImageRotate(TaskRequest request) : ImageTask(request)
 {
     private double _degrees = 90;
 
-    public override string Title => "Rotate";
+    public override string Title => Loc.T("menu.image.rotate");
     protected override string Suffix => "_rotated";
 
     public override bool Configure()
@@ -108,7 +110,7 @@ internal sealed class ImageConvert(TaskRequest request) : ImageTask(request)
 
     private string _target = "PNG";
 
-    public override string Title => "Convert";
+    public override string Title => Loc.T("menu.image.convert");
     protected override string Suffix => string.Empty;
     protected override string? OutputExtension => "." + _target.ToLowerInvariant();
 
@@ -133,41 +135,80 @@ internal sealed class ImageConvert(TaskRequest request) : ImageTask(request)
                 frame.BackgroundColor = MagickColors.White;
                 frame.Alpha(AlphaOption.Remove);
                 break;
+
+            case "WEBP":
+                frame.Quality = (uint)Math.Clamp(Preferences.WebpQuality, 1, 100);
+                break;
         }
     }
 }
 
 internal sealed class ImageStripMetadata(TaskRequest request) : ImageTask(request)
 {
-    public override string Title => "Remove Metadata";
+    public override string Title => Loc.T("menu.image.strip");
     protected override string Suffix => "_clean";
 
     protected override void Transform(IMagickImage<byte> frame)
     {
-        frame.AutoOrient();
+        var metadata = Preferences.Metadata;
 
-        var colorProfile = frame.GetColorProfile();
-        frame.Strip();
-        if (colorProfile is not null) frame.SetProfile(colorProfile);
+        if (metadata.ApplyOrientation) frame.AutoOrient();
+
+        if (metadata.RemoveExif)
+        {
+            frame.RemoveProfile("exif");
+        }
+        else if (metadata.RemoveGps)
+        {
+            StripGps(frame);
+        }
+
+        if (metadata.RemoveComments)
+        {
+            frame.RemoveProfile("xmp");
+            frame.RemoveProfile("iptc");
+            frame.RemoveAttribute("comment");
+            frame.RemoveAttribute("Software");
+        }
+
+        if (metadata.RemoveColorProfile)
+        {
+            frame.RemoveProfile("icc");
+            frame.RemoveProfile("icm");
+        }
+    }
+
+    private static void StripGps(IMagickImage<byte> frame)
+    {
+        var exif = frame.GetExifProfile();
+        if (exif is null) return;
+
+        var located = exif.Values
+            .Where(value => value.Tag.ToString()?.StartsWith("GPS", StringComparison.Ordinal) == true)
+            .Select(value => value.Tag)
+            .ToList();
+        if (located.Count == 0) return;
+
+        foreach (var tag in located) exif.RemoveValue(tag);
+        frame.SetProfile(exif);
     }
 }
 
 internal sealed class ImageChromaKey(TaskRequest request) : ImageTask(request)
 {
-    private static readonly Percentage Tolerance = new(25);
+    public override string Title => Loc.T("menu.image.chromakey");
 
-    private static readonly MagickColor Key = MagickColors.Lime;
-
-    public override string Title => "Remove Green Screen";
-    
     protected override string Suffix => "_keyed";
 
     protected override string? OutputExtension => ".png";
 
     protected override void Transform(IMagickImage<byte> frame)
     {
-        frame.ColorFuzz = Tolerance;
-        frame.Transparent(Key);
+        var image = Preferences;
+        var key = ColorText.Parse(image.BackgroundKeyColor, System.Windows.Media.Colors.Lime);
+
+        frame.ColorFuzz = new Percentage(Math.Clamp(image.BackgroundTolerance, 0, 100));
+        frame.Transparent(new MagickColor(key.R, key.G, key.B));
         frame.ColorFuzz = new Percentage(0);
     }
 }
@@ -180,7 +221,7 @@ internal sealed class ImageCompress(TaskRequest request) : BatchTask(request)
 
     private long _target;
 
-    public override string Title => "Compress";
+    public override string Title => Loc.T("menu.image.compress");
 
     public override bool Configure()
     {
@@ -211,30 +252,58 @@ internal sealed class ImageCompress(TaskRequest request) : BatchTask(request)
         var original = new FileInfo(path).Length;
         if (original <= _target)
         {
-            progress.Info(
-                $"{Path.GetFileName(path)} is already {Formatting.Bytes(original)} — left alone.");
+            progress.Info(Loc.F("msg.alreadySmall", Path.GetFileName(path),
+                                Formatting.Bytes(original)));
             return;
         }
 
         using var image = new MagickImage(path);
-        var (data, reached) = Squeeze(image, _target, progress.Token);
+        var attempt = Squeeze(image, _target, progress.Token);
 
-        var output = OutputPath.Derive(path, "_compressed");
+        var output = OutputPath.Derive(path, "_compressed", attempt.AsWebp ? ".webp" : null);
         using (var working = new WorkingFile(output))
         {
-            File.WriteAllBytes(output, data);
+            File.WriteAllBytes(output, attempt.Data);
             working.Keep();
         }
 
-        if (!reached)
+        if (attempt.AsWebp)
         {
-            progress.Warn($"{Path.GetFileName(path)} — {Formatting.Bytes(_target)} was not " +
-                          $"reachable, smallest was {Formatting.Bytes(data.LongLength)}.");
+            progress.Info(Loc.F("msg.webpFallback", Path.GetFileName(path),
+                                Formatting.Bytes(_target)));
+        }
+        if (!attempt.Reached)
+        {
+            progress.Warn(Loc.F("msg.targetMissed", Path.GetFileName(path),
+                                Formatting.Bytes(_target),
+                                Formatting.Bytes(attempt.Data.LongLength)));
         }
     }, progress.Token);
 
-    private static (byte[] Data, bool Reached) Squeeze(MagickImage image, long target,
-                                                       CancellationToken token)
+    private readonly record struct Attempt(byte[] Data, bool Reached, bool AsWebp);
+
+    private static Attempt Squeeze(MagickImage image, long target, CancellationToken token)
+    {
+        using var native = (MagickImage)image.Clone();
+        var (bytes, reached) = Shrink(native, target, token);
+
+        if (reached) return new Attempt(bytes, true, false);
+        if (!Settings.Current.Image.AllowWebpFallback || image.Format == MagickFormat.WebP)
+        {
+            return new Attempt(bytes, false, false);
+        }
+
+        using var alternative = (MagickImage)image.Clone();
+        alternative.Format = MagickFormat.WebP;
+        var (webp, webpReached) = Shrink(alternative, target, token);
+
+        return webpReached || webp.LongLength < bytes.LongLength
+            ? new Attempt(webp, webpReached, true)
+            : new Attempt(bytes, false, false);
+    }
+
+    private static (byte[] Data, bool Reached) Shrink(MagickImage image, long target,
+                                                      CancellationToken token)
     {
         Func<long, byte[]> shrink =
             ImageIo.IsHeif(image.Format) ? _ => ImageIo.EncodeHeif(image)

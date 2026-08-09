@@ -8,22 +8,23 @@ public partial class OcrNotice : Window
     private OcrNotice(IReadOnlyList<string> languages)
     {
         InitializeComponent();
-        Title = $"{Branding.Name} — Text recognition";
+        Title = $"{Branding.Name} — {Loc.T("dialog.ocr.title")}";
         LanguagesText.Text = languages.Count > 0
             ? string.Join("   ", languages)
-            : "No recognizer is installed. Text recognition will not work until you add one.";
+            : Loc.T("dialog.ocr.none");
     }
 
     internal static void ShowOnce(IReadOnlyList<string> languages)
     {
-        var settings = Settings.Load();
-        if (settings.SuppressOcrLanguageNotice) return;
+        var settings = Settings.Current;
+        if (settings.Ocr.SuppressLanguageNotice) return;
 
         var dialog = new OcrNotice(languages);
         bool accepted = dialog.ShowDialog() == true;
 
         if (!accepted || !dialog.SuppressBox.IsChecked.GetValueOrDefault()) return;
-        settings.SuppressOcrLanguageNotice = true;
+
+        settings.Ocr.SuppressLanguageNotice = true;
         settings.Save();
     }
 

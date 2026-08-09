@@ -12,11 +12,13 @@ public partial class TargetBytes : Window
     {
         InitializeComponent();
         _ready = true;
-        Title = $"{Branding.Name} — Compress";
+        Title = $"{Branding.Name} — {Loc.T("dialog.target.title")}";
+
+        var syntax = Loc.T("dialog.target.syntax");
         HintText.Text = largestSelected > 0
-            ? $"Largest selected file is {Formatting.Bytes(largestSelected)}. " +
-              "Accepts 8MB, 900KB or a plain byte count."
-            : "Accepts 8MB, 900KB or a plain byte count.";
+            ? Loc.F("dialog.target.largest", Formatting.Bytes(largestSelected), syntax)
+            : syntax;
+
         SizeBox.Focus();
     }
 
@@ -31,7 +33,7 @@ public partial class TargetBytes : Window
     {
         if (!_ready) return;
         EchoText.Text = Formatting.TryParseBytes(SizeBox.Text, out var bytes)
-            ? $"= {Formatting.Plural(bytes, "byte")}"
+            ? Loc.F("dialog.target.echo", Formatting.Count(bytes))
             : string.Empty;
     }
 
@@ -39,7 +41,7 @@ public partial class TargetBytes : Window
     {
         if (!Formatting.TryParseBytes(SizeBox.Text, out _))
         {
-            Report.Error("Enter a size such as 8MB, 900KB or 1500000.");
+            Report.Error(Loc.T("dialog.target.invalid"));
             return;
         }
         DialogResult = true;

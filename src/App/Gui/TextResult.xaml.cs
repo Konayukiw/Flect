@@ -1,4 +1,5 @@
 using System.Windows;
+using Optimizer.Main;
 
 namespace Optimizer.Gui;
 
@@ -17,11 +18,11 @@ public partial class TextResult : Window
         try
         {
             Clipboard.SetText(Body.Text);
-            CopyButton.Content = "Copied";
+            CopyButton.Content = Loc.T("common.copied");
         }
         catch (Exception)
         {
-            CopyButton.Content = "Copy failed";
+            CopyButton.Content = Loc.T("common.copyFailed");
         }
     }
 

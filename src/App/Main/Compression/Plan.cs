@@ -7,7 +7,7 @@ internal enum InitialStrategy { Remux, AudioOnly, VideoEncode }
 internal sealed record AudioPlan(AudioMode Mode, int EffectiveKbps, int EncodeKbps);
 
 internal sealed record EncodingProfile(int Width, int Height, double Fps, int VideoKbps,
-                                       int AudioKbps, string Preset);
+                                       int AudioKbps);
 
 internal sealed record Plan(
     long SafeTargetBytes,

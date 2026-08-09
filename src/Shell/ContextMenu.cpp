@@ -2,10 +2,51 @@
 
 #include "Launcher.h"
 #include "Module.h"
+#include "Resource.h"
+
+namespace {
+
+HBITMAP LoadMenuIcon() {
+  const int cx = ::GetSystemMetrics(SM_CXSMICON);
+  const int cy = ::GetSystemMetrics(SM_CYSMICON);
+
+  auto icon = static_cast<HICON>(::LoadImageW(Module::Instance(), MAKEINTRESOURCEW(IDI_FLECT),
+                                              IMAGE_ICON, cx, cy, LR_DEFAULTCOLOR));
+  if (!icon) return nullptr;
+
+  BITMAPINFO info{};
+  info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+  info.bmiHeader.biWidth = cx;
+  info.bmiHeader.biHeight = -cy;
+  info.bmiHeader.biPlanes = 1;
+  info.bmiHeader.biBitCount = 32;
+  info.bmiHeader.biCompression = BI_RGB;
+
+  void* bits = nullptr;
+  HDC screen = ::GetDC(nullptr);
+  HBITMAP bitmap = ::CreateDIBSection(screen, &info, DIB_RGB_COLORS, &bits, nullptr, 0);
+  ::ReleaseDC(nullptr, screen);
+
+  if (bitmap) {
+    HDC dc = ::CreateCompatibleDC(nullptr);
+    HGDIOBJ previous = ::SelectObject(dc, bitmap);
+    ::DrawIconEx(dc, 0, 0, icon, cx, cy, 0, nullptr, DI_NORMAL);
+    ::SelectObject(dc, previous);
+    ::DeleteDC(dc);
+  }
+
+  ::DestroyIcon(icon);
+  return bitmap;
+}
+
+}
 
 ContextMenu::ContextMenu() { Module::AddRef(); }
 
-ContextMenu::~ContextMenu() { Module::Release(); }
+ContextMenu::~ContextMenu() {
+  if (icon_) ::DeleteObject(icon_);
+  Module::Release();
+}
 
 IFACEMETHODIMP ContextMenu::QueryInterface(REFIID riid, void** ppv) {
   if (!ppv) return E_POINTER;
@@ -89,12 +130,19 @@ IFACEMETHODIMP ContextMenu::QueryContextMenu(HMENU menu, UINT indexMenu, UINT id
     return MAKE_HRESULT(SEVERITY_SUCCESS, 0, 0);
   }
 
+  if (!icon_) icon_ = LoadMenuIcon();
+
   MENUITEMINFOW root{};
   root.cbSize = sizeof(root);
   root.fMask = MIIM_STRING | MIIM_SUBMENU | MIIM_ID;
   root.wID = idCmdFirst;
   root.hSubMenu = submenu;
   root.dwTypeData = const_cast<LPWSTR>(BRAND_NAME);
+
+  if (icon_) {
+    root.fMask |= MIIM_BITMAP;
+    root.hbmpItem = icon_;
+  }
 
   if (!::InsertMenuItemW(menu, indexMenu, TRUE, &root)) {
     ::DestroyMenu(submenu);
