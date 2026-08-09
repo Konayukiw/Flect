@@ -1,0 +1,77 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <Platforms>x64</Platforms>
+    <PlatformTarget>x64</PlatformTarget>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+
+    <RootNamespace>Optimizer</RootNamespace>
+    <AssemblyName>$(BrandAppExeName)</AssemblyName>
+    <Product>$(BrandName)</Product>
+    <AssemblyTitle>$(BrandName)</AssemblyTitle>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Using Include="System.IO" />
+  </ItemGroup>
+
+  <PropertyGroup Condition="Exists('$(MSBuildThisFileDirectory)Assets\flect.ico')">
+    <ApplicationIcon>Assets\flect.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)Assets\flect.ico')">
+    <Resource Include="Assets\flect.ico" />
+  </ItemGroup>
+
+  <Target Name="WarnMissingAppIcon" BeforeTargets="BeforeBuild"
+          Condition="!Exists('$(MSBuildThisFileDirectory)Assets\flect.ico')">
+    <Warning Text="Assets\flect.ico is missing - building without an application icon." />
+  </Target>
+
+  <ItemGroup>
+    <PackageReference Include="Magick.NET-Q8-x64" Version="14.16.0" />
+    <PackageReference Include="PDFtoImage" Version="5.3.0" />
+    <PackageReference Include="PdfPig" Version="0.1.15" />
+    <PackageReference Include="System.IO.Hashing" Version="10.0.10" />
+    <PackageReference Include="UTF.Unknown" Version="2.6.0" />
+  </ItemGroup>
+
+  <Target Name="TrimForeignSymbols" AfterTargets="Publish">
+    <ItemGroup>
+      <_ForeignSymbols Include="$(PublishDir)**\*.pdb"
+                       Exclude="$(PublishDir)$(AssemblyName).pdb" />
+    </ItemGroup>
+    <Delete Files="@(_ForeignSymbols)" />
+  </Target>
+
+  <Target Name="GenerateBrandingSource" BeforeTargets="BeforeCompile">
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+    <ItemGroup>
+      <_BrandLine Include="// &lt;auto-generated /&gt; Source of truth: Directory.Build.props" />
+      <_BrandLine Include="namespace $(RootNamespace)%3B" />
+      <_BrandLine Include="internal static class Branding" />
+      <_BrandLine Include="{" />
+      <_BrandLine Include="    public const string Name = &quot;$(BrandName)&quot;%3B" />
+      <_BrandLine Include="}" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(IntermediateOutputPath)Branding.g.cs"
+                      Lines="@(_BrandLine)"
+                      Overwrite="true"
+                      WriteOnlyWhenDifferent="true"
+                      Encoding="utf-8" />
+    <ItemGroup>
+      <Compile Include="$(IntermediateOutputPath)Branding.g.cs" />
+    </ItemGroup>
+  </Target>
+
+</Project>

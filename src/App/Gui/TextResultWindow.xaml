@@ -1,0 +1,26 @@
+<Window x:Class="Optimizer.Gui.TextResultWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Width="820" Height="620" MinWidth="420" MinHeight="260"
+        WindowStartupLocation="CenterScreen">
+  <Grid Margin="18">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <TextBlock x:Name="HeadingText" Grid.Row="0" Style="{StaticResource Text.Heading}" />
+
+    <TextBox x:Name="Body" Grid.Row="1" IsReadOnly="True" IsReadOnlyCaretVisible="True"
+             FontFamily="{DynamicResource Font.Mono}" FontSize="12"
+             AcceptsReturn="True" TextWrapping="NoWrap"
+             VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto"
+             Padding="10,8" />
+
+    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,14,0,0">
+      <Button x:Name="CopyButton" Content="Copy" Margin="0,0,8,0" Click="OnCopy" />
+      <Button Content="Close" IsCancel="True" IsDefault="True" Click="OnClose" />
+    </StackPanel>
+  </Grid>
+</Window>

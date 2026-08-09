@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7F1D0A62-3C48-4E15-9B22-5A0C6E9D41B7}</ProjectGuid>
+    <RootNamespace>ShellExt</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+
+  <PropertyGroup Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset Condition="'$(DefaultPlatformToolset)' != ''">$(DefaultPlatformToolset)</PlatformToolset>
+    <PlatformToolset Condition="'$(PlatformToolset)' == ''">v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <UseDebugLibraries Condition="'$(Configuration)' == 'Debug'">true</UseDebugLibraries>
+    <UseDebugLibraries Condition="'$(Configuration)' != 'Debug'">false</UseDebugLibraries>
+    <WholeProgramOptimization Condition="'$(Configuration)' == 'Release'">true</WholeProgramOptimization>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+
+  <PropertyGroup>
+    <OutDir>$(BrandBuildDir)shell\$(Configuration)\</OutDir>
+    <IntDir>$(BrandBuildDir)shell\obj\$(Configuration)\</IntDir>
+    <TargetName>$(BrandShellDllName)</TargetName>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>false</TreatWarningAsError>
+      <ConformanceMode>true</ConformanceMode>
+      <SDLCheck>true</SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;NOMINMAX;STRICT;UNICODE;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary Condition="'$(Configuration)' == 'Debug'">MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary Condition="'$(Configuration)' != 'Debug'">MultiThreaded</RuntimeLibrary>
+      <Optimization Condition="'$(Configuration)' == 'Release'">MaxSpeed</Optimization>
+      <FunctionLevelLinking Condition="'$(Configuration)' == 'Release'">true</FunctionLevelLinking>
+      <IntrinsicFunctions Condition="'$(Configuration)' == 'Release'">true</IntrinsicFunctions>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <ModuleDefinitionFile>ShellExt.def</ModuleDefinitionFile>
+      <AdditionalDependencies>shlwapi.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;advapi32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding Condition="'$(Configuration)' == 'Release'">true</EnableCOMDATFolding>
+      <OptimizeReferences Condition="'$(Configuration)' == 'Release'">true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <ClCompile Include="ClassFactory.cpp" />
+    <ClCompile Include="ContextMenu.cpp" />
+    <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="GifProbe.cpp" />
+    <ClCompile Include="Launcher.cpp" />
+    <ClCompile Include="MenuBuilder.cpp" />
+    <ClCompile Include="Registry.cpp" />
+    <ClCompile Include="Selection.cpp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClInclude Include="ClassFactory.h" />
+    <ClInclude Include="ContextMenu.h" />
+    <ClInclude Include="framework.h" />
+    <ClInclude Include="GifProbe.h" />
+    <ClInclude Include="Labels.h" />
+    <ClInclude Include="Launcher.h" />
+    <ClInclude Include="MenuBuilder.h" />
+    <ClInclude Include="Module.h" />
+    <ClInclude Include="Registry.h" />
+    <ClInclude Include="Selection.h" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="ShellExt.def" />
+  </ItemGroup>
+
+  <Target Name="GenerateBrandingHeader"
+          BeforeTargets="ClCompile"
+          Inputs="$(RepoRoot)Directory.Build.props;$(MSBuildThisFileFullPath)"
+          Outputs="$(IntDir)Branding.g.h">
+    <MakeDir Directories="$(IntDir)" />
+    <ItemGroup>
+      <_BrandLine Remove="@(_BrandLine)" />
+      <_BrandLine Include="// &lt;auto-generated /&gt; Source of truth: Directory.Build.props" />
+      <_BrandLine Include="#pragma once" />
+      <_BrandLine Include="#define BRAND_NAME      L&quot;$(BrandName)&quot;" />
+      <_BrandLine Include="#define BRAND_CLSID_STR L&quot;$(BrandClsid)&quot;" />
+      <_BrandLine Include="#define BRAND_APP_EXE   L&quot;$(BrandAppExeName).exe&quot;" />
+    </ItemGroup>
+    <WriteLinesToFile File="$(IntDir)Branding.g.h"
+                      Lines="@(_BrandLine)"
+                      Overwrite="true"
+                      WriteOnlyWhenDifferent="true"
+                      Encoding="utf-8" />
+  </Target>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+
+</Project>

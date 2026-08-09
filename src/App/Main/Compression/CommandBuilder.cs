@@ -1,0 +1,81 @@
+using System.Globalization;
+
+namespace Optimizer.Main.Compression;
+
+internal static class CommandBuilder
+{
+    private static readonly string[] TrackMaps = ["-map", "0:v:0", "-map", "0:a:0?"];
+
+    private static readonly string[] FastStart = ["-movflags", "+faststart"];
+
+    public static string[] Remux(string input, string output) =>
+    [
+        .. Ffmpeg.Preamble, "-i", input,
+        .. TrackMaps,
+        "-c", "copy",
+        .. FastStart,
+        output,
+    ];
+
+    public static string[] AudioOnly(string input, string output, CompressionPlan plan) =>
+    [
+        .. Ffmpeg.Preamble, "-i", input,
+        .. TrackMaps,
+        "-c:v", "copy",
+        .. AudioCodec(plan),
+        .. FastStart,
+        output,
+    ];
+
+    public static string[] SinglePass(string input, string output, CompressionPlan plan,
+                                      int videoKbps, int threads) =>
+    [
+        .. Ffmpeg.Preamble, "-i", input,
+        .. TrackMaps,
+        .. VideoFilter(plan),
+        "-threads", threads.ToString(CultureInfo.InvariantCulture),
+        "-c:v", "libx264",
+        "-b:v", $"{videoKbps}k",
+        "-preset", plan.Profile.Preset,
+        "-pix_fmt", "yuv420p",
+        .. AudioCodec(plan),
+        .. FastStart,
+        output,
+    ];
+
+    public static string[] AudioOnlySource(string input, string output, int audioKbps) =>
+    [
+        .. Ffmpeg.Preamble, "-i", input,
+        "-vn",
+        "-c:a", "aac", "-b:a", $"{audioKbps}k",
+        .. FastStart,
+        output,
+    ];
+
+    private static string[] AudioCodec(CompressionPlan plan) => plan.Audio.Mode switch
+    {
+        AudioMode.None => ["-an"],
+        AudioMode.Copy => ["-c:a", "copy"],
+        _ => ["-c:a", "aac", "-b:a", $"{plan.Audio.EncodeKbps}k"],
+    };
+
+    private static string[] VideoFilter(CompressionPlan plan)
+    {
+        var profile = plan.Profile;
+        int sourceWidth = ProfileBuilder.MakeEven(plan.Source.Width);
+        int sourceHeight = ProfileBuilder.MakeEven(plan.Source.Height);
+        double sourceFps = plan.Source.FrameRate > 0 ? plan.Source.FrameRate : 30;
+
+        var parts = new List<string>();
+        if (profile.Width != sourceWidth || profile.Height != sourceHeight)
+        {
+            parts.Add($"scale={profile.Width}:{profile.Height}");
+        }
+        if (Math.Abs(profile.Fps - sourceFps) > 0.01)
+        {
+            parts.Add("fps=" + profile.Fps.ToString("0.###", CultureInfo.InvariantCulture));
+        }
+
+        return parts.Count > 0 ? ["-vf", string.Join(',', parts)] : [];
+    }
+}
