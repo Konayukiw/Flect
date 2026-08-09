@@ -278,11 +278,11 @@ internal sealed class VideoCompress(TaskRequest request) : VideoTask(request)
             throw new InvalidOperationException("Could not read the duration of this file.");
         }
 
-        var plan = PlanBuilder.Build(info, _target);
+        var plan = Planner.Build(info, _target);
         var destination = OutputPath.Derive(path, "_compressed", info.HasVideo ? ".mp4" : ".m4a");
 
         using var scratch = new ScratchDirectory(destination);
-        var pipeline = new CompressionPipeline(plan, progress);
+        var pipeline = new Pipeline(plan, progress);
 
         var outcome = info.HasVideo
             ? await pipeline.RunAsync(path, scratch)

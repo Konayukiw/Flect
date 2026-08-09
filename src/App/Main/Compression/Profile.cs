@@ -1,6 +1,6 @@
 namespace Optimizer.Main.Compression;
 
-internal static class ProfileBuilder
+internal static class Profile
 {
     private const double BppDirectAdopt = 0.05;
     private const double BppSampleTest = 0.03;
@@ -21,14 +21,14 @@ internal static class ProfileBuilder
                                                    candidate.Fps);
             if (bpp >= BppSampleTest)
             {
-                return Profile(candidate, videoKbps, audioKbps);
+                return Prof(candidate, videoKbps, audioKbps);
             }
         }
 
-        return Profile(candidates[^1], videoKbps, audioKbps);
+        return Prof(candidates[^1], videoKbps, audioKbps);
     }
 
-    private static EncodingProfile Profile(Candidate candidate, int videoKbps, int audioKbps) =>
+    private static EncodingProfile Prof(Candidate candidate, int videoKbps, int audioKbps) =>
         new(candidate.Width, candidate.Height, candidate.Fps, videoKbps, audioKbps, BalancedPreset);
 
     private static List<Candidate> Candidates(MediaInfo source)

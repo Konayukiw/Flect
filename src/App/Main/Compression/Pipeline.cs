@@ -2,7 +2,7 @@
 
 internal sealed record CompressionOutcome(string Path, long Bytes, bool TargetReached);
 
-internal sealed class CompressionPipeline(CompressionPlan plan, ITaskProgress progress)
+internal sealed class Pipeline(Plan plan, ITaskProgress progress)
 {
     public async Task<CompressionOutcome> RunAsync(string input, ScratchDirectory scratch)
     {
@@ -11,7 +11,7 @@ internal sealed class CompressionPipeline(CompressionPlan plan, ITaskProgress pr
         if (plan.Strategy == InitialStrategy.Remux)
         {
             var remux = scratch.PathFor("remux.mp4");
-            var size = await TryStageAsync(CommandBuilder.Remux(input, remux), remux,
+            var size = await TryStageAsync(Command.Remux(input, remux), remux,
                                            "Repackaging", duration);
             if (size is long bytes) return new CompressionOutcome(remux, bytes, true);
         }
@@ -19,7 +19,7 @@ internal sealed class CompressionPipeline(CompressionPlan plan, ITaskProgress pr
         if (plan.Source.VideoCopyable && plan.Audio.Mode == AudioMode.Encode)
         {
             var audioOnly = scratch.PathFor("audio.mp4");
-            var size = await TryStageAsync(CommandBuilder.AudioOnly(input, audioOnly, plan),
+            var size = await TryStageAsync(Command.AudioOnly(input, audioOnly, plan),
                                            audioOnly, "Compressing audio", duration);
             if (size is long bytes) return new CompressionOutcome(audioOnly, bytes, true);
         }
@@ -37,7 +37,7 @@ internal sealed class CompressionPipeline(CompressionPlan plan, ITaskProgress pr
                         $"@{plan.Profile.Fps:0}fps · {videoKbps}kbps";
 
             await Ffmpeg.RunEncodeAsync(
-                threads => CommandBuilder.SinglePass(input, encode, plan, videoKbps, threads),
+                threads => Command.SinglePass(input, encode, plan, videoKbps, threads),
                 progress, label, duration, plan.Profile.Height);
 
             long size = new FileInfo(encode).Length;
@@ -78,7 +78,7 @@ internal sealed class CompressionPipeline(CompressionPlan plan, ITaskProgress pr
         int audioKbps = (int)Math.Clamp(budgetKbps - 4, 8, 320);
 
         var output = scratch.PathFor("audio-source.m4a");
-        await Ffmpeg.RunAsync(CommandBuilder.AudioOnlySource(input, output, audioKbps), progress,
+        await Ffmpeg.RunAsync(Command.AudioOnlySource(input, output, audioKbps), progress,
                               $"Encoding audio · {audioKbps}kbps", duration);
 
         long size = new FileInfo(output).Length;

@@ -9,7 +9,7 @@ internal sealed record AudioPlan(AudioMode Mode, int EffectiveKbps, int EncodeKb
 internal sealed record EncodingProfile(int Width, int Height, double Fps, int VideoKbps,
                                        int AudioKbps, string Preset);
 
-internal sealed record CompressionPlan(
+internal sealed record Plan(
     long SafeTargetBytes,
     InitialStrategy Strategy,
     EncodingProfile Profile,

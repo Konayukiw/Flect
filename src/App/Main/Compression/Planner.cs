@@ -1,8 +1,8 @@
 namespace Optimizer.Main.Compression;
 
-internal static class PlanBuilder
+internal static class Planner
 {
-    public static CompressionPlan Build(MediaInfo source, long targetBytes)
+    public static Plan Build(MediaInfo source, long targetBytes)
     {
         long safeTarget = Bitrate.SafeTarget(targetBytes);
         var audio = BuildAudio(source);
@@ -22,10 +22,10 @@ internal static class PlanBuilder
 
         if (videoKbps < Bitrate.MinVideoKbps) videoKbps = Bitrate.MinVideoKbps;
 
-        return new CompressionPlan(
+        return new Plan(
             safeTarget,
             ChooseStrategy(source, audio),
-            ProfileBuilder.Build(source, videoKbps, audio.EffectiveKbps),
+            Profile.Build(source, videoKbps, audio.EffectiveKbps),
             audio,
             source);
     }

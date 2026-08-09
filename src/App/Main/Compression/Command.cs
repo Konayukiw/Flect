@@ -2,7 +2,7 @@ using System.Globalization;
 
 namespace Optimizer.Main.Compression;
 
-internal static class CommandBuilder
+internal static class Command
 {
     private static readonly string[] TrackMaps = ["-map", "0:v:0", "-map", "0:a:0?"];
 
@@ -17,7 +17,7 @@ internal static class CommandBuilder
         output,
     ];
 
-    public static string[] AudioOnly(string input, string output, CompressionPlan plan) =>
+    public static string[] AudioOnly(string input, string output, Plan plan) =>
     [
         .. Ffmpeg.Preamble, "-i", input,
         .. TrackMaps,
@@ -27,7 +27,7 @@ internal static class CommandBuilder
         output,
     ];
 
-    public static string[] SinglePass(string input, string output, CompressionPlan plan,
+    public static string[] SinglePass(string input, string output, Plan plan,
                                       int videoKbps, int threads) =>
     [
         .. Ffmpeg.Preamble, "-i", input,
@@ -52,18 +52,18 @@ internal static class CommandBuilder
         output,
     ];
 
-    private static string[] AudioCodec(CompressionPlan plan) => plan.Audio.Mode switch
+    private static string[] AudioCodec(Plan plan) => plan.Audio.Mode switch
     {
         AudioMode.None => ["-an"],
         AudioMode.Copy => ["-c:a", "copy"],
         _ => ["-c:a", "aac", "-b:a", $"{plan.Audio.EncodeKbps}k"],
     };
 
-    private static string[] VideoFilter(CompressionPlan plan)
+    private static string[] VideoFilter(Plan plan)
     {
         var profile = plan.Profile;
-        int sourceWidth = ProfileBuilder.MakeEven(plan.Source.Width);
-        int sourceHeight = ProfileBuilder.MakeEven(plan.Source.Height);
+        int sourceWidth = Profile.MakeEven(plan.Source.Width);
+        int sourceHeight = Profile.MakeEven(plan.Source.Height);
         double sourceFps = plan.Source.FrameRate > 0 ? plan.Source.FrameRate : 30;
 
         var parts = new List<string>();
