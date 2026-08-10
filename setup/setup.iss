@@ -95,23 +95,42 @@ begin
   end;
 end;
 
+{ The taskbar exists for exactly as long as the shell does, so its window is the honest
+  answer to "is Explorer back yet" - unlike AutoRestartShell, which only says whether
+  Windows intends to restart the shell, not whether it actually did. }
+function ShellIsRunning(): Boolean;
+begin
+  Result := FindWindowByClassName('Shell_TrayWnd') <> 0;
+end;
+
+function WaitForShell(TimeoutMs: Integer): Boolean;
+var
+  Waited: Integer;
+begin
+  Waited := 0;
+  while (Waited < TimeoutMs) and not ShellIsRunning() do
+  begin
+    Sleep(250);
+    Waited := Waited + 250;
+  end;
+  Result := ShellIsRunning();
+end;
+
 procedure RestartExplorer();
 var
   ResultCode: Integer;
-  AutoRestart: Cardinal;
 begin
   Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM explorer.exe', '',
        SW_HIDE, ewWaitUntilTerminated, ResultCode);
-  Sleep(1500);
 
-  if RegQueryDWordValue(HKEY_LOCAL_MACHINE,
-       'SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon',
-       'AutoRestartShell', AutoRestart) and (AutoRestart = 0) then
-  begin
-    Exec(ExpandConstant('{win}\explorer.exe'), '', '', SW_SHOWNORMAL,
-         ewNoWait, ResultCode);
-    Sleep(1000);
-  end;
+  { Winlogon usually brings the shell back on its own, but a forced kill does not always
+    count as the crash it watches for. Give it a moment, then start Explorer ourselves
+    rather than leaving the user staring at an empty desktop. }
+  if WaitForShell(5000) then
+    exit;
+
+  Exec(ExpandConstant('{win}\explorer.exe'), '', '', SW_SHOWNORMAL, ewNoWait, ResultCode);
+  WaitForShell(10000);
 end;
 
 function RunRegsvr32(const Arguments: String): Boolean;
