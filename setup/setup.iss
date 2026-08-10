@@ -5,7 +5,7 @@
   #error AppId must be passed in with /DAppId=... (bare GUID, no braces)
 #endif
 #ifndef AppVersion
-  #define AppVersion "1.0.0"
+  #define AppVersion "1.0"
 #endif
 #ifndef DistDir
   #define DistDir "..\dist"

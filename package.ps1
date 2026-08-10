@@ -25,7 +25,7 @@ $appId = $group.BrandAppId
 if (-not $brand) { throw 'BrandName is missing from Directory.Build.props' }
 if (-not $appId) { throw 'BrandAppId is missing from Directory.Build.props' }
 if (-not $Version) { $Version = $group.BrandVersion }
-if (-not $Version) { $Version = '1.0.0' }
+if (-not $Version) { $Version = '1.0' }
 
 $appId = $appId.Trim('{', '}')
 
