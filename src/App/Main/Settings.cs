@@ -18,6 +18,8 @@ internal enum EncodePriority { Speed, Balanced, Quality }
 
 internal enum GifDither { None, Bayer, FloydSteinberg }
 
+internal enum TrimAccuracy { Keyframe, Exact }
+
 internal enum SjisFallback { ReplaceAndWarn, Substitute, Fail }
 
 internal enum JsonKeyOrder { Ordinal, IgnoreCase, Natural }
@@ -111,9 +113,15 @@ internal sealed class VideoPresets
     public double RotateC { get; set; } = 180;
 }
 
+internal sealed class TrimSettings
+{
+    public TrimAccuracy Accuracy { get; set; } = TrimAccuracy.Keyframe;
+}
+
 internal sealed class VideoSettings
 {
     public VideoPresets Presets { get; set; } = new();
+    public TrimSettings Trim { get; set; } = new();
     public VideoCodecChoice Codec { get; set; } = VideoCodecChoice.H264;
     public HardwareEncoder Hardware { get; set; } = HardwareEncoder.None;
     public EncodePriority Priority { get; set; } = EncodePriority.Balanced;

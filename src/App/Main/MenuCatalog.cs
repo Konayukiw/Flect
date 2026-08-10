@@ -72,6 +72,7 @@ internal static class MenuCatalog
                 MenuEntry.Leaf("video.resize.p1", "Preset 1", "menu.preset1"),
                 MenuEntry.Leaf("video.resize.p2", "Preset 2", "menu.preset2"),
                 MenuEntry.Leaf("video.resize.custom", "Custom...", "menu.custom")),
+            MenuEntry.Leaf("video.trim", "Trim..."),
             MenuEntry.Group("video.compress", "Compress",
                 MenuEntry.Leaf("video.compress.discord", "Discord"),
                 MenuEntry.Leaf("video.compress.p1", "Preset 1", "menu.preset1"),

@@ -156,5 +156,20 @@
       </StackPanel>
     </Border>
 
+    <Border Style="{StaticResource Settings.Section}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource Settings.SectionTitle}"
+                   Text="{loc:T settings.video.trim}" />
+        <TextBlock Style="{StaticResource Settings.Label}" Margin="0,0,0,8"
+                   Text="{loc:T settings.video.trim.accuracy}" />
+        <RadioButton x:Name="TrimKeyframeBox" GroupName="TrimAccuracy" Margin="0,0,0,6"
+                     Content="{loc:T settings.video.trim.keyframe}" />
+        <RadioButton x:Name="TrimExactBox" GroupName="TrimAccuracy"
+                     Content="{loc:T settings.video.trim.exact}" />
+        <TextBlock Style="{StaticResource Settings.Hint}" Margin="0,10,0,0"
+                   Text="{loc:T settings.video.trim.hint}" />
+      </StackPanel>
+    </Border>
+
   </StackPanel>
 </UserControl>

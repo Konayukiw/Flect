@@ -17,9 +17,37 @@ internal static class Ffmpeg
             onOutputLine: line => ReportProgress(line, progress, label, durationSeconds),
             priority: Background);
 
-    public static async Task RunEncodeAsync(Func<int, IEnumerable<string>> build,
+    public static async Task RunEncodeAsync(EncoderChoice encoder,
+                                            Func<EncoderChoice, int, IEnumerable<string>> build,
                                             ITaskProgress progress, string label,
                                             double durationSeconds, int outputHeight)
+    {
+        var fallback = Encoders.CpuFallback(encoder);
+        if (fallback is null)
+        {
+            await RunLadderAsync(encoder, build, progress, label, durationSeconds, outputHeight);
+            return;
+        }
+
+        try
+        {
+            await RunAsync(build(encoder, EncodePolicy.Ladder(outputHeight)[0]), progress, label,
+                           durationSeconds);
+            return;
+        }
+        catch (ProcessFailure)
+        {
+            Encoders.DisableHardware();
+            progress.Warn(Loc.F("msg.hardwareFallback", encoder.Name));
+        }
+
+        await RunLadderAsync(fallback, build, progress, label, durationSeconds, outputHeight);
+    }
+
+    private static async Task RunLadderAsync(EncoderChoice encoder,
+                                             Func<EncoderChoice, int, IEnumerable<string>> build,
+                                             ITaskProgress progress, string label,
+                                             double durationSeconds, int outputHeight)
     {
         var rungs = EncodePolicy.Ladder(outputHeight);
 
@@ -28,7 +56,7 @@ internal static class Ffmpeg
             int threads = rungs[attempt];
             try
             {
-                await RunAsync(build(threads), progress, label, durationSeconds);
+                await RunAsync(build(encoder, threads), progress, label, durationSeconds);
                 EncodePolicy.RecordSuccess(threads);
                 return;
             }

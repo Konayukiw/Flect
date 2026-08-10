@@ -212,6 +212,9 @@ std::vector<MenuNode> BuildVideo(const SelectionInfo& selection, const ShellConf
 
   std::vector<MenuNode> items;
   items.push_back(ResizeMenu(config, text, L"video", L"Video"));
+  if (selection.paths.size() == 1) {
+    items.push_back(Leaf(L"video.trim", text.trim, L"video.trim"));
+  }
   items.push_back(Popup(L"video.compress", text.compress, std::move(compress)));
   items.push_back(RotateMenu(config, text, L"video", L"Video"));
 

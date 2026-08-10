@@ -37,7 +37,9 @@ internal sealed class Pipeline(Plan plan, ITaskProgress progress)
                         $"@{plan.Profile.Fps:0}fps · {videoKbps}kbps";
 
             await Ffmpeg.RunEncodeAsync(
-                threads => Command.SinglePass(input, encode, plan, videoKbps, threads),
+                Command.Encoder(),
+                (encoder, threads) =>
+                    Command.SinglePass(input, encode, plan, encoder, videoKbps, threads),
                 progress, label, duration, plan.Profile.Height);
 
             long size = new FileInfo(encode).Length;

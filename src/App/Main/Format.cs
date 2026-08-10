@@ -26,6 +26,43 @@ internal static class Formatting
     public static string Percent(double fraction) =>
         (fraction * 100).ToString(fraction >= 0.1 ? "0.0" : "0.00", CultureInfo.InvariantCulture) + "%";
 
+    public static string Timecode(double seconds)
+    {
+        if (seconds < 0 || double.IsNaN(seconds)) seconds = 0;
+
+        var span = TimeSpan.FromSeconds(seconds);
+        return span.TotalHours >= 1
+            ? string.Format(CultureInfo.InvariantCulture, "{0}:{1:00}:{2:00}.{3:0}",
+                            (int)span.TotalHours, span.Minutes, span.Seconds, span.Milliseconds / 100)
+            : string.Format(CultureInfo.InvariantCulture, "{0}:{1:00}.{2:0}",
+                            (int)span.TotalMinutes, span.Seconds, span.Milliseconds / 100);
+    }
+
+    public static bool TryParseTimecode(string text, out double seconds)
+    {
+        seconds = 0;
+        var trimmed = text.Trim();
+        if (trimmed.Length == 0) return false;
+
+        var parts = trimmed.Split(':');
+        if (parts.Length > 3) return false;
+
+        double total = 0;
+        for (int i = 0; i < parts.Length; i++)
+        {
+            if (!double.TryParse(parts[i], NumberStyles.Float, CultureInfo.InvariantCulture,
+                                 out var value) || value < 0)
+            {
+                return false;
+            }
+            total += value * Math.Pow(60, parts.Length - 1 - i);
+        }
+
+        if (double.IsNaN(total) || double.IsInfinity(total)) return false;
+        seconds = total;
+        return true;
+    }
+
     public static bool TryParseBytes(string text, out long bytes)
     {
         bytes = 0;

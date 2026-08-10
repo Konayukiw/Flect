@@ -48,6 +48,7 @@ Select as many files as you like - these run over the whole selection at once, n
 | | |
 | --- | --- |
 | **Resize** | Scale down by percentage or to custom pixels |
+| **Trim** | Scrub to the part you want and keep just that - instantly, no re-encoding |
 | **Compress** | Hit a target size - including a one-click Discord preset |
 | **Rotate** | Any angle, with a chosen fill colour |
 | **Convert** | Between MP4, MOV, MKV, M4A, AVI, WEBM, FLV,  animated GIF |
@@ -186,6 +187,16 @@ Video compression stages through a hidden scratch directory next to the destinat
 </details>
 　
 <details>
+<summary><b>My trimmed clip starts a bit earlier than I marked</b></summary>
+
+That is the price of not re-encoding. Video is stored in chunks that begin with a keyframe, and the frames after one cannot be decoded without it — so a cut that copies the streams has to begin at the keyframe before your mark, which can be a few seconds early. Everything you asked for is there; there is just a little extra in front, and the file is finished the moment you click.
+
+If you need the cut exactly where you put it, open Flect's settings → **Video → Trim** and choose to land on the exact frame. That re-encodes the clip, so it takes as long as any other encode and loses a little quality.
+
+Trim only appears when you have selected a single video — one start and end cannot mean the same thing across clips of different lengths.
+</details>
+　
+<details>
 <summary><b>Why did Explorer restart when I installed?</b></summary>
 
 Explorer loads the menu handler into itself and holds onto it. Installing over a version that has already been used therefore needs Explorer to let go first. Setup does that on its own, and only when the file is genuinely locked.
@@ -215,7 +226,7 @@ Through **Settings › Apps › Installed apps** in Windows, like any other prog
 <summary><b>Known limitations</b></summary>
 
 - Compressed video always comes out as `.mp4`, even when the codec is H.265, VP9 or AV1. The result plays fine but the container/codec pairing is unusual.
-- Hardware encoders are offered based on what your ffmpeg build reports. If the build supports one but your machine has no such GPU, the encode fails rather than falling back to the CPU.
+- Hardware acceleration is offered only after Flect confirms your GPU can actually encode. It checks the first time you open the settings, and rechecks if you change graphics card or driver. If an encode fails on the GPU anyway, it finishes on the CPU instead.
 </details>
 
 ---

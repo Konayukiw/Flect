@@ -54,6 +54,9 @@ public partial class VideoPage : UserControl, ISettingsPage
         Fields.Select(GifDitherBox, video.GifDither);
 
         FillColorField.Value = video.RotateFillColor;
+
+        TrimKeyframeBox.IsChecked = video.Trim.Accuracy == TrimAccuracy.Keyframe;
+        TrimExactBox.IsChecked = video.Trim.Accuracy == TrimAccuracy.Exact;
     }
 
     void ISettingsPage.Store(Settings settings)
@@ -83,6 +86,10 @@ public partial class VideoPage : UserControl, ISettingsPage
         video.GifDither = Fields.Selected(GifDitherBox, video.GifDither);
 
         video.RotateFillColor = FillColorField.Value;
+
+        video.Trim.Accuracy = TrimExactBox.IsChecked == true
+            ? TrimAccuracy.Exact
+            : TrimAccuracy.Keyframe;
     }
 
     private async void LoadHardwareChoices()

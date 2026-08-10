@@ -27,11 +27,16 @@ internal static class Command
         output,
     ];
 
-    public static string[] SinglePass(string input, string output, Plan plan,
-                                      int videoKbps, int threads)
+    public static EncoderChoice Encoder()
     {
         var video = Settings.Current.Video;
-        var encoder = Encoders.Preferred(video.Codec, video.Hardware);
+        return Encoders.Preferred(video.Codec, video.Hardware);
+    }
+
+    public static string[] SinglePass(string input, string output, Plan plan,
+                                      EncoderChoice encoder, int videoKbps, int threads)
+    {
+        var video = Settings.Current.Video;
 
         return
         [

@@ -9,15 +9,11 @@ internal abstract class VideoTask(TaskRequest request) : BatchTask(request)
 {
     protected static VideoSettings Preferences => Settings.Current.Video;
 
-    protected static string[] VideoEncoder(string extension)
-    {
-        var encoder = Encoders.ForContainer(extension, Preferences);
-        return
-        [
-            .. Encoders.Quality(encoder, Preferences.Priority),
-            .. Encoders.PixelFormat(encoder),
-        ];
-    }
+    protected static string[] VideoEncoder(EncoderChoice encoder) =>
+    [
+        .. Encoders.Quality(encoder, Preferences.Priority),
+        .. Encoders.PixelFormat(encoder),
+    ];
 
     protected static string[] AudioCodec(string extension) => extension switch
     {
@@ -34,22 +30,25 @@ internal abstract class VideoTask(TaskRequest request) : BatchTask(request)
     {
         var extension = Path.GetExtension(output).ToLowerInvariant();
 
-        string[] Build(string[] audio, int threads) =>
+        string[] Build(string[] audio, EncoderChoice encoder, int threads) =>
             [.. Ffmpeg.Preamble, "-i", input, "-vf", filter,
              "-threads", threads.ToString(CultureInfo.InvariantCulture),
-             .. VideoEncoder(extension), .. audio, output];
+             .. VideoEncoder(encoder), .. audio, output];
 
         using var working = new WorkingFile(output);
         try
         {
-            await Ffmpeg.RunEncodeAsync(threads => Build(["-c:a", "copy"], threads), progress, label,
-                                        info.DurationSeconds, info.Height);
+            await Ffmpeg.RunEncodeAsync(Encoders.ForContainer(extension, Preferences),
+                                        (encoder, threads) => Build(["-c:a", "copy"], encoder, threads),
+                                        progress, label, info.DurationSeconds, info.Height);
         }
         catch (InvalidOperationException)
         {
             OutputPath.SafeDelete(output);
-            await Ffmpeg.RunEncodeAsync(threads => Build(AudioEncoder(extension), threads), progress,
-                                        label, info.DurationSeconds, info.Height);
+            await Ffmpeg.RunEncodeAsync(Encoders.ForContainer(extension, Preferences),
+                                        (encoder, threads) =>
+                                            Build(AudioEncoder(extension), encoder, threads),
+                                        progress, label, info.DurationSeconds, info.Height);
         }
         working.Keep();
     }
@@ -179,14 +178,15 @@ internal sealed class VideoConvert(TaskRequest request) : VideoTask(request)
         var output = OutputPath.Derive(path, string.Empty, extension);
 
         string[] copyArgs = _target == "M4A" ? ["-vn", "-c:a", "copy"] : ["-c", "copy"];
-        string[] encodeArgs = _target == "M4A"
-            ? ["-vn", .. AudioEncoder(extension)]
-            : [.. VideoEncoder(extension), .. AudioEncoder(extension)];
 
-        string[] Build(int threads) =>
+        string[] EncodeArgs(EncoderChoice encoder) => _target == "M4A"
+            ? ["-vn", .. AudioEncoder(extension)]
+            : [.. VideoEncoder(encoder), .. AudioEncoder(extension)];
+
+        string[] Build(EncoderChoice encoder, int threads) =>
             [.. Ffmpeg.Preamble, "-i", path,
              "-threads", threads.ToString(CultureInfo.InvariantCulture),
-             .. encodeArgs, output];
+             .. EncodeArgs(encoder), output];
 
         using var working = new WorkingFile(output);
         try
@@ -201,8 +201,8 @@ internal sealed class VideoConvert(TaskRequest request) : VideoTask(request)
             OutputPath.SafeDelete(output);
         }
 
-        await Ffmpeg.RunEncodeAsync(Build, progress, Loc.T("label.converting"), info.DurationSeconds,
-                                    info.Height);
+        await Ffmpeg.RunEncodeAsync(Encoders.ForContainer(extension, Preferences), Build, progress,
+                                    Loc.T("label.converting"), info.DurationSeconds, info.Height);
         working.Keep();
     }
 
@@ -243,6 +243,90 @@ internal sealed class VideoConvert(TaskRequest request) : VideoTask(request)
         {
             OutputPath.SafeDelete(palette);
         }
+        working.Keep();
+    }
+}
+
+internal sealed class VideoTrim(TaskRequest request) : VideoTask(request)
+{
+    private TrimRange? _range;
+
+    public override string Title => Loc.T("menu.video.trim");
+
+    public override bool Configure()
+    {
+        var path = Request.Paths.FirstOrDefault();
+        if (path is null) return false;
+
+        MediaInfo info;
+        try
+        {
+            info = Task.Run(() => Media.ReadAsync(path, CancellationToken.None))
+                       .GetAwaiter().GetResult();
+        }
+        catch (Exception)
+        {
+            Report.Error(Loc.T("msg.noDuration"));
+            return false;
+        }
+
+        if (!info.HasVideo)
+        {
+            Report.Error(Loc.T("msg.noVideoStream"));
+            return false;
+        }
+        if (info.DurationSeconds <= 0)
+        {
+            Report.Error(Loc.T("msg.noDuration"));
+            return false;
+        }
+
+        _range = Trim.Ask(path, info.DurationSeconds);
+        return _range is not null;
+    }
+
+    protected override async Task ProcessAsync(string path, ITaskProgress progress)
+    {
+        if (_range is null) return;
+
+        var info = await Media.ReadAsync(path, progress.Token);
+        RequireVideo(info);
+
+        var start = Math.Clamp(_range.StartSeconds, 0, Math.Max(0, info.DurationSeconds - 0.05));
+        var end = Math.Clamp(_range.EndSeconds, start, info.DurationSeconds);
+        var length = end - start;
+        if (length <= 0) throw new InvalidOperationException(Loc.T("dialog.trim.backwards"));
+
+        var output = OutputPath.Derive(path, "_trimmed");
+        var extension = Path.GetExtension(output).ToLowerInvariant();
+
+        string[] Seek() =>
+        [
+            .. Ffmpeg.Preamble,
+            "-ss", start.ToString("0.###", CultureInfo.InvariantCulture),
+            "-i", path,
+            "-t", length.ToString("0.###", CultureInfo.InvariantCulture),
+        ];
+
+        using var working = new WorkingFile(output);
+
+        if (Preferences.Trim.Accuracy == TrimAccuracy.Keyframe)
+        {
+            await Ffmpeg.RunAsync([.. Seek(), "-c", "copy", "-avoid_negative_ts", "make_zero",
+                                   output],
+                                  progress, Loc.T("label.trimming"), length);
+        }
+        else
+        {
+            string[] Build(EncoderChoice encoder, int threads) =>
+                [.. Seek(),
+                 "-threads", threads.ToString(CultureInfo.InvariantCulture),
+                 .. VideoEncoder(encoder), .. AudioEncoder(extension), output];
+
+            await Ffmpeg.RunEncodeAsync(Encoders.ForContainer(extension, Preferences), Build,
+                                        progress, Loc.T("label.trimming"), length, info.Height);
+        }
+
         working.Keep();
     }
 }

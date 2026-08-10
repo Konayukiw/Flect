@@ -12,19 +12,27 @@ internal static class Encoders
 {
     private static readonly Lazy<HashSet<string>> Installed = new(Probe);
 
-    private static readonly (HardwareEncoder Hardware, string Probe)[] HardwareProbes =
-    [
-        (HardwareEncoder.Nvenc, "h264_nvenc"),
-        (HardwareEncoder.Qsv, "h264_qsv"),
-        (HardwareEncoder.Amf, "h264_amf"),
-    ];
+    private static bool _hardwareUnusable;
 
     public static bool Has(string name) => Installed.Value.Contains(name);
 
-    public static IReadOnlyList<HardwareEncoder> AvailableHardware() =>
-        HardwareProbes.Where(probe => Has(probe.Probe))
-                      .Select(probe => probe.Hardware)
-                      .ToList();
+    public static void DisableHardware() => _hardwareUnusable = true;
+
+    public static EncoderChoice? CpuFallback(EncoderChoice encoder)
+    {
+        if (!encoder.IsHardware) return null;
+
+        var codec = encoder.Name.Split('_')[0] switch
+        {
+            "hevc" => VideoCodecChoice.H265,
+            "av1" => VideoCodecChoice.Av1,
+            "vp9" => VideoCodecChoice.Vp9,
+            _ => VideoCodecChoice.H264,
+        };
+        return Software(codec);
+    }
+
+    public static IReadOnlyList<HardwareEncoder> AvailableHardware() => HardwareSupport.Usable();
 
     public static EncoderChoice ForContainer(string extension, VideoSettings settings) =>
         extension switch
@@ -36,7 +44,8 @@ internal static class Encoders
 
     public static EncoderChoice Preferred(VideoCodecChoice codec, HardwareEncoder hardware)
     {
-        if (hardware != HardwareEncoder.None)
+        if (hardware != HardwareEncoder.None && !_hardwareUnusable &&
+            !HardwareSupport.KnownUnusable(hardware))
         {
             var accelerated = HardwareName(codec, hardware);
             if (accelerated is not null && Has(accelerated))

@@ -21,6 +21,7 @@ internal static class TaskFactory
         "image.chromakey" => new ImageChromaKey(request),
 
         "video.resize" => new VideoResize(request),
+        "video.trim" => new VideoTrim(request),
         "video.compress" => new VideoCompress(request),
         "video.rotate" => new VideoRotate(request),
         "video.convert" => new VideoConvert(request),
