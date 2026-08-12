@@ -3,7 +3,7 @@ using System.Globalization;
 using Windows.Globalization;
 using Windows.Media.Ocr;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Ocr;
 
 internal sealed record OcrLanguage(string Tag, string Name)
 {
@@ -74,7 +74,7 @@ internal static class OcrLanguages
                 Arguments = "-NoProfile -ExecutionPolicy Bypass -NoExit -Command \"" +
                             script.Replace("\"", "\\\"") + "\"",
             };
-            return Process.Start(info) is not null;
+            return System.Diagnostics.Process.Start(info) is not null;
         }
         catch (Exception)
         {

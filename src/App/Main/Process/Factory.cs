@@ -1,10 +1,8 @@
-using Optimizer.Tasks;
+namespace Optimizer.Main.Process;
 
-namespace Optimizer.Main;
-
-internal static class TaskFactory
+internal static class Factory
 {
-    public static TaskBase? Create(TaskRequest request) => request.Id switch
+    public static TaskBase? Create(Request request) => request.Id switch
     {
         "folder.removeDuplicate" => new FolderRemoveDuplicate(request),
         "folder.removeEmpty" => new FolderRemoveEmpty(request),

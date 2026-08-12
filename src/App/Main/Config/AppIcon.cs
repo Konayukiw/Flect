@@ -2,7 +2,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Config;
 
 internal static class AppIcon
 {

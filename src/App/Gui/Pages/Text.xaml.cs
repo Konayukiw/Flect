@@ -1,12 +1,11 @@
 using System.Windows;
 using System.Windows.Controls;
-using Optimizer.Main;
 
-namespace Optimizer.Gui;
+namespace Optimizer.Gui.Pages;
 
-public partial class TextPage : UserControl, ISettingsPage
+public partial class Text : UserControl, ISettingsPage
 {
-    public TextPage()
+    public Text()
     {
         InitializeComponent();
 

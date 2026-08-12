@@ -1,8 +1,8 @@
 using System.Text.Json.Nodes;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Text;
 
-internal static class JsonSorter
+internal static class SortJson
 {
     public static JsonNode Sort(JsonNode node, JsonSortSettings settings)
     {

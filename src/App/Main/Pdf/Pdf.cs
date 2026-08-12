@@ -1,7 +1,7 @@
 using PDFtoImage;
 using SkiaSharp;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Pdf;
 
 internal static class PdfRenderer
 {

@@ -1,9 +1,9 @@
 using System.Text;
 using UtfUnknown;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Text;
 
-internal static class Text
+internal static class TextFile
 {
     public static string Read(string path) => Read(path, out _);
 

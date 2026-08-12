@@ -1,7 +1,7 @@
-<UserControl x:Class="Optimizer.Gui.OcrPage"
+<UserControl x:Class="Optimizer.Gui.Pages.Ocr"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:loc="clr-namespace:Optimizer.Main">
+             xmlns:loc="clr-namespace:Optimizer.Main.Localization">
 
   <StackPanel>
 

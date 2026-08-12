@@ -1,11 +1,10 @@
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
-using Optimizer.Main;
 
-namespace Optimizer.Gui;
+namespace Optimizer.Gui.Pages;
 
-public partial class SettingsWindow : Window
+public partial class SettingsGui : Window
 {
     private static readonly string[] Titles =
     [
@@ -18,7 +17,7 @@ public partial class SettingsWindow : Window
     private Settings _settings;
     private int _index;
 
-    private SettingsWindow(int page)
+    private SettingsGui(int page)
     {
         InitializeComponent();
 
@@ -35,10 +34,10 @@ public partial class SettingsWindow : Window
 
     public static void Open(int page = 0)
     {
-        var existing = Application.Current.Windows.OfType<SettingsWindow>().FirstOrDefault();
+        var existing = Application.Current.Windows.OfType<SettingsGui>().FirstOrDefault();
         if (existing is null)
         {
-            new SettingsWindow(page).Show();
+            new SettingsGui(page).Show();
             return;
         }
 
@@ -106,9 +105,9 @@ public partial class SettingsWindow : Window
         return true;
     }
 
-    private SettingsWindow Replace()
+    private SettingsGui Replace()
     {
-        var replacement = new SettingsWindow(_index);
+        var replacement = new SettingsGui(_index);
         replacement.Show();
         Close();
         return replacement;

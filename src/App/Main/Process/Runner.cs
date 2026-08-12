@@ -1,6 +1,4 @@
-using Optimizer.Gui;
-
-namespace Optimizer.Main;
+namespace Optimizer.Main.Process;
 
 internal sealed class NullProgress : ITaskProgress
 {
@@ -15,11 +13,11 @@ internal sealed class NullProgress : ITaskProgress
     public void Error(string message) { }
 }
 
-internal static class TaskRunner
+internal static class Runner
 {
-    public static async Task RunAsync(TaskRequest request)
+    public static async Task RunAsync(Request request)
     {
-        var task = TaskFactory.Create(request);
+        var task = Factory.Create(request);
         if (task is null)
         {
             Report.Error($"Unrecognized command: {request.Id}");

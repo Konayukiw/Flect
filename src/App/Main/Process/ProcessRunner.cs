@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Text;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Process;
 
 internal sealed record ProcessResult(int ExitCode, string StandardOutput, string StandardError)
 {
@@ -36,7 +36,7 @@ internal static class ProcessRunner
         };
         foreach (var argument in arguments) info.ArgumentList.Add(argument);
 
-        using var process = new Process { StartInfo = info };
+        using var process = new System.Diagnostics.Process { StartInfo = info };
         var standardOutput = new StringBuilder();
         var standardError = new StringBuilder();
 

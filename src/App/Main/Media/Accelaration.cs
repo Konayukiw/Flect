@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using Microsoft.Win32;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Media;
 
-internal static class HardwareSupport
+internal static class Accelaration
 {
     private const string FileName = "hardware.json";
 
@@ -66,7 +66,7 @@ internal static class HardwareSupport
                 info.ArgumentList.Add(argument);
             }
 
-            using var process = Process.Start(info);
+            using var process = System.Diagnostics.Process.Start(info);
             if (process is null) return false;
 
             process.StandardOutput.ReadToEnd();

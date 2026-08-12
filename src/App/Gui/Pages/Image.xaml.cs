@@ -1,13 +1,12 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using Optimizer.Main;
 
-namespace Optimizer.Gui;
+namespace Optimizer.Gui.Pages;
 
-public partial class ImagePage : UserControl, ISettingsPage
+public partial class Image : UserControl, ISettingsPage
 {
-    public ImagePage() => InitializeComponent();
+    public Image() => InitializeComponent();
 
     void ISettingsPage.Load(Settings settings)
     {

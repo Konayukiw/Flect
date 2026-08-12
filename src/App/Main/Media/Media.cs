@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Media;
 
 internal sealed record MediaInfo(
     double DurationSeconds,

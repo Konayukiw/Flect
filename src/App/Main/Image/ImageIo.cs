@@ -1,7 +1,7 @@
 using System.Windows.Media.Imaging;
 using ImageMagick;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Image;
 
 internal static class ImageIo
 {

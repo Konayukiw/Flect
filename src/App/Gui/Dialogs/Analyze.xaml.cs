@@ -1,8 +1,7 @@
 using System.Windows;
 using Microsoft.Win32;
-using Optimizer.Main;
 
-namespace Optimizer.Gui;
+namespace Optimizer.Gui.Dialogs;
 
 public sealed record StatTile(string Value, string Label);
 

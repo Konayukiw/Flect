@@ -2,12 +2,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Windows;
-using Optimizer.Main;
-using Optimizer.Gui;
+using Optimizer.Main.Process;
 
-namespace Optimizer.Tasks;
+namespace Optimizer.Tasks.Folder;
 
-internal sealed class FolderRemoveDuplicate(TaskRequest request) : TaskBase(request)
+internal sealed class FolderRemoveDuplicate(Request request) : TaskBase(request)
 {
     private string? _summary;
 
@@ -67,7 +66,7 @@ internal sealed class FolderRemoveDuplicate(TaskRequest request) : TaskBase(requ
         };
 }
 
-internal sealed class FolderRemoveEmpty(TaskRequest request) : TaskBase(request)
+internal sealed class FolderRemoveEmpty(Request request) : TaskBase(request)
 {
     private string? _summary;
 
@@ -116,7 +115,7 @@ internal sealed class FolderRemoveEmpty(TaskRequest request) : TaskBase(request)
     }
 }
 
-internal sealed class FolderTree(TaskRequest request) : TaskBase(request)
+internal sealed class FolderTree(Request request) : TaskBase(request)
 {
     private string _output = string.Empty;
 
@@ -131,7 +130,7 @@ internal sealed class FolderTree(TaskRequest request) : TaskBase(request)
     public override void Present() => new TextResult(Title, _output).Show();
 }
 
-internal sealed class FolderRename(TaskRequest request) : TaskBase(request)
+internal sealed class FolderRename(Request request) : TaskBase(request)
 {
     private RenamePlan _plan = new(string.Empty, string.Empty, string.Empty, true);
     private RenameSettings _settings = new();
@@ -273,7 +272,7 @@ internal sealed class FolderRename(TaskRequest request) : TaskBase(request)
     }
 }
 
-internal sealed class FolderAnalyze(TaskRequest request) : TaskBase(request)
+internal sealed class FolderAnalyze(Request request) : TaskBase(request)
 {
     private AnalyzeReport? _report;
 

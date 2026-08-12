@@ -1,4 +1,4 @@
-namespace Optimizer.Main;
+namespace Optimizer.Main.Process;
 
 internal interface ITaskProgress
 {
@@ -14,9 +14,9 @@ internal interface ITaskProgress
     void Error(string message);
 }
 
-internal abstract class TaskBase(TaskRequest request)
+internal abstract class TaskBase(Request request)
 {
-    protected TaskRequest Request { get; } = request;
+    protected Request Request { get; } = request;
 
     public abstract string Title { get; }
 
@@ -31,7 +31,7 @@ internal abstract class TaskBase(TaskRequest request)
     public virtual void Present() { }
 }
 
-internal abstract class BatchTask(TaskRequest request) : TaskBase(request)  
+internal abstract class BatchTask(Request request) : TaskBase(request)  
 {
     protected abstract Task ProcessAsync(string path, ITaskProgress progress);
 

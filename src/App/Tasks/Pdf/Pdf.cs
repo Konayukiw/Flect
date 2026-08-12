@@ -1,13 +1,13 @@
-using Optimizer.Main;
-using Optimizer.Gui;
 using SkiaSharp;
 using UglyToad.PdfPig;
 using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
 using UglyToad.PdfPig.Writer;
 
-namespace Optimizer.Tasks;
+using Optimizer.Main.Process;
 
-internal sealed class PdfPreview(TaskRequest request) : TaskBase(request)
+namespace Optimizer.Tasks.Pdf;
+
+internal sealed class PdfPreview(Request request) : TaskBase(request)
 {
     public override string Title => Loc.T("menu.pdf.preview");
 
@@ -15,10 +15,10 @@ internal sealed class PdfPreview(TaskRequest request) : TaskBase(request)
 
     public override Task RunAsync(ITaskProgress progress) => Task.CompletedTask;
 
-    public override void Present() => new Gui.PdfPreview(Request.Paths[0]).Show();
+    public override void Present() => new PdfPreviewWindow(Request.Paths[0]).Show();
 }
 
-internal sealed class PdfMerge(TaskRequest request) : TaskBase(request)
+internal sealed class PdfMerge(Request request) : TaskBase(request)
 {
     private string? _output;
 
@@ -50,7 +50,7 @@ internal sealed class PdfMerge(TaskRequest request) : TaskBase(request)
     }, progress.Token);
 }
 
-internal sealed class PdfConvert(TaskRequest request) : BatchTask(request)
+internal sealed class PdfConvert(Request request) : BatchTask(request)
 {
     private string _target = "PNG";
 

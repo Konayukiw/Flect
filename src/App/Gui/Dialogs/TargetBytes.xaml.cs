@@ -1,8 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
-using Optimizer.Main;
 
-namespace Optimizer.Gui;
+namespace Optimizer.Gui.Dialogs;
 
 public partial class TargetBytes : Window
 {

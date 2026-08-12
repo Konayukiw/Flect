@@ -2,11 +2,12 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
-using Optimizer.Main;
 
-namespace Optimizer.Tasks;
+using Optimizer.Main.Process;
 
-internal sealed class JsonFormat(TaskRequest request, bool sortKeys) : BatchTask(request)
+namespace Optimizer.Tasks.Text;
+
+internal sealed class JsonFormat(Request request, bool sortKeys) : BatchTask(request)
 {
     private static readonly JsonDocumentOptions ParseOptions = new()
     {
@@ -27,7 +28,7 @@ internal sealed class JsonFormat(TaskRequest request, bool sortKeys) : BatchTask
         var node = JsonNode.Parse(File.ReadAllText(path), nodeOptions: null, ParseOptions)
             ?? throw new InvalidOperationException(Loc.T("msg.emptyFile"));
 
-        var formatted = sortKeys ? JsonSorter.Sort(node, Settings.Current.Text.JsonSort) : node;
+        var formatted = sortKeys ? SortJson.Sort(node, Settings.Current.Text.JsonSort) : node;
 
         var output = OutputPath.Derive(path, sortKeys ? "_sorted" : "_pretty");
         using var working = new WorkingFile(output);

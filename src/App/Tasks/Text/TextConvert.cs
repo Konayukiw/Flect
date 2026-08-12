@@ -3,11 +3,12 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Xml;
 using System.Xml.Linq;
-using Optimizer.Main;
 
-namespace Optimizer.Tasks;
+using Optimizer.Main.Process;
 
-internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
+namespace Optimizer.Tasks.Text;
+
+internal sealed class TextConvert(Request request) : BatchTask(request)
 {
     private static readonly UTF8Encoding CsvEncoding = new(encoderShouldEmitUTF8Identifier: true);
     private static readonly UTF8Encoding PlainEncoding = new(encoderShouldEmitUTF8Identifier: false);
@@ -24,7 +25,7 @@ internal sealed class TextConvert(TaskRequest request) : BatchTask(request)
 
     protected override Task ProcessAsync(string path, ITaskProgress progress) => Task.Run(() =>
     {
-        var text = Text.Read(path);
+        var text = TextFile.Read(path);
         var source = Path.GetExtension(path).TrimStart('.').ToUpperInvariant();
         var converted = _target == "TXT" ? text : Render(Parse(source, text, progress, path));
         var output = OutputPath.Derive(path, string.Empty, "." + _target.ToLowerInvariant());

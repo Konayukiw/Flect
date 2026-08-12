@@ -1,7 +1,6 @@
 using System.Windows;
-using Optimizer.Main;
 
-namespace Optimizer.Gui;
+namespace Optimizer.Gui.Dialogs;
 
 internal sealed record PixelTarget(uint Width, uint Height, bool KeepAspect);
 

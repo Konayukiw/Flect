@@ -1,8 +1,8 @@
-<Window x:Class="Optimizer.Gui.SettingsWindow"
+<Window x:Class="Optimizer.Gui.Pages.SettingsGui"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:loc="clr-namespace:Optimizer.Main"
-        xmlns:pages="clr-namespace:Optimizer.Gui"
+        xmlns:loc="clr-namespace:Optimizer.Main.Localization"
+        xmlns:pages="clr-namespace:Optimizer.Gui.Pages"
         Width="940" Height="700" MinWidth="820" MinHeight="560"
         WindowStartupLocation="CenterScreen" ShowInTaskbar="True">
 
@@ -104,12 +104,12 @@
       <ScrollViewer x:Name="Scroller" Grid.Row="1" VerticalScrollBarVisibility="Auto"
                     Padding="26,0,20,10">
         <Grid x:Name="PageHost">
-          <pages:GeneralPage x:Name="PageGeneral" />
-          <pages:FolderPage x:Name="PageFolder" Visibility="Collapsed" />
-          <pages:VideoPage x:Name="PageVideo" Visibility="Collapsed" />
-          <pages:ImagePage x:Name="PageImage" Visibility="Collapsed" />
-          <pages:TextPage x:Name="PageText" Visibility="Collapsed" />
-          <pages:OcrPage x:Name="PageOcr" Visibility="Collapsed" />
+          <pages:General x:Name="PageGeneral" />
+          <pages:Folder x:Name="PageFolder" Visibility="Collapsed" />
+          <pages:Video x:Name="PageVideo" Visibility="Collapsed" />
+          <pages:Image x:Name="PageImage" Visibility="Collapsed" />
+          <pages:Text x:Name="PageText" Visibility="Collapsed" />
+          <pages:Ocr x:Name="PageOcr" Visibility="Collapsed" />
         </Grid>
       </ScrollViewer>
 

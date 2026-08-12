@@ -1,9 +1,10 @@
 using System.Text;
-using Optimizer.Main;
 
-namespace Optimizer.Tasks;
+using Optimizer.Main.Process;
 
-internal sealed class TextEncode(TaskRequest request) : BatchTask(request)
+namespace Optimizer.Tasks.Text;
+
+internal sealed class TextEncode(Request request) : BatchTask(request)
 {
     private const int ShiftJisCodePage = 932;
 
@@ -19,7 +20,7 @@ internal sealed class TextEncode(TaskRequest request) : BatchTask(request)
 
     protected override Task ProcessAsync(string path, ITaskProgress progress) => Task.Run(() =>
     {
-        var text = Text.Read(path);
+        var text = TextFile.Read(path);
         var output = OutputPath.Derive(path, Suffix());
         using var working = new WorkingFile(output);
 
@@ -84,7 +85,7 @@ internal sealed class TextEncode(TaskRequest request) : BatchTask(request)
     };
 }
 
-internal sealed class TextLineEndings(TaskRequest request) : BatchTask(request)
+internal sealed class TextLineEndings(Request request) : BatchTask(request)
 {
     private string _target = "CRLF";
 
@@ -98,7 +99,7 @@ internal sealed class TextLineEndings(TaskRequest request) : BatchTask(request)
 
     protected override Task ProcessAsync(string path, ITaskProgress progress) => Task.Run(() =>
     {
-        var text = Text.Read(path, out var encoding);
+        var text = TextFile.Read(path, out var encoding);
         var ending = _target == "LF" ? "\n" : "\r\n";
         var normalised = text.Replace("\r\n", "\n").Replace('\r', '\n');
         var converted = ending == "\n" ? normalised : normalised.Replace("\n", ending);

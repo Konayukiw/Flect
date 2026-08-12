@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.IO.Hashing;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Folder;
 
 internal sealed record ScannedFile(string Path, long Size, DateTime LastWrite, string Extension);
 

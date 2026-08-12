@@ -1,4 +1,6 @@
-﻿namespace Optimizer.Main.Compression;
+﻿using Optimizer.Main.Process;
+
+namespace Optimizer.Main.Media.Compression;
 
 internal sealed record CompressionOutcome(string Path, long Bytes, bool TargetReached);
 

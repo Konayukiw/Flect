@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Optimizer.Main.Compression;
+namespace Optimizer.Main.Media.Compression;
 
 internal static class Command
 {

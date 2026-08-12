@@ -1,7 +1,6 @@
 using System.Windows.Controls;
-using Optimizer.Main;
 
-namespace Optimizer.Gui;
+namespace Optimizer.Gui.Pages;
 
 public partial class ExclusionEditor : UserControl
 {

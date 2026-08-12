@@ -1,4 +1,4 @@
-namespace Optimizer.Main;
+namespace Optimizer.Main.Common;
 
 internal sealed class WorkingFile(string path) : IDisposable
 {

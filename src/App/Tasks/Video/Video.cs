@@ -1,11 +1,9 @@
 using System.Globalization;
-using Optimizer.Main;
-using Optimizer.Main.Compression;
-using Optimizer.Gui;
+using Optimizer.Main.Process;
 
-namespace Optimizer.Tasks;
+namespace Optimizer.Tasks.Video;
 
-internal abstract class VideoTask(TaskRequest request) : BatchTask(request)
+internal abstract class VideoTask(Request request) : BatchTask(request)
 {
     protected static VideoSettings Preferences => Settings.Current.Video;
 
@@ -70,7 +68,7 @@ internal abstract class VideoTask(TaskRequest request) : BatchTask(request)
     }
 }
 
-internal sealed class VideoResize(TaskRequest request) : VideoTask(request)
+internal sealed class VideoResize(Request request) : VideoTask(request)
 {
     private PixelTarget? _pixels;
     private double _percent = 50;
@@ -120,7 +118,7 @@ internal sealed class VideoResize(TaskRequest request) : VideoTask(request)
     }
 }
 
-internal sealed class VideoRotate(TaskRequest request) : VideoTask(request)
+internal sealed class VideoRotate(Request request) : VideoTask(request)
 {
     private int _degrees = 90;
 
@@ -151,7 +149,7 @@ internal sealed class VideoRotate(TaskRequest request) : VideoTask(request)
     };
 }
 
-internal sealed class VideoConvert(TaskRequest request) : VideoTask(request)
+internal sealed class VideoConvert(Request request) : VideoTask(request)
 {
     private string _target = "MP4";
 
@@ -247,7 +245,7 @@ internal sealed class VideoConvert(TaskRequest request) : VideoTask(request)
     }
 }
 
-internal sealed class VideoTrim(TaskRequest request) : VideoTask(request)
+internal sealed class VideoTrim(Request request) : VideoTask(request)
 {
     private TrimRange? _range;
 
@@ -331,7 +329,7 @@ internal sealed class VideoTrim(TaskRequest request) : VideoTask(request)
     }
 }
 
-internal sealed class VideoCompress(TaskRequest request) : VideoTask(request)
+internal sealed class VideoCompress(Request request) : VideoTask(request)
 {
     private long _target;
 

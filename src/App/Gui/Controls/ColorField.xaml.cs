@@ -2,9 +2,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Optimizer.Main;
 
-namespace Optimizer.Gui;
+namespace Optimizer.Gui.Controls;
 
 public sealed record ColorSwatch(string Hex, Brush Brush);
 

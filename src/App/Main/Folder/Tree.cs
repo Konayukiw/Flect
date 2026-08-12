@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Folder;
 
 internal static class TreeRenderer
 {

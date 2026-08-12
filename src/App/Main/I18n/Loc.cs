@@ -1,7 +1,7 @@
 using System.Globalization;
 using System.Windows.Markup;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Localization;
 
 internal static class Loc
 {

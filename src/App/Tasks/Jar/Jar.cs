@@ -1,8 +1,9 @@
-using Optimizer.Main;
 
-namespace Optimizer.Tasks;
+using Optimizer.Main.Process;
 
-internal sealed class JarDecompile(TaskRequest request) : BatchTask(request)
+namespace Optimizer.Tasks.Jar;
+
+internal sealed class JarDecompile(Request request) : BatchTask(request)
 {
     public override string Title => Loc.T("menu.jar.decompile");
 

@@ -4,7 +4,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Common;
 
 internal static class ReportWriter
 {

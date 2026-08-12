@@ -1,6 +1,6 @@
 using System.Windows;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Common;
 
 internal static class Report
 {

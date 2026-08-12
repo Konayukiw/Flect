@@ -1,14 +1,13 @@
 using System.Windows;
 using System.Windows.Controls;
-using Optimizer.Main;
 
-namespace Optimizer.Gui;
+namespace Optimizer.Gui.Pages;
 
-public partial class GeneralPage : UserControl, ISettingsPage
+public partial class General : UserControl, ISettingsPage
 {
     private List<MenuOption> _menu = [];
 
-    public GeneralPage()
+    public General()
     {
         InitializeComponent();
 

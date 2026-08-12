@@ -3,7 +3,7 @@
     <BrandName>Flect</BrandName>
     <BrandClsid>{4D038D4F-2125-48BE-8848-BA30A13AC7EA}</BrandClsid>
     <BrandAppId>{16C090EA-F07E-47B7-8811-B97D3BE26DDC}</BrandAppId>
-    <BrandVersion>1.0</BrandVersion>
+    <BrandVersion>1.1</BrandVersion>
   </PropertyGroup>
 
   <PropertyGroup>

@@ -1,6 +1,6 @@
 using System.Runtime.InteropServices;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Common;
 
 internal static class Recycler
 {

@@ -1,4 +1,4 @@
-namespace Optimizer.Main;
+namespace Optimizer.Main.Config;
 
 internal enum AppTheme { System, Light, Dark }
 

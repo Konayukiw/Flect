@@ -1,6 +1,6 @@
 using System.Globalization;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Common;
 
 internal static class Formatting
 {

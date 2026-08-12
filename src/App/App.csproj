@@ -23,6 +23,28 @@
 
   <ItemGroup>
     <Using Include="System.IO" />
+    <Using Include="Optimizer.Main.Common" />
+    <Using Include="Optimizer.Main.Process" />
+    <Using Include="Optimizer.Main.Config" />
+    <Using Include="Optimizer.Main.Localization" />
+    <Using Include="Optimizer.Main.Folder" />
+    <Using Include="Optimizer.Main.Media" />
+    <Using Include="Optimizer.Main.Media.Compression" />
+    <Using Include="Optimizer.Main.Image" />
+    <Using Include="Optimizer.Main.Pdf" />
+    <Using Include="Optimizer.Main.Text" />
+    <Using Include="Optimizer.Main.Ocr" />
+    <Using Include="Optimizer.Tasks.Folder" />
+    <Using Include="Optimizer.Tasks.Image" />
+    <Using Include="Optimizer.Tasks.Video" />
+    <Using Include="Optimizer.Tasks.Audio" />
+    <Using Include="Optimizer.Tasks.Pdf" />
+    <Using Include="Optimizer.Tasks.Text" />
+    <Using Include="Optimizer.Tasks.Ocr" />
+    <Using Include="Optimizer.Tasks.Jar" />
+    <Using Include="Optimizer.Gui.Controls" />
+    <Using Include="Optimizer.Gui.Dialogs" />
+    <Using Include="Optimizer.Gui.Pages" />
   </ItemGroup>
 
   <PropertyGroup Condition="Exists('$(MSBuildThisFileDirectory)Assets\flect.ico')">

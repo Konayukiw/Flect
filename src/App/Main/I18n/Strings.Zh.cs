@@ -1,4 +1,4 @@
-namespace Optimizer.Main;
+namespace Optimizer.Main.Localization;
 
 internal static partial class Strings
 {

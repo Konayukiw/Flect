@@ -1,8 +1,7 @@
 using System.Globalization;
 using System.Windows.Controls;
-using Optimizer.Main;
 
-namespace Optimizer.Gui;
+namespace Optimizer.Gui.Pages;
 
 public sealed record Choice(object Value, string Label)
 {

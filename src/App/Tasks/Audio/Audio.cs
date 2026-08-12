@@ -1,6 +1,6 @@
-using Optimizer.Main;
+using Optimizer.Main.Process;
 
-namespace Optimizer.Tasks;
+namespace Optimizer.Tasks.Audio;
 
 internal static class AudioFormat
 {
@@ -28,7 +28,7 @@ internal static class AudioFormat
     };
 }
 
-internal sealed class AudioConvert(TaskRequest request) : BatchTask(request)
+internal sealed class AudioConvert(Request request) : BatchTask(request)
 {
     private string _target = "MP3";
 
@@ -53,7 +53,7 @@ internal sealed class AudioConvert(TaskRequest request) : BatchTask(request)
     }
 }
 
-internal sealed class VideoExtractAudio(TaskRequest request) : BatchTask(request)
+internal sealed class VideoExtractAudio(Request request) : BatchTask(request)
 {
     private string _target = "MP3";
 

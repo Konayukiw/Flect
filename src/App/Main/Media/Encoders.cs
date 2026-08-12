@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Globalization;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Media;
 
 internal sealed record EncoderChoice(string Name, HardwareEncoder Hardware)
 {
@@ -32,7 +32,7 @@ internal static class Encoders
         return Software(codec);
     }
 
-    public static IReadOnlyList<HardwareEncoder> AvailableHardware() => HardwareSupport.Usable();
+    public static IReadOnlyList<HardwareEncoder> AvailableHardware() => Accelaration.Usable();
 
     public static EncoderChoice ForContainer(string extension, VideoSettings settings) =>
         extension switch
@@ -45,7 +45,7 @@ internal static class Encoders
     public static EncoderChoice Preferred(VideoCodecChoice codec, HardwareEncoder hardware)
     {
         if (hardware != HardwareEncoder.None && !_hardwareUnusable &&
-            !HardwareSupport.KnownUnusable(hardware))
+            !Accelaration.KnownUnusable(hardware))
         {
             var accelerated = HardwareName(codec, hardware);
             if (accelerated is not null && Has(accelerated))
@@ -202,7 +202,7 @@ internal static class Encoders
             info.ArgumentList.Add("-hide_banner");
             info.ArgumentList.Add("-encoders");
 
-            using var process = Process.Start(info);
+            using var process = System.Diagnostics.Process.Start(info);
             if (process is null) return names;
 
             var output = process.StandardOutput.ReadToEnd();

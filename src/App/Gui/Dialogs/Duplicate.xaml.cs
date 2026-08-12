@@ -1,8 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Windows;
-using Optimizer.Main;
 
-namespace Optimizer.Gui;
+namespace Optimizer.Gui.Dialogs;
 
 public sealed record DuplicateRow(string Note, string Text, bool IsHeader, bool IsRemoving);
 

@@ -1,7 +1,7 @@
 using System.Text;
 using System.Windows;
-using Optimizer.Gui;
-using Optimizer.Main;
+
+using Optimizer.Main.Process;
 
 namespace Optimizer;
 
@@ -15,7 +15,7 @@ public partial class App : Application
 
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-        var settings = Settings.Current;
+        var settings = Optimizer.Main.Config.Settings.Current;
         Loc.Use(settings.General.Language);
         Theme.Apply(this, settings.General.Theme);
         AppIcon.Register();
@@ -36,11 +36,11 @@ public partial class App : Application
         {
             if (args.Length == 0)
             {
-                SettingsWindow.Open();
+                Gui.Pages.SettingsGui.Open();
                 return;
             }
 
-            var request = TaskRequest.Parse(args);
+            var request = Request.Parse(args);
             if (request is null)
             {
                 Report.Error(Loc.F("msg.unknownCommand", string.Join(' ', args)));
@@ -48,7 +48,7 @@ public partial class App : Application
                 return;
             }
 
-            await TaskRunner.RunAsync(request);
+            await Runner.RunAsync(request);
         }
         catch (Exception ex)
         {

@@ -1,12 +1,11 @@
 using System.Windows;
 using System.Windows.Controls;
-using Optimizer.Main;
 
-namespace Optimizer.Gui;
+namespace Optimizer.Gui.Pages;
 
-public partial class OcrPage : UserControl, ISettingsPage
+public partial class Ocr : UserControl, ISettingsPage
 {
-    public OcrPage()
+    public Ocr()
     {
         InitializeComponent();
 

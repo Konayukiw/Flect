@@ -1,15 +1,15 @@
 using System.Text;
 using System.Windows;
 using ImageMagick;
-using Optimizer.Main;
-using Optimizer.Gui;
 using Windows.Graphics.Imaging;
 using Windows.Media.Ocr;
 using Windows.Storage.Streams;
 
-namespace Optimizer.Tasks;
+using Optimizer.Main.Process;
 
-internal sealed class ImageOcr(TaskRequest request) : BatchTask(request)
+namespace Optimizer.Tasks.Ocr;
+
+internal sealed class ImageOcr(Request request) : BatchTask(request)
 {
     private const uint ComfortableEdge = 1600;
 

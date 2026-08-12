@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Media;
 
 internal static class Ffmpeg
 {

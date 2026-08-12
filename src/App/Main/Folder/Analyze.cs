@@ -1,4 +1,4 @@
-namespace Optimizer.Main;
+namespace Optimizer.Main.Folder;
 
 internal sealed record TypeShare(string Extension, int Count, long Bytes);
 

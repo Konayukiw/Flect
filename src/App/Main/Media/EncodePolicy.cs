@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Numerics;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Media;
 
 internal static class EncodePolicy
 {
@@ -14,7 +14,7 @@ internal static class EncodePolicy
         int usable = Environment.ProcessorCount;
         try
         {
-            ulong mask = (ulong)(long)Process.GetCurrentProcess().ProcessorAffinity;
+            ulong mask = (ulong)(long)System.Diagnostics.Process.GetCurrentProcess().ProcessorAffinity;
             if (mask != 0) usable = Math.Min(usable, BitOperations.PopCount(mask));
         }
         catch (Exception)

@@ -1,13 +1,12 @@
 using System.Windows.Controls;
-using Optimizer.Main;
 
-namespace Optimizer.Gui;
+namespace Optimizer.Gui.Pages;
 
-public partial class VideoPage : UserControl, ISettingsPage
+public partial class Video : UserControl, ISettingsPage
 {
     private HardwareEncoder _hardware = HardwareEncoder.None;
 
-    public VideoPage()
+    public Video()
     {
         InitializeComponent();
 

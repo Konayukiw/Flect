@@ -1,9 +1,8 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using Optimizer.Main;
 
-namespace Optimizer.Gui;
+namespace Optimizer.Gui.Dialogs;
 
 internal sealed record TrimRange(double StartSeconds, double EndSeconds)
 {

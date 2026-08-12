@@ -1,18 +1,17 @@
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using Optimizer.Main;
 using SkiaSharp;
 
-namespace Optimizer.Gui;
+namespace Optimizer.Gui.Dialogs;
 
-public partial class PdfPreview : Window
+public partial class PdfPreviewWindow : Window
 {
     private readonly string _path;
     private readonly int _pageCount;
     private int _page;
 
-    public PdfPreview(string path)
+    public PdfPreviewWindow(string path)
     {
         InitializeComponent();
         _path = path;

@@ -1,4 +1,4 @@
-namespace Optimizer.Main;
+namespace Optimizer.Main.Folder;
 
 internal enum DuplicateMode { KeepOldest, KeepNewest, DeleteAll }
 

@@ -1,12 +1,12 @@
 using System.Text;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Process;
 
-internal sealed class TaskRequest
+internal sealed class Request
 {
     private readonly Dictionary<string, string> _parameters;
 
-    private TaskRequest(string domain, string action, Dictionary<string, string> parameters,
+    private Request(string domain, string action, Dictionary<string, string> parameters,
                        IReadOnlyList<string> paths)
     {
         Domain = domain;
@@ -23,7 +23,7 @@ internal sealed class TaskRequest
 
     public string? this[string key] => _parameters.GetValueOrDefault(key);
 
-    public static TaskRequest? Parse(string[] args)
+    public static Request? Parse(string[] args)
     {
         string? verb = null;
         string? input = null;
@@ -56,7 +56,7 @@ internal sealed class TaskRequest
             }
         }
 
-        return new TaskRequest(name[0], name[1], parameters, paths);
+        return new Request(name[0], name[1], parameters, paths);
     }
 
     private static List<string> ReadSelection(string listFile)

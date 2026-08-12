@@ -1,4 +1,4 @@
-namespace Optimizer.Main;
+namespace Optimizer.Main.Process;
 
 internal sealed record MenuEntry(string Id, string LabelKey, string Label,
                                  IReadOnlyList<MenuEntry> Children)

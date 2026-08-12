@@ -1,10 +1,9 @@
 using ImageMagick;
-using Optimizer.Main;
-using Optimizer.Gui;
+using Optimizer.Main.Process;
 
-namespace Optimizer.Tasks;
+namespace Optimizer.Tasks.Image;
 
-internal abstract class ImageTask(TaskRequest request) : BatchTask(request)
+internal abstract class ImageTask(Request request) : BatchTask(request)
 {
     protected static ImageSettings Preferences => Settings.Current.Image;
 
@@ -42,7 +41,7 @@ internal abstract class ImageTask(TaskRequest request) : BatchTask(request)
     };
 }
 
-internal sealed class ImageResize(TaskRequest request) : ImageTask(request)
+internal sealed class ImageResize(Request request) : ImageTask(request)
 {
     private PixelTarget? _pixels;
     private double _percent = 50;
@@ -82,7 +81,7 @@ internal sealed class ImageResize(TaskRequest request) : ImageTask(request)
     }
 }
 
-internal sealed class ImageRotate(TaskRequest request) : ImageTask(request)
+internal sealed class ImageRotate(Request request) : ImageTask(request)
 {
     private double _degrees = 90;
 
@@ -104,7 +103,7 @@ internal sealed class ImageRotate(TaskRequest request) : ImageTask(request)
     }
 }
 
-internal sealed class ImageConvert(TaskRequest request) : ImageTask(request)
+internal sealed class ImageConvert(Request request) : ImageTask(request)
 {
     private const uint IconMaxEdge = 256;
 
@@ -143,7 +142,7 @@ internal sealed class ImageConvert(TaskRequest request) : ImageTask(request)
     }
 }
 
-internal sealed class ImageStripMetadata(TaskRequest request) : ImageTask(request)
+internal sealed class ImageStripMetadata(Request request) : ImageTask(request)
 {
     public override string Title => Loc.T("menu.image.strip");
     protected override string Suffix => "_clean";
@@ -194,7 +193,7 @@ internal sealed class ImageStripMetadata(TaskRequest request) : ImageTask(reques
     }
 }
 
-internal sealed class ImageChromaKey(TaskRequest request) : ImageTask(request)
+internal sealed class ImageChromaKey(Request request) : ImageTask(request)
 {
     public override string Title => Loc.T("menu.image.chromakey");
 
@@ -213,7 +212,7 @@ internal sealed class ImageChromaKey(TaskRequest request) : ImageTask(request)
     }
 }
 
-internal sealed class ImageCompress(TaskRequest request) : BatchTask(request)
+internal sealed class ImageCompress(Request request) : BatchTask(request)
 {
     private const int MaxDownscaleRounds = 8;
     private const double DownscaleFactor = 0.8;

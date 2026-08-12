@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using Microsoft.Win32;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Config;
 
 internal static class Theme
 {

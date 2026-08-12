@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Optimizer.Main;
+namespace Optimizer.Main.Config;
 
 internal static class Store
 {
