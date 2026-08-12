@@ -55,6 +55,13 @@
     <Resource Include="Assets\flect.ico" />
   </ItemGroup>
 
+  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)Assets\Fonts\Inter.ttf')">
+    <Resource Include="Assets\Fonts\Inter.ttf" />
+  </ItemGroup>
+  <ItemGroup Condition="Exists('$(MSBuildThisFileDirectory)Assets\Fonts\Komorebi.ttf')">
+    <Resource Include="Assets\Fonts\Komorebi.ttf" />
+  </ItemGroup>
+
   <Target Name="WarnMissingAppIcon" BeforeTargets="BeforeBuild"
           Condition="!Exists('$(MSBuildThisFileDirectory)Assets\flect.ico')">
     <Warning Text="Assets\flect.ico is missing - building without an application icon." />

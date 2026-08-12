@@ -5,7 +5,7 @@
 You don't have to search for converter on the browser or compress using Video Editor.
 
 <p align="center">
-  <img src="src/App/Assets/Introduction.gif" alt="Example for conversion" width="640">
+  <img src="src/App/Assets/Introduction/Introduction.gif" alt="Example for conversion" width="640">
 </p>
 
 ## Installation

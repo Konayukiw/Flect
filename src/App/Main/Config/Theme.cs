@@ -19,6 +19,17 @@ internal static class Theme
         ("Brush.Danger", "#FFC42B1C", "#FFFF6B5E"),
         ("Brush.Success", "#FF0F7B0F", "#FF6CCB6C"),
         ("Brush.Hover", "#FFEAEAEA", "#FF3A3A3A"),
+        ("Brush.HoverSoft", "#FFE7F0FA", "#FF2B3947"),
+        ("Brush.Pressed", "#FFD6D6D6", "#FF343434"),
+        ("Brush.SurfaceLifted", "#FFFFFFFF", "#FF333333"),
+        ("Brush.PrimaryHover", "#FF0A568F", "#FF6FBCF0"),
+        ("Brush.PrimaryPressed", "#FF084672", "#FF5AA8DC"),
+    ];
+
+    // Color resources (not brushes) for use with transparent effects.
+    private static readonly (string Key, string Light, string Dark)[] ShadowColors =
+    [
+        ("Color.Shadow", "#33000000", "#55000000"),
     ];
 
     public static bool IsDark { get; private set; }
@@ -39,6 +50,10 @@ internal static class Theme
         foreach (var (key, light, dark) in Palette)
         {
             resources[key] = Fill(IsDark ? dark : light);
+        }
+        foreach (var (key, light, dark) in ShadowColors)
+        {
+            resources[key] = (Color)ColorConverter.ConvertFromString(IsDark ? dark : light);
         }
     }
 

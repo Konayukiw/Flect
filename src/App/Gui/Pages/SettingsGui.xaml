@@ -16,7 +16,7 @@
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="RadioButton">
-            <Border x:Name="Row" CornerRadius="5" Background="Transparent" Padding="10,8">
+            <Border x:Name="Row" CornerRadius="{StaticResource Radius.Medium}" Background="Transparent" Padding="10,8">
               <Grid>
                 <Border x:Name="Marker" Width="3" HorizontalAlignment="Left" CornerRadius="2"
                         Margin="-4,2,0,2" Opacity="0"
@@ -66,7 +66,8 @@
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0" Margin="18,20,18,16">
-          <TextBlock Text="Flect" FontSize="19" FontWeight="SemiBold" />
+          <TextBlock Text="Flect" FontFamily="{DynamicResource Font.Display}"
+                     FontSize="22" FontWeight="SemiBold" />
           <TextBlock x:Name="SubtitleText" Style="{StaticResource Text.Muted}" Margin="0,2,0,0" />
         </StackPanel>
 
@@ -99,6 +100,7 @@
       </Grid.RowDefinitions>
 
       <TextBlock x:Name="PageTitle" Grid.Row="0" Margin="26,22,26,12"
+                 FontFamily="{DynamicResource Font.Display}"
                  FontSize="20" FontWeight="SemiBold" />
 
       <ScrollViewer x:Name="Scroller" Grid.Row="1" VerticalScrollBarVisibility="Auto"

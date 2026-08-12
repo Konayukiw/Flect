@@ -18,9 +18,30 @@
       <SolidColorBrush x:Key="Brush.Danger"     Color="#FFC42B1C" />
       <SolidColorBrush x:Key="Brush.Success"    Color="#FF0F7B0F" />
       <SolidColorBrush x:Key="Brush.Hover"      Color="#FFEAEAEA" />
+      <SolidColorBrush x:Key="Brush.HoverSoft"  Color="#FFE7F0FA" />
+      <SolidColorBrush x:Key="Brush.Pressed"    Color="#FFD6D6D6" />
+      <SolidColorBrush x:Key="Brush.SurfaceLifted" Color="#FFFFFFFF" />
+      <SolidColorBrush x:Key="Brush.PrimaryHover"  Color="#FF0A568F" />
+      <SolidColorBrush x:Key="Brush.PrimaryPressed" Color="#FF084672" />
 
-      <FontFamily x:Key="Font.Ui">Segoe UI Variable Text, Segoe UI</FontFamily>
+      <Color x:Key="Color.Shadow">#33000000</Color>
+
+      <!-- ===== Fonts (embedded with system fallback) ===== -->
+      <FontFamily x:Key="Font.Ui">pack://application:,,,/Assets/Fonts/#komorebi gothic P, Yu Gothic UI, Segoe UI Variable Text, Segoe UI</FontFamily>
+      <FontFamily x:Key="Font.Display">pack://application:,,,/Assets/Fonts/#Inter Display, Segoe UI Variable Display, Segoe UI</FontFamily>
       <FontFamily x:Key="Font.Mono">Cascadia Mono, Consolas, Courier New</FontFamily>
+
+      <!-- ===== Corner radius tokens ===== -->
+      <CornerRadius x:Key="Radius.Small">4</CornerRadius>
+      <CornerRadius x:Key="Radius.Medium">6</CornerRadius>
+      <CornerRadius x:Key="Radius.Large">10</CornerRadius>
+
+      <!-- ===== Spacing tokens ===== -->
+      <Thickness x:Key="Space.XXS">4</Thickness>
+      <Thickness x:Key="Space.XS">8</Thickness>
+      <Thickness x:Key="Space.SM">12</Thickness>
+      <Thickness x:Key="Space.MD">16</Thickness>
+      <Thickness x:Key="Space.LG">24</Thickness>
 
       <Style TargetType="Window">
         <Setter Property="Background" Value="{DynamicResource Brush.Window}" />
@@ -44,7 +65,7 @@
 
       <Style x:Key="Text.Heading" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
-        <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}" />
+        <Setter Property="FontFamily" Value="{DynamicResource Font.Display}" />
         <Setter Property="FontSize" Value="15" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Margin" Value="0,0,0,6" />
@@ -62,16 +83,63 @@
         <Setter Property="Template">
           <Setter.Value>
             <ControlTemplate TargetType="Button">
-              <Border x:Name="Chrome" CornerRadius="5"
+              <Border x:Name="Chrome" CornerRadius="{StaticResource Radius.Medium}"
                       Background="{TemplateBinding Background}"
                       BorderBrush="{TemplateBinding BorderBrush}"
-                      BorderThickness="1">
+                      BorderThickness="1"
+                      RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                  <ScaleTransform x:Name="BtnScale" ScaleX="1" ScaleY="1" />
+                </Border.RenderTransform>
                 <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
                                   Margin="{TemplateBinding Padding}" />
               </Border>
               <ControlTemplate.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
                   <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Brush.Hover}" />
+                  <Trigger.EnterActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleX"
+                                         To="1.02" Duration="0:0:0.09" />
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleY"
+                                         To="1.02" Duration="0:0:0.09" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.EnterActions>
+                  <Trigger.ExitActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleX"
+                                         To="1" Duration="0:0:0.09" />
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleY"
+                                         To="1" Duration="0:0:0.09" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.ExitActions>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                  <Setter TargetName="Chrome" Property="Background" Value="{DynamicResource Brush.Pressed}" />
+                  <Trigger.EnterActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleX"
+                                         To="0.97" Duration="0:0:0.06" />
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleY"
+                                         To="0.97" Duration="0:0:0.06" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.EnterActions>
+                  <Trigger.ExitActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleX"
+                                         To="1" Duration="0:0:0.06" />
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleY"
+                                         To="1" Duration="0:0:0.06" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.ExitActions>
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="False">
                   <Setter Property="Opacity" Value="0.45" />
@@ -87,6 +155,77 @@
         <Setter Property="Background" Value="{DynamicResource Brush.Accent}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.AccentText}" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="Button">
+              <Border x:Name="Chrome" CornerRadius="{StaticResource Radius.Medium}"
+                      Background="{TemplateBinding Background}"
+                      BorderBrush="{TemplateBinding BorderBrush}"
+                      BorderThickness="1"
+                      RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                  <ScaleTransform x:Name="BtnScale" ScaleX="1" ScaleY="1" />
+                </Border.RenderTransform>
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                  Margin="{TemplateBinding Padding}" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Setter TargetName="Chrome" Property="Background"
+                          Value="{DynamicResource Brush.PrimaryHover}" />
+                  <Trigger.EnterActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleX"
+                                         To="1.02" Duration="0:0:0.09" />
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleY"
+                                         To="1.02" Duration="0:0:0.09" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.EnterActions>
+                  <Trigger.ExitActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleX"
+                                         To="1" Duration="0:0:0.09" />
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleY"
+                                         To="1" Duration="0:0:0.09" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.ExitActions>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                  <Setter TargetName="Chrome" Property="Background"
+                          Value="{DynamicResource Brush.PrimaryPressed}" />
+                  <Trigger.EnterActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleX"
+                                         To="0.97" Duration="0:0:0.06" />
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleY"
+                                         To="0.97" Duration="0:0:0.06" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.EnterActions>
+                  <Trigger.ExitActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleX"
+                                         To="1" Duration="0:0:0.06" />
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleY"
+                                         To="1" Duration="0:0:0.06" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.ExitActions>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                  <Setter Property="Opacity" Value="0.45" />
+                  <Setter Property="Cursor" Value="Arrow" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
       </Style>
 
       <Style TargetType="TextBox">
@@ -111,8 +250,34 @@
         <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="6" />
-        <Setter Property="Padding" Value="12" />
+        <Setter Property="CornerRadius" Value="{StaticResource Radius.Medium}" />
+        <Setter Property="Padding" Value="{StaticResource Space.SM}" />
+        <Setter Property="Effect">
+          <Setter.Value>
+            <DropShadowEffect BlurRadius="12" ShadowDepth="1" Direction="270"
+                              Opacity="0" Color="{DynamicResource Color.Shadow}" />
+          </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+          <Trigger Property="IsMouseOver" Value="True">
+            <Trigger.EnterActions>
+              <BeginStoryboard>
+                <Storyboard>
+                  <DoubleAnimation Storyboard.TargetProperty="(UIElement.Effect).Opacity"
+                                   To="0.20" Duration="0:0:0.15" />
+                </Storyboard>
+              </BeginStoryboard>
+            </Trigger.EnterActions>
+            <Trigger.ExitActions>
+              <BeginStoryboard>
+                <Storyboard>
+                  <DoubleAnimation Storyboard.TargetProperty="(UIElement.Effect).Opacity"
+                                   To="0" Duration="0:0:0.15" />
+                </Storyboard>
+              </BeginStoryboard>
+            </Trigger.ExitActions>
+          </Trigger>
+        </Style.Triggers>
       </Style>
 
     </ResourceDictionary>
