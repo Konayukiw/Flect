@@ -1,6 +1,9 @@
 using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Animation;
+
+using Optimizer.Gui;
 
 namespace Optimizer.Gui.Pages;
 
@@ -16,10 +19,12 @@ public partial class SettingsGui : Window
 
     private Settings _settings;
     private int _index;
+    private bool _transitioning;
 
     private SettingsGui(int page)
     {
         InitializeComponent();
+        Backdrop.Apply(this);
 
         _settings = Settings.Load();
         _pages = [PageGeneral, PageFolder, PageVideo, PageImage, PageText, PageOcr];
@@ -63,6 +68,37 @@ public partial class SettingsGui : Window
         Tab(_index).IsChecked = true;
         PageTitle.Text = Loc.T(Titles[_index]);
         Scroller.ScrollToTop();
+        AnimatePageIn();
+    }
+
+    private void AnimatePageIn()
+    {
+        if (_transitioning) return;
+
+        _transitioning = true;
+        var page = _pages[_index];
+
+        page.RenderTransform = new System.Windows.Media.TranslateTransform(8, 0);
+        page.Opacity = 0;
+
+        var slide = new DoubleAnimation
+        {
+            From = 8,
+            To = 0,
+            Duration = TimeSpan.FromMilliseconds(180),
+            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut },
+        };
+        slide.Completed += (_, _) => _transitioning = false;
+        page.RenderTransform.BeginAnimation(
+            System.Windows.Media.TranslateTransform.XProperty, slide);
+
+        page.BeginAnimation(UIElement.OpacityProperty,
+            new DoubleAnimation
+            {
+                From = 0,
+                To = 1,
+                Duration = TimeSpan.FromMilliseconds(180),
+            });
     }
 
     private RadioButton Tab(int page) => page switch
@@ -139,4 +175,16 @@ public partial class SettingsGui : Window
         MessageBox.Show(replacement, Loc.T("settings.reset.done"), Branding.Name,
                         MessageBoxButton.OK, MessageBoxImage.Information);
     }
+
+    private void OnMinimizeClick(object sender, RoutedEventArgs e) =>
+        WindowState = WindowState.Minimized;
+
+    private void OnMaximizeClick(object sender, RoutedEventArgs e)
+    {
+        WindowState = WindowState == WindowState.Maximized
+            ? WindowState.Normal
+            : WindowState.Maximized;
+    }
+
+    private void OnCloseClick(object sender, RoutedEventArgs e) => Close();
 }

@@ -3,26 +3,65 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:loc="clr-namespace:Optimizer.Main.Localization"
         xmlns:pages="clr-namespace:Optimizer.Gui.Pages"
-        Width="940" Height="700" MinWidth="820" MinHeight="560"
-        WindowStartupLocation="CenterScreen" ShowInTaskbar="True">
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        Width="980" Height="720" MinWidth="840" MinHeight="580"
+        WindowStartupLocation="CenterScreen" ShowInTaskbar="True"
+        WindowStyle="None" Background="Transparent"
+        ResizeMode="CanResizeWithGrip">
+
+  <shell:WindowChrome.WindowChrome>
+    <shell:WindowChrome CaptionHeight="36" ResizeBorderThickness="6"
+                        GlassFrameThickness="1" UseAeroCaptionButtons="False" />
+  </shell:WindowChrome.WindowChrome>
 
   <Window.Resources>
+
+    <Geometry x:Key="Icon.General">M 2 4.5 H 8.5 M 2 8 H 4.5 M 2 11.5 H 9.5</Geometry>
+    <Geometry x:Key="Icon.GeneralFill">M 8.5 4.5 A 2 2 0 1 0 12.5 4.5 A 2 2 0 1 0 8.5 4.5 Z M 4.5 8 A 2 2 0 1 0 8.5 8 A 2 2 0 1 0 4.5 8 Z M 9.5 11.5 A 2 2 0 1 0 13.5 11.5 A 2 2 0 1 0 9.5 11.5 Z</Geometry>
+
+    <Geometry x:Key="Icon.Folder">M 2.5 4.3 C 2.5 3.63 3.05 3.1 3.72 3.1 H 6.3 C 6.63 3.1 6.95 3.23 7.18 3.46 L 7.8 4.08 H 12.28 C 12.95 4.08 13.5 4.63 13.5 5.3 V 11.7 C 13.5 12.37 12.95 12.9 12.28 12.9 H 3.72 C 3.05 12.9 2.5 12.37 2.5 11.7 Z</Geometry>
+
+    <Geometry x:Key="Icon.Video">M 2 4.6 C 2 3.97 2.5 3.5 3.15 3.5 H 12.85 C 13.5 3.5 14 3.97 14 4.6 V 11.4 C 14 12.03 13.5 12.5 12.85 12.5 H 3.15 C 2.5 12.5 2 12.03 2 11.4 Z</Geometry>
+    <Geometry x:Key="Icon.VideoFill">M 6.6 6.2 L 9.9 8 L 6.6 9.8 Z</Geometry>
+
+    <Geometry x:Key="Icon.Image">M 2.5 3.8 C 2.5 3.08 3.08 2.5 3.8 2.5 H 12.2 C 12.92 2.5 13.5 3.08 13.5 3.8 V 12.2 C 13.5 12.92 12.92 13.5 12.2 13.5 H 3.8 C 3.08 13.5 2.5 12.92 2.5 12.2 Z M 3.6 11.2 L 6.8 7.2 L 9.4 10.1 L 12.4 6.6</Geometry>
+    <Geometry x:Key="Icon.ImageFill">M 9.7 4.9 A 1.1 1.1 0 1 0 11.9 4.9 A 1.1 1.1 0 1 0 9.7 4.9 Z</Geometry>
+
+    <Geometry x:Key="Icon.Text">M 3.72 2.6 H 9.2 C 9.53 2.6 9.85 2.73 10.08 2.96 L 13.04 5.92 C 13.27 6.15 13.4 6.47 13.4 6.8 V 12.28 C 13.4 12.95 12.85 13.5 12.18 13.5 H 3.72 C 3.05 13.5 2.5 12.95 2.5 12.28 V 3.82 C 2.5 3.15 3.05 2.6 3.72 2.6 Z M 9.2 2.6 V 5.92 H 13.4 M 5 8.9 H 11 M 5 10.9 H 8.8</Geometry>
+
+    <Geometry x:Key="Icon.Ocr">M 3 4.2 H 7.6 M 3 6.5 H 5.9 M 6.7 10 A 3.3 3.3 0 1 0 13.3 10 A 3.3 3.3 0 1 0 6.7 10 Z M 12.4 12.4 L 14.6 14.6</Geometry>
+
+    <Style x:Key="NavIcon" TargetType="Path">
+      <Setter Property="Stretch" Value="Uniform" />
+      <Setter Property="Width" Value="16" />
+      <Setter Property="Height" Value="16" />
+      <Setter Property="Stroke" Value="{DynamicResource Brush.TextMuted}" />
+      <Setter Property="StrokeThickness" Value="1.5" />
+      <Setter Property="StrokeStartLineCap" Value="Round" />
+      <Setter Property="StrokeEndLineCap" Value="Round" />
+      <Setter Property="StrokeLineJoin" Value="Round" />
+      <Setter Property="Fill" Value="{DynamicResource Brush.TextMuted}" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding IsChecked, RelativeSource={RelativeSource AncestorType={x:Type RadioButton}}}"
+                     Value="True">
+          <Setter Property="Stroke" Value="{DynamicResource Brush.Accent}" />
+          <Setter Property="Fill" Value="{DynamicResource Brush.Accent}" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+
     <Style x:Key="NavItem" TargetType="RadioButton">
       <Setter Property="Cursor" Value="Hand" />
       <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
       <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}" />
       <Setter Property="FontSize" Value="13" />
-      <Setter Property="Margin" Value="8,1" />
+      <Setter Property="Margin" Value="0,1" />
       <Setter Property="Template">
         <Setter.Value>
           <ControlTemplate TargetType="RadioButton">
-            <Border x:Name="Row" CornerRadius="{StaticResource Radius.Medium}" Background="Transparent" Padding="10,8">
-              <Grid>
-                <Border x:Name="Marker" Width="3" HorizontalAlignment="Left" CornerRadius="2"
-                        Margin="-4,2,0,2" Opacity="0"
-                        Background="{DynamicResource Brush.Accent}" />
-                <ContentPresenter Margin="6,0,0,0" VerticalAlignment="Center" />
-              </Grid>
+            <Border x:Name="Row" CornerRadius="{StaticResource Radius.Medium}"
+                    Background="Transparent" Padding="12,9">
+              <ContentPresenter VerticalAlignment="Center" />
             </Border>
             <ControlTemplate.Triggers>
               <Trigger Property="IsMouseOver" Value="True">
@@ -31,8 +70,8 @@
               </Trigger>
               <Trigger Property="IsChecked" Value="True">
                 <Setter TargetName="Row" Property="Background"
-                        Value="{DynamicResource Brush.Hover}" />
-                <Setter TargetName="Marker" Property="Opacity" Value="1" />
+                        Value="{DynamicResource Brush.HoverSoft}" />
+                <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
                 <Setter Property="FontWeight" Value="SemiBold" />
               </Trigger>
             </ControlTemplate.Triggers>
@@ -45,86 +84,235 @@
            BasedOn="{StaticResource {x:Type Button}}">
       <Setter Property="Foreground" Value="{DynamicResource Brush.Danger}" />
       <Setter Property="MinWidth" Value="0" />
-      <Setter Property="Padding" Value="10,6" />
+      <Setter Property="Padding" Value="12,7" />
       <Setter Property="FontSize" Value="12" />
+    </Style>
+
+    <Style x:Key="TitleBarButton" TargetType="Button">
+      <Setter Property="Width" Value="46" />
+      <Setter Property="Height" Value="36" />
+      <Setter Property="Foreground" Value="{DynamicResource Brush.TextMuted}" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="MinWidth" Value="0" />
+      <Setter Property="FontFamily" Value="{DynamicResource Font.Display}" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="shell:WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Bg" Background="{TemplateBinding Background}">
+              <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource Brush.Hover}" />
+              </Trigger>
+              <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="Bg" Property="Background" Value="{DynamicResource Brush.Pressed}" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style x:Key="TitleBarCloseButton" TargetType="Button" BasedOn="{StaticResource TitleBarButton}">
+      <Setter Property="Foreground" Value="{DynamicResource Brush.TextMuted}" />
+      <Style.Triggers>
+        <Trigger Property="IsMouseOver" Value="True">
+          <Setter Property="Foreground" Value="White" />
+          <Setter Property="Background" Value="#FFE26223" />
+        </Trigger>
+        <Trigger Property="IsPressed" Value="True">
+          <Setter Property="Background" Value="#FFBB4E1E" />
+        </Trigger>
+      </Style.Triggers>
     </Style>
   </Window.Resources>
 
   <Grid>
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition Width="212" />
-      <ColumnDefinition Width="*" />
-    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
 
-    <Border Grid.Column="0" Background="{DynamicResource Brush.Surface}"
-            BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
+    <Border Grid.Row="0" Height="36"
+            Background="{DynamicResource Brush.MicaChrome}"
+            BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,0,1">
+
       <Grid>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="14,0,0,0">
+          <Border Width="20" Height="20" CornerRadius="6" VerticalAlignment="Center">
+            <Border.Background>
+              <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#FF4F46E5" Offset="0" />
+                <GradientStop Color="#FF8B5CF6" Offset="1" />
+              </LinearGradientBrush>
+            </Border.Background>
+            <TextBlock Text="F" Foreground="White" FontFamily="{DynamicResource Font.Display}"
+                       FontSize="12" FontWeight="SemiBold"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <TextBlock Text="Flect" Margin="9,0,0,0" VerticalAlignment="Center"
+                     FontFamily="{DynamicResource Font.Display}" FontSize="12"
+                     FontWeight="SemiBold" Foreground="{DynamicResource Brush.Text}" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+          <Button x:Name="MinimizeButton" Style="{StaticResource TitleBarButton}"
+                  Click="OnMinimizeClick" Content="&#xE921;" />
+          <Button x:Name="MaximizeButton" Style="{StaticResource TitleBarButton}"
+                  Click="OnMaximizeClick" Content="&#xE922;" />
+          <Button x:Name="CloseButton" Style="{StaticResource TitleBarCloseButton}"
+                  Click="OnCloseClick" Content="&#xE8BB;" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="224" />
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <Border Grid.Column="0" Background="{DynamicResource Brush.MicaChrome}"
+              BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,0,1,0">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+
+          <StackPanel Grid.Row="0" Margin="18,20,18,18" Orientation="Horizontal">
+            <Border Width="36" Height="36" CornerRadius="10" VerticalAlignment="Center">
+              <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                  <GradientStop Color="#FF4F46E5" Offset="0" />
+                  <GradientStop Color="#FF8B5CF6" Offset="1" />
+                </LinearGradientBrush>
+              </Border.Background>
+              <TextBlock Text="F" Foreground="White" FontFamily="{DynamicResource Font.Display}"
+                         FontSize="19" FontWeight="SemiBold"
+                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Border>
+            <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+              <TextBlock Text="Flect" FontFamily="{DynamicResource Font.Display}"
+                         FontSize="17" FontWeight="SemiBold" />
+              <TextBlock x:Name="SubtitleText" Style="{StaticResource Text.Muted}"
+                         FontSize="11" Margin="0,1,0,0" />
+            </StackPanel>
+          </StackPanel>
+
+          <StackPanel Grid.Row="1" Margin="8,0,8,8">
+            <RadioButton x:Name="NavGeneral" Style="{StaticResource NavItem}" IsChecked="True"
+                         Checked="OnNavChanged" Tag="0">
+              <StackPanel Orientation="Horizontal">
+                <Grid Width="16" Height="16" VerticalAlignment="Center">
+                  <Path Data="{StaticResource Icon.General}" Style="{StaticResource NavIcon}" />
+                  <Path Data="{StaticResource Icon.GeneralFill}" Style="{StaticResource NavIcon}" />
+                </Grid>
+                <TextBlock Text="{loc:T settings.nav.general}" Margin="11,0,0,0"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+            </RadioButton>
+            <RadioButton x:Name="NavFolder" Style="{StaticResource NavItem}"
+                         Checked="OnNavChanged" Tag="1">
+              <StackPanel Orientation="Horizontal">
+                <Grid Width="16" Height="16" VerticalAlignment="Center">
+                  <Path Data="{StaticResource Icon.Folder}" Style="{StaticResource NavIcon}" />
+                </Grid>
+                <TextBlock Text="{loc:T settings.nav.folder}" Margin="11,0,0,0"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+            </RadioButton>
+            <RadioButton x:Name="NavVideo" Style="{StaticResource NavItem}"
+                         Checked="OnNavChanged" Tag="2">
+              <StackPanel Orientation="Horizontal">
+                <Grid Width="16" Height="16" VerticalAlignment="Center">
+                  <Path Data="{StaticResource Icon.Video}" Style="{StaticResource NavIcon}" />
+                  <Path Data="{StaticResource Icon.VideoFill}" Style="{StaticResource NavIcon}" />
+                </Grid>
+                <TextBlock Text="{loc:T settings.nav.video}" Margin="11,0,0,0"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+            </RadioButton>
+            <RadioButton x:Name="NavImage" Style="{StaticResource NavItem}"
+                         Checked="OnNavChanged" Tag="3">
+              <StackPanel Orientation="Horizontal">
+                <Grid Width="16" Height="16" VerticalAlignment="Center">
+                  <Path Data="{StaticResource Icon.Image}" Style="{StaticResource NavIcon}" />
+                  <Path Data="{StaticResource Icon.ImageFill}" Style="{StaticResource NavIcon}" />
+                </Grid>
+                <TextBlock Text="{loc:T settings.nav.image}" Margin="11,0,0,0"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+            </RadioButton>
+            <RadioButton x:Name="NavText" Style="{StaticResource NavItem}"
+                         Checked="OnNavChanged" Tag="4">
+              <StackPanel Orientation="Horizontal">
+                <Grid Width="16" Height="16" VerticalAlignment="Center">
+                  <Path Data="{StaticResource Icon.Text}" Style="{StaticResource NavIcon}" />
+                </Grid>
+                <TextBlock Text="{loc:T settings.nav.text}" Margin="11,0,0,0"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+            </RadioButton>
+            <RadioButton x:Name="NavOcr" Style="{StaticResource NavItem}"
+                         Checked="OnNavChanged" Tag="5">
+              <StackPanel Orientation="Horizontal">
+                <Grid Width="16" Height="16" VerticalAlignment="Center">
+                  <Path Data="{StaticResource Icon.Ocr}" Style="{StaticResource NavIcon}" />
+                </Grid>
+                <TextBlock Text="{loc:T settings.nav.ocr}" Margin="11,0,0,0"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+            </RadioButton>
+          </StackPanel>
+
+          <Button Grid.Row="2" Margin="16,0,16,18" HorizontalAlignment="Stretch"
+                  Style="{StaticResource DangerButton}"
+                  Content="{loc:T settings.reset}" Click="OnReset" />
+        </Grid>
+      </Border>
+
+      <Grid Grid.Column="1" Background="{DynamicResource Brush.Window}">
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto" />
           <RowDefinition Height="*" />
           <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Margin="18,20,18,16">
-          <TextBlock Text="Flect" FontFamily="{DynamicResource Font.Display}"
-                     FontSize="22" FontWeight="SemiBold" />
-          <TextBlock x:Name="SubtitleText" Style="{StaticResource Text.Muted}" Margin="0,2,0,0" />
-        </StackPanel>
+        <TextBlock x:Name="PageTitle" Grid.Row="0" Margin="28,24,28,14"
+                   FontFamily="{DynamicResource Font.Display}"
+                   FontSize="20" FontWeight="SemiBold" />
 
-        <StackPanel Grid.Row="1" Margin="0,0,0,8">
-          <RadioButton x:Name="NavGeneral" Style="{StaticResource NavItem}" IsChecked="True"
-                       Content="{loc:T settings.nav.general}" Checked="OnNavChanged" Tag="0" />
-          <RadioButton x:Name="NavFolder" Style="{StaticResource NavItem}"
-                       Content="{loc:T settings.nav.folder}" Checked="OnNavChanged" Tag="1" />
-          <RadioButton x:Name="NavVideo" Style="{StaticResource NavItem}"
-                       Content="{loc:T settings.nav.video}" Checked="OnNavChanged" Tag="2" />
-          <RadioButton x:Name="NavImage" Style="{StaticResource NavItem}"
-                       Content="{loc:T settings.nav.image}" Checked="OnNavChanged" Tag="3" />
-          <RadioButton x:Name="NavText" Style="{StaticResource NavItem}"
-                       Content="{loc:T settings.nav.text}" Checked="OnNavChanged" Tag="4" />
-          <RadioButton x:Name="NavOcr" Style="{StaticResource NavItem}"
-                       Content="{loc:T settings.nav.ocr}" Checked="OnNavChanged" Tag="5" />
-        </StackPanel>
+        <ScrollViewer x:Name="Scroller" Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                      Padding="28,0,24,10">
+          <Grid x:Name="PageHost">
+            <pages:General x:Name="PageGeneral" />
+            <pages:Folder x:Name="PageFolder" Visibility="Collapsed" />
+            <pages:Video x:Name="PageVideo" Visibility="Collapsed" />
+            <pages:Image x:Name="PageImage" Visibility="Collapsed" />
+            <pages:Text x:Name="PageText" Visibility="Collapsed" />
+            <pages:Ocr x:Name="PageOcr" Visibility="Collapsed" />
+          </Grid>
+        </ScrollViewer>
 
-        <Button Grid.Row="2" Margin="16,0,16,18" HorizontalAlignment="Stretch"
-                Style="{StaticResource DangerButton}"
-                Content="{loc:T settings.reset}" Click="OnReset" />
+        <Border Grid.Row="2" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,1,0,0"
+                Background="{DynamicResource Brush.Surface}" Padding="28,12">
+          <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="{loc:T common.cancel}" Click="OnCancel" IsCancel="True" />
+            <Button x:Name="ApplyButton" Content="{loc:T common.apply}" Click="OnApply"
+                    Margin="8,0,0,0" Style="{StaticResource Button.Secondary}" />
+            <Button Content="{loc:T common.ok}" Click="OnAccept" IsDefault="True" Margin="8,0,0,0"
+                    Style="{StaticResource Button.Primary}" />
+          </StackPanel>
+        </Border>
       </Grid>
-    </Border>
-
-    <Grid Grid.Column="1">
-      <Grid.RowDefinitions>
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="*" />
-        <RowDefinition Height="Auto" />
-      </Grid.RowDefinitions>
-
-      <TextBlock x:Name="PageTitle" Grid.Row="0" Margin="26,22,26,12"
-                 FontFamily="{DynamicResource Font.Display}"
-                 FontSize="20" FontWeight="SemiBold" />
-
-      <ScrollViewer x:Name="Scroller" Grid.Row="1" VerticalScrollBarVisibility="Auto"
-                    Padding="26,0,20,10">
-        <Grid x:Name="PageHost">
-          <pages:General x:Name="PageGeneral" />
-          <pages:Folder x:Name="PageFolder" Visibility="Collapsed" />
-          <pages:Video x:Name="PageVideo" Visibility="Collapsed" />
-          <pages:Image x:Name="PageImage" Visibility="Collapsed" />
-          <pages:Text x:Name="PageText" Visibility="Collapsed" />
-          <pages:Ocr x:Name="PageOcr" Visibility="Collapsed" />
-        </Grid>
-      </ScrollViewer>
-
-      <Border Grid.Row="2" BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0,1,0,0"
-              Background="{DynamicResource Brush.Surface}" Padding="26,14">
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-          <Button Content="{loc:T common.cancel}" Click="OnCancel" IsCancel="True" />
-          <Button x:Name="ApplyButton" Content="{loc:T common.apply}" Click="OnApply"
-                  Margin="8,0,0,0" />
-          <Button Content="{loc:T common.ok}" Click="OnAccept" IsDefault="True" Margin="8,0,0,0"
-                  Style="{StaticResource Button.Primary}" />
-        </StackPanel>
-      </Border>
     </Grid>
   </Grid>
 </Window>

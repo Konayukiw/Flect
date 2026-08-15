@@ -83,6 +83,102 @@
               <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
+            <Border x:Name="Track" Grid.Column="0" Width="40" Height="22"
+                    CornerRadius="11" VerticalAlignment="Center"
+                    Background="{DynamicResource Brush.Border}"
+                    BorderBrush="{DynamicResource Brush.Border}" BorderThickness="0">
+              <Border.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                  <BeginStoryboard>
+                    <Storyboard>
+                      <DoubleAnimation Storyboard.TargetProperty="(Border.Opacity)"
+                                       To="0.85" Duration="0:0:0.12" />
+                    </Storyboard>
+                  </BeginStoryboard>
+                </EventTrigger>
+                <EventTrigger RoutedEvent="MouseLeave">
+                  <BeginStoryboard>
+                    <Storyboard>
+                      <DoubleAnimation Storyboard.TargetProperty="(Border.Opacity)"
+                                       To="1" Duration="0:0:0.12" />
+                    </Storyboard>
+                  </BeginStoryboard>
+                </EventTrigger>
+              </Border.Triggers>
+            </Border>
+
+            <Ellipse x:Name="Thumb" Grid.Column="0" Width="16" Height="16"
+                     HorizontalAlignment="Left" Margin="3,0,0,0"
+                     VerticalAlignment="Center" Fill="{DynamicResource Brush.Surface}">
+              <Ellipse.Effect>
+                <DropShadowEffect BlurRadius="3" ShadowDepth="1" Opacity="0.25"
+                                  Color="{DynamicResource Color.Shadow}" />
+              </Ellipse.Effect>
+              <Ellipse.RenderTransform>
+                <TranslateTransform x:Name="ThumbMove" X="0" Y="0" />
+              </Ellipse.RenderTransform>
+            </Ellipse>
+
+            <ContentPresenter Grid.Column="1" Margin="10,0,0,0"
+                              VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                              RecognizesAccessKey="True" />
+          </Grid>
+
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Track" Property="Background" Value="{DynamicResource Brush.Accent}" />
+              <Setter TargetName="Track" Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+              <Trigger.EnterActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="ThumbMove" Storyboard.TargetProperty="X"
+                                     To="19" Duration="0:0:0.16">
+                      <DoubleAnimation.EasingFunction>
+                        <CubicEase EasingMode="EaseOut" />
+                      </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.EnterActions>
+              <Trigger.ExitActions>
+                <BeginStoryboard>
+                  <Storyboard>
+                    <DoubleAnimation Storyboard.TargetName="ThumbMove" Storyboard.TargetProperty="X"
+                                     To="0" Duration="0:0:0.16">
+                      <DoubleAnimation.EasingFunction>
+                        <CubicEase EasingMode="EaseOut" />
+                      </DoubleAnimation.EasingFunction>
+                    </DoubleAnimation>
+                  </Storyboard>
+                </BeginStoryboard>
+              </Trigger.ExitActions>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.45" />
+              <Setter Property="Cursor" Value="Arrow" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style x:Key="CheckBox.Box" TargetType="CheckBox">
+    <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+    <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Margin" Value="0,3" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="CheckBox">
+          <Grid Background="Transparent">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
             <Border x:Name="Box" Grid.Column="0" Width="17" Height="17"
                     CornerRadius="{DynamicResource Radius.Small}"
                     VerticalAlignment="Top" Margin="0,1,0,0"
@@ -284,6 +380,8 @@
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Chrome" Property="Background"
+                      Value="{DynamicResource Brush.Hover}" />
               <Setter TargetName="Chrome" Property="BorderBrush"
                       Value="{DynamicResource Brush.Accent}" />
             </Trigger>
@@ -308,7 +406,16 @@
         <ControlTemplate TargetType="ComboBoxItem">
           <Border x:Name="Row" Background="Transparent" CornerRadius="{DynamicResource Radius.Small}"
                   Margin="3,1" Padding="{TemplateBinding Padding}">
-            <ContentPresenter />
+            <ContentPresenter TextElement.Foreground="{TemplateBinding Foreground}">
+              <ContentPresenter.Resources>
+                <Style TargetType="TextBlock">
+                  <Setter Property="Foreground"
+                          Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ComboBoxItem}}" />
+                  <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}" />
+                  <Setter Property="FontSize" Value="13" />
+                </Style>
+              </ContentPresenter.Resources>
+            </ContentPresenter>
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsHighlighted" Value="True">
@@ -356,7 +463,7 @@
                       Background="{DynamicResource Brush.Surface}"
                       BorderBrush="{DynamicResource Brush.Border}" BorderThickness="1">
                 <Border.Effect>
-                  <DropShadowEffect BlurRadius="12" ShadowDepth="2" Opacity="0.22" Color="Black" />
+                  <DropShadowEffect BlurRadius="14" ShadowDepth="2" Opacity="0.18" Color="Black" />
                 </Border.Effect>
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                   <ItemsPresenter />
@@ -384,19 +491,24 @@
             <Grid.RenderTransform>
               <ScaleTransform x:Name="KnobScale" ScaleX="1" ScaleY="1" />
             </Grid.RenderTransform>
-            <Ellipse x:Name="Knob" Fill="{DynamicResource Brush.Accent}" />
-            <Ellipse Width="6" Height="6" Fill="{DynamicResource Brush.AccentText}" />
+            <Ellipse x:Name="Knob" Fill="{DynamicResource Brush.Surface}">
+              <Ellipse.Effect>
+                <DropShadowEffect BlurRadius="4" ShadowDepth="1" Opacity="0.25"
+                                  Color="{DynamicResource Color.Shadow}" />
+              </Ellipse.Effect>
+            </Ellipse>
+            <Ellipse Width="8" Height="8" Fill="{DynamicResource Brush.Accent}" />
           </Grid>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="Knob" Property="Opacity" Value="0.85" />
+              <Setter TargetName="Knob" Property="Opacity" Value="0.9" />
               <Trigger.EnterActions>
                 <BeginStoryboard>
                   <Storyboard>
                     <DoubleAnimation Storyboard.TargetName="KnobScale" Storyboard.TargetProperty="ScaleX"
-                                     To="1.18" Duration="0:0:0.15" />
+                                     To="1.12" Duration="0:0:0.15" />
                     <DoubleAnimation Storyboard.TargetName="KnobScale" Storyboard.TargetProperty="ScaleY"
-                                     To="1.18" Duration="0:0:0.15" />
+                                     To="1.12" Duration="0:0:0.15" />
                   </Storyboard>
                 </BeginStoryboard>
               </Trigger.EnterActions>
@@ -448,8 +560,8 @@
     <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="CornerRadius" Value="{DynamicResource Radius.Large}" />
-    <Setter Property="Padding" Value="16,14" />
-    <Setter Property="Margin" Value="0,0,0,14" />
+    <Setter Property="Padding" Value="20,18" />
+    <Setter Property="Margin" Value="0,0,0,16" />
     <Setter Property="Effect">
       <Setter.Value>
         <DropShadowEffect BlurRadius="14" ShadowDepth="1" Direction="270"
@@ -462,7 +574,7 @@
           <BeginStoryboard>
             <Storyboard>
               <DoubleAnimation Storyboard.TargetProperty="(UIElement.Effect).Opacity"
-                               To="0.18" Duration="0:0:0.18" />
+                               To="0.10" Duration="0:0:0.18" />
             </Storyboard>
           </BeginStoryboard>
         </Trigger.EnterActions>
@@ -483,7 +595,7 @@
     <Setter Property="FontFamily" Value="{DynamicResource Font.Display}" />
     <Setter Property="FontSize" Value="15" />
     <Setter Property="FontWeight" Value="SemiBold" />
-    <Setter Property="Margin" Value="0,0,0,10" />
+    <Setter Property="Margin" Value="0,0,0,12" />
   </Style>
 
   <Style x:Key="Settings.Label" TargetType="TextBlock">
@@ -503,7 +615,7 @@
 
   <Style x:Key="Settings.SubHint" TargetType="TextBlock"
          BasedOn="{StaticResource Settings.Hint}">
-    <Setter Property="Margin" Value="26,0,0,8" />
+    <Setter Property="Margin" Value="50,0,0,8" />
   </Style>
 
   <Style x:Key="Settings.Field" TargetType="TextBox">

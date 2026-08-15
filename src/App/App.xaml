@@ -8,35 +8,33 @@
         <ResourceDictionary Source="Gui/Controls/Controls.xaml" />
       </ResourceDictionary.MergedDictionaries>
 
-      <SolidColorBrush x:Key="Brush.Window"     Color="#FFF6F6F6" />
-      <SolidColorBrush x:Key="Brush.Surface"    Color="#FFFFFFFF" />
-      <SolidColorBrush x:Key="Brush.Border"     Color="#FFD8D8D8" />
-      <SolidColorBrush x:Key="Brush.Text"       Color="#FF1B1B1B" />
-      <SolidColorBrush x:Key="Brush.TextMuted"  Color="#FF6B6B6B" />
-      <SolidColorBrush x:Key="Brush.Accent"     Color="#FF0F6CBD" />
-      <SolidColorBrush x:Key="Brush.AccentText" Color="#FFFFFFFF" />
-      <SolidColorBrush x:Key="Brush.Danger"     Color="#FFC42B1C" />
-      <SolidColorBrush x:Key="Brush.Success"    Color="#FF0F7B0F" />
-      <SolidColorBrush x:Key="Brush.Hover"      Color="#FFEAEAEA" />
-      <SolidColorBrush x:Key="Brush.HoverSoft"  Color="#FFE7F0FA" />
-      <SolidColorBrush x:Key="Brush.Pressed"    Color="#FFD6D6D6" />
-      <SolidColorBrush x:Key="Brush.SurfaceLifted" Color="#FFFFFFFF" />
-      <SolidColorBrush x:Key="Brush.PrimaryHover"  Color="#FF0A568F" />
-      <SolidColorBrush x:Key="Brush.PrimaryPressed" Color="#FF084672" />
+      <SolidColorBrush x:Key="Brush.Window"         Color="#FFF6F7F9" />
+      <SolidColorBrush x:Key="Brush.Surface"        Color="#FFFFFFFF" />
+      <SolidColorBrush x:Key="Brush.Border"         Color="#FFE3E5EA" />
+      <SolidColorBrush x:Key="Brush.Text"           Color="#FF191C22" />
+      <SolidColorBrush x:Key="Brush.TextMuted"      Color="#FF6B7280" />
+      <SolidColorBrush x:Key="Brush.Accent"         Color="#FF4F46E5" />
+      <SolidColorBrush x:Key="Brush.AccentText"     Color="#FFFFFFFF" />
+      <SolidColorBrush x:Key="Brush.Danger"         Color="#FFDC2626" />
+      <SolidColorBrush x:Key="Brush.Success"        Color="#FF16A34A" />
+      <SolidColorBrush x:Key="Brush.Hover"          Color="#FFEEF0F4" />
+      <SolidColorBrush x:Key="Brush.HoverSoft"      Color="#FFEDEBFE" />
+      <SolidColorBrush x:Key="Brush.Pressed"        Color="#FFE2E4EA" />
+      <SolidColorBrush x:Key="Brush.SurfaceLifted"  Color="#FFFFFFFF" />
+      <SolidColorBrush x:Key="Brush.PrimaryHover"   Color="#FF4338CA" />
+      <SolidColorBrush x:Key="Brush.PrimaryPressed" Color="#FF3730A3" />
+      <SolidColorBrush x:Key="Brush.MicaChrome"     Color="#F8FFFFFF" />
 
-      <Color x:Key="Color.Shadow">#33000000</Color>
+      <Color x:Key="Color.Shadow">#26000000</Color>
 
-      <!-- ===== Fonts (embedded with system fallback) ===== -->
       <FontFamily x:Key="Font.Ui">pack://application:,,,/Assets/Fonts/#komorebi gothic P, Yu Gothic UI, Segoe UI Variable Text, Segoe UI</FontFamily>
       <FontFamily x:Key="Font.Display">pack://application:,,,/Assets/Fonts/#Inter Display, Segoe UI Variable Display, Segoe UI</FontFamily>
       <FontFamily x:Key="Font.Mono">Cascadia Mono, Consolas, Courier New</FontFamily>
 
-      <!-- ===== Corner radius tokens ===== -->
-      <CornerRadius x:Key="Radius.Small">4</CornerRadius>
-      <CornerRadius x:Key="Radius.Medium">6</CornerRadius>
-      <CornerRadius x:Key="Radius.Large">10</CornerRadius>
+      <CornerRadius x:Key="Radius.Small">5</CornerRadius>
+      <CornerRadius x:Key="Radius.Medium">8</CornerRadius>
+      <CornerRadius x:Key="Radius.Large">12</CornerRadius>
 
-      <!-- ===== Spacing tokens ===== -->
       <Thickness x:Key="Space.XXS">4</Thickness>
       <Thickness x:Key="Space.XS">8</Thickness>
       <Thickness x:Key="Space.SM">12</Thickness>
@@ -49,6 +47,7 @@
         <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}" />
         <Setter Property="FontSize" Value="13" />
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
+        <Setter Property="UseLayoutRounding" Value="True" />
       </Style>
 
       <Style TargetType="TextBlock">
@@ -66,7 +65,7 @@
       <Style x:Key="Text.Heading" TargetType="TextBlock">
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
         <Setter Property="FontFamily" Value="{DynamicResource Font.Display}" />
-        <Setter Property="FontSize" Value="15" />
+        <Setter Property="FontSize" Value="16" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Margin" Value="0,0,0,6" />
       </Style>
@@ -77,7 +76,7 @@
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
         <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="Padding" Value="16,6" />
+        <Setter Property="Padding" Value="16,7" />
         <Setter Property="MinWidth" Value="88" />
         <Setter Property="Cursor" Value="Hand" />
         <Setter Property="Template">
@@ -157,22 +156,30 @@
         <Setter Property="Foreground" Value="{DynamicResource Brush.AccentText}" />
         <Setter Property="Template">
           <Setter.Value>
-            <ControlTemplate TargetType="Button">
-              <Border x:Name="Chrome" CornerRadius="{StaticResource Radius.Medium}"
-                      Background="{TemplateBinding Background}"
-                      BorderBrush="{TemplateBinding BorderBrush}"
-                      BorderThickness="1"
-                      RenderTransformOrigin="0.5,0.5">
-                <Border.RenderTransform>
-                  <ScaleTransform x:Name="BtnScale" ScaleX="1" ScaleY="1" />
-                </Border.RenderTransform>
-                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
-                                  Margin="{TemplateBinding Padding}" />
-              </Border>
-              <ControlTemplate.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                  <Setter TargetName="Chrome" Property="Background"
-                          Value="{DynamicResource Brush.PrimaryHover}" />
+              <ControlTemplate TargetType="Button">
+                <Border x:Name="Chrome" CornerRadius="{StaticResource Radius.Medium}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="1"
+                        RenderTransformOrigin="0.5,0.5">
+                  <Border.RenderTransform>
+                    <ScaleTransform x:Name="BtnScale" ScaleX="1" ScaleY="1" />
+                  </Border.RenderTransform>
+                  <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                    TextElement.Foreground="{TemplateBinding Foreground}"
+                                    Margin="{TemplateBinding Padding}">
+                    <ContentPresenter.Resources>
+                      <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                        <Setter Property="Foreground"
+                                Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                      </Style>
+                    </ContentPresenter.Resources>
+                  </ContentPresenter>
+                </Border>
+                <ControlTemplate.Triggers>
+                  <Trigger Property="IsMouseOver" Value="True">
+                    <Setter TargetName="Chrome" Property="Background"
+                            Value="{DynamicResource Brush.PrimaryHover}" />
                   <Trigger.EnterActions>
                     <BeginStoryboard>
                       <Storyboard>
@@ -228,15 +235,124 @@
         </Setter>
       </Style>
 
+      <Style x:Key="Button.Secondary" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="Button">
+              <Border x:Name="Chrome" CornerRadius="{StaticResource Radius.Medium}"
+                      Background="{TemplateBinding Background}"
+                      BorderBrush="{TemplateBinding BorderBrush}"
+                      BorderThickness="1"
+                      RenderTransformOrigin="0.5,0.5">
+                <Border.RenderTransform>
+                  <ScaleTransform x:Name="BtnScale" ScaleX="1" ScaleY="1" />
+                </Border.RenderTransform>
+                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"
+                                  Margin="{TemplateBinding Padding}" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Setter TargetName="Chrome" Property="Background"
+                          Value="{DynamicResource Brush.HoverSoft}" />
+                  <Trigger.EnterActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleX"
+                                         To="1.02" Duration="0:0:0.09" />
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleY"
+                                         To="1.02" Duration="0:0:0.09" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.EnterActions>
+                  <Trigger.ExitActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleX"
+                                         To="1" Duration="0:0:0.09" />
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleY"
+                                         To="1" Duration="0:0:0.09" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.ExitActions>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                  <Setter TargetName="Chrome" Property="Background"
+                          Value="{DynamicResource Brush.Hover}" />
+                  <Trigger.EnterActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleX"
+                                         To="0.97" Duration="0:0:0.06" />
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleY"
+                                         To="0.97" Duration="0:0:0.06" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.EnterActions>
+                  <Trigger.ExitActions>
+                    <BeginStoryboard>
+                      <Storyboard>
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleX"
+                                         To="1" Duration="0:0:0.06" />
+                        <DoubleAnimation Storyboard.TargetName="BtnScale" Storyboard.TargetProperty="ScaleY"
+                                         To="1" Duration="0:0:0.06" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.ExitActions>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                  <Setter Property="Opacity" Value="0.45" />
+                  <Setter Property="Cursor" Value="Arrow" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+      </Style>
+
       <Style TargetType="TextBox">
         <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
         <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
         <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
         <Setter Property="CaretBrush" Value="{DynamicResource Brush.Text}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource Brush.Accent}" />
         <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}" />
         <Setter Property="FontSize" Value="13" />
-        <Setter Property="Padding" Value="7,5" />
+        <Setter Property="Padding" Value="8,6" />
         <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="TextBox">
+              <Border x:Name="Chrome" CornerRadius="{StaticResource Radius.Small}"
+                      Background="{TemplateBinding Background}"
+                      BorderBrush="{TemplateBinding BorderBrush}"
+                      BorderThickness="{TemplateBinding BorderThickness}">
+                <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"
+                              Focusable="False" />
+              </Border>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Setter TargetName="Chrome" Property="BorderBrush"
+                          Value="{DynamicResource Brush.TextMuted}" />
+                </Trigger>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                  <Setter TargetName="Chrome" Property="BorderBrush"
+                          Value="{DynamicResource Brush.Accent}" />
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                  <Setter Property="Opacity" Value="0.5" />
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+          <Trigger Property="AcceptsReturn" Value="False">
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+          </Trigger>
+        </Style.Triggers>
       </Style>
 
       <Style TargetType="ProgressBar">
@@ -244,6 +360,37 @@
         <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
         <Setter Property="Background" Value="{DynamicResource Brush.Border}" />
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Template">
+          <Setter.Value>
+            <ControlTemplate TargetType="ProgressBar">
+              <Grid ClipToBounds="True">
+                <Border x:Name="Track" CornerRadius="2"
+                        Background="{TemplateBinding Background}" />
+                <Border x:Name="PART_Indicator" CornerRadius="2" HorizontalAlignment="Left"
+                        Background="{TemplateBinding Foreground}"
+                        RenderTransformOrigin="0,0.5">
+                  <Border.RenderTransform>
+                    <TranslateTransform x:Name="Move" />
+                  </Border.RenderTransform>
+                </Border>
+              </Grid>
+              <ControlTemplate.Triggers>
+                <Trigger Property="IsIndeterminate" Value="True">
+                  <Setter TargetName="PART_Indicator" Property="Width" Value="80" />
+                  <Trigger.EnterActions>
+                    <BeginStoryboard>
+                      <Storyboard RepeatBehavior="Forever" AutoReverse="True">
+                        <DoubleAnimation Storyboard.TargetName="Move"
+                                         Storyboard.TargetProperty="X"
+                                         From="-80" To="480" Duration="0:0:1.2" />
+                      </Storyboard>
+                    </BeginStoryboard>
+                  </Trigger.EnterActions>
+                </Trigger>
+              </ControlTemplate.Triggers>
+            </ControlTemplate>
+          </Setter.Value>
+        </Setter>
       </Style>
 
       <Style x:Key="Panel.Card" TargetType="Border">
@@ -264,7 +411,7 @@
               <BeginStoryboard>
                 <Storyboard>
                   <DoubleAnimation Storyboard.TargetProperty="(UIElement.Effect).Opacity"
-                                   To="0.20" Duration="0:0:0.15" />
+                                   To="0.14" Duration="0:0:0.15" />
                 </Storyboard>
               </BeginStoryboard>
             </Trigger.EnterActions>

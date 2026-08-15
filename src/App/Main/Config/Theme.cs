@@ -9,27 +9,27 @@ internal static class Theme
 {
     private static readonly (string Key, string Light, string Dark)[] Palette =
     [
-        ("Brush.Window", "#FFF6F6F6", "#FF1F1F1F"),
-        ("Brush.Surface", "#FFFFFFFF", "#FF2B2B2B"),
-        ("Brush.Border", "#FFD8D8D8", "#FF3D3D3D"),
-        ("Brush.Text", "#FF1B1B1B", "#FFF2F2F2"),
-        ("Brush.TextMuted", "#FF6B6B6B", "#FFA0A0A0"),
-        ("Brush.Accent", "#FF0F6CBD", "#FF4CA0E0"),
-        ("Brush.AccentText", "#FFFFFFFF", "#FF10202C"),
-        ("Brush.Danger", "#FFC42B1C", "#FFFF6B5E"),
-        ("Brush.Success", "#FF0F7B0F", "#FF6CCB6C"),
-        ("Brush.Hover", "#FFEAEAEA", "#FF3A3A3A"),
-        ("Brush.HoverSoft", "#FFE7F0FA", "#FF2B3947"),
-        ("Brush.Pressed", "#FFD6D6D6", "#FF343434"),
-        ("Brush.SurfaceLifted", "#FFFFFFFF", "#FF333333"),
-        ("Brush.PrimaryHover", "#FF0A568F", "#FF6FBCF0"),
-        ("Brush.PrimaryPressed", "#FF084672", "#FF5AA8DC"),
+        ("Brush.Window", "#FFF6F7F9", "#FF16171D"),
+        ("Brush.Surface", "#FFFFFFFF", "#FF1D1E26"),
+        ("Brush.Border", "#FFE3E5EA", "#FF2C2E39"),
+        ("Brush.Text", "#FF191C22", "#FFF1F2F6"),
+        ("Brush.TextMuted", "#FF6B7280", "#FF9AA0AE"),
+        ("Brush.Accent", "#FF4F46E5", "#FF818CF8"),
+        ("Brush.AccentText", "#FFFFFFFF", "#FF14151D"),
+        ("Brush.Danger", "#FFDC2626", "#FFF87171"),
+        ("Brush.Success", "#FF16A34A", "#FF4ADE80"),
+        ("Brush.Hover", "#FFEEF0F4", "#FF272935"),
+        ("Brush.HoverSoft", "#FFEDEBFE", "#FF26263D"),
+        ("Brush.Pressed", "#FFE2E4EA", "#FF23242E"),
+        ("Brush.SurfaceLifted", "#FFFFFFFF", "#FF242630"),
+        ("Brush.PrimaryHover", "#FF4338CA", "#FFA5B4FC"),
+        ("Brush.PrimaryPressed", "#FF3730A3", "#FF909CF7"),
+        ("Brush.MicaChrome", "#F8FFFFFF", "#F81D1E26"),
     ];
 
-    // Color resources (not brushes) for use with transparent effects.
     private static readonly (string Key, string Light, string Dark)[] ShadowColors =
     [
-        ("Color.Shadow", "#33000000", "#55000000"),
+        ("Color.Shadow", "#26000000", "#44000000"),
     ];
 
     public static bool IsDark { get; private set; }

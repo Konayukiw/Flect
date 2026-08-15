@@ -49,6 +49,7 @@
                         Visibility="{Binding HasChildren, Converter={StaticResource Show}}" />
 
           <CheckBox Grid.Column="1" Margin="2,1" Content="{Binding Label}"
+                    Style="{StaticResource CheckBox.Box}"
                     IsChecked="{Binding IsChecked, Mode=TwoWay}" IsThreeState="False" />
         </Grid>
 
