@@ -99,7 +99,7 @@ RAR is read-only: Flect can extract `.rar` files but cannot create them. This is
 | **JSON** | CSV, XML |
 | **XML** | JSON |
 | **INI, CFG, CONF** | JSON, XML |
-| **JAR** | a folder of decompiled `.java` sources |
+| **JAR** | A folder of decompiled `.java` sources |
 | **Folder** | ZIP, 7z, TAR, tar.gz archive of the folder |
 | Text encodings | UTF-8, UTF-8 (BOM), UTF-16, Shift_JIS |
 | Line endings | CRLF (Windows), LF (Unix) |

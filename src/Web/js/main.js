@@ -30,95 +30,93 @@ const icons = {
 
 const MENU = {
   image: [
-    { t: "リサイズ", s: "resize" },
-    { t: "圧縮", s: "compress" },
-    { t: "回転", s: "rotate" },
-    { t: "変換", s: "convert", sub: true },
-    { t: "OCR", s: "ocr" },
+    { k: "menu.resize", s: "resize" },
+    { k: "menu.compress", s: "compress" },
+    { k: "menu.rotate", s: "rotate" },
+    { k: "menu.convert", s: "convert", sub: true },
+    { k: "menu.ocr", s: "ocr" },
   ],
   imageSub: [
     { fmt: "PNG" }, { fmt: "JPG" }, { fmt: "WEBP" }, { fmt: "HEIC" }, { fmt: "ICO" }, { fmt: "GIF" }, { fmt: "SVG" },
   ],
   video: [
-    { t: "リサイズ", s: "resize" },
-    { t: "トリム", s: "trim" },
-    { t: "サムネイル", s: "thumb" },
-    { t: "圧縮", s: "compress" },
-    { t: "回転", s: "rotate" },
-    { t: "変換", s: "convert", sub: true },
-    { t: "音声を抽出", s: "audio" },
+    { k: "menu.resize", s: "resize" },
+    { k: "menu.trim", s: "trim" },
+    { k: "menu.thumb", s: "thumb" },
+    { k: "menu.compress", s: "compress" },
+    { k: "menu.rotate", s: "rotate" },
+    { k: "menu.convert", s: "convert", sub: true },
+    { k: "menu.audio", s: "audio" },
   ],
   videoSub: [
     { fmt: "MP4" }, { fmt: "MOV" }, { fmt: "MKV" }, { fmt: "M4A" }, { fmt: "AVI" }, { fmt: "WEBM" }, { fmt: "FLV" }, { fmt: "GIF" },
   ],
   audio: [
-    { t: "変換", s: "convert" },
+    { k: "menu.convert", s: "convert" },
   ],
   pdf: [
-    { t: "プレビュー", s: "preview" },
-    { t: "結合", s: "merge" },
-    { t: "変換", s: "convert", sub: true },
+    { k: "menu.preview", s: "preview" },
+    { k: "menu.merge", s: "merge" },
+    { k: "menu.convert", s: "convert", sub: true },
   ],
   pdfSub: [
     { fmt: "PNG" }, { fmt: "JPG" }, { fmt: "TXT" },
   ],
   folder: [
-    { t: "重複を削除...", s: "dup" },
-    { t: "空フォルダを削除", s: "dup" },
-    { t: "ツリー表示", s: "tree" },
-    { t: "名前を一括変更...", s: "rename" },
-    { t: "解析", s: "analyze" },
-    { t: "圧縮", s: "compress" },
+    { k: "menu.dup", s: "dup" },
+    { k: "menu.empty", s: "dup" },
+    { k: "menu.tree", s: "tree" },
+    { k: "menu.rename", s: "rename" },
+    { k: "menu.analyze", s: "analyze" },
+    { k: "menu.compress", s: "compress" },
   ],
   archive: [
-    { t: "展開", s: "extract" },
+    { k: "menu.extract", s: "extract" },
   ],
   text: [
-    { t: "整形", s: "sort" },
-    { t: "キーを並べ替え", s: "sort" },
+    { k: "menu.beautify", s: "sort" },
+    { k: "menu.sortKeys", s: "sort" },
   ],
 };
 
 const TASKS = {
-  "リサイズ (image)": { scans: [["写真を解析しています…", "45%"], ["リサイズしています…", "78%"]], job: "resize" },
-  "圧縮 (image)": { scans: [["写真を解析しています…", "40%"], ["圧縮しています…", "72%"]], job: "compress" },
-  "回転 (image)": { scans: [["回転しています…", "80%"]], job: "compress" },
-  "OCR (image)": { scans: [["OCR を実行しています…", "55%"]], job: "ocr" },
-  "リサイズ (video)": { scans: [["動画を解析しています…", "30%"], ["リサイズしています…", "75%"]], job: "compress" },
-  "トリム (video)": { scans: [["トリムしています（再エンコードなし）…", "95%"]], job: "compress" },
-  "サムネイル (video)": { scans: [["フレームを書き出しています…", "80%"]], job: "convert" },
-  "圧縮 (video)": { scans: [["動画を解析しています…", "25%"], ["圧縮しています…", "70%"]], job: "compress" },
-  "回転 (video)": { scans: [["回転しています…", "60%"]], job: "compress" },
-  "音声を抽出 (video)": { scans: [["音声を抽出しています…", "66%"], ["書き出しています…", "88%"]], job: "compress" },
-  "変換 (image)": { scans: [["書き出しています…", "64%"]], job: "convert" },
-  "変換 (video)": { scans: [["変換しています…", "50%"]], job: "convert" },
-  "変換 (audio)": { scans: [["変換しています…", "70%"]], job: "convert" },
-  "プレビュー (pdf)": { scans: [["プレビューを開いています…", "40%"]], job: "convert" },
-  "結合 (pdf)": { scans: [["PDF を結合しています…", "75%"]], job: "convert" },
-  "変換 (pdf)": { scans: [["書き出しています…", "82%"]], job: "convert" },
-  "重複を削除... (folder)": { scans: [["フォルダをスキャンしています…", "35%"], ["ハッシュを比較しています…", "70%"], ["ごみ箱へ移動しています…", "92%"]], job: "duplicate" },
-  "空フォルダを削除 (folder)": { scans: [["スキャンしています…", "55%"], ["ごみ箱へ移動しています…", "90%"]], job: "duplicate" },
-  "ツリー表示 (folder)": { scans: [["ツリーを生成しています…", "80%"]], job: "convert" },
-  "名前を一括変更... (folder)": { scans: [["名前を変更しています…", "76%"]], job: "convert" },
-  "解析 (folder)": { scans: [["解析中…", "50%"], ["レポートを作成しています…", "88%"]], job: "duplicate" },
-  "圧縮 (folder)": { scans: [["フォルダを圧縮しています…", "70%"]], job: "compress" },
-  "展開 (archive)": { scans: [["展開しています…", "65%"], ["ファイルを書き出しています…", "88%"]], job: "convert" },
+  "menu.resize (image)": { scans: [["scan.analyzingImage", "45%"], ["scan.resizing", "78%"]], job: "resize" },
+  "menu.compress (image)": { scans: [["scan.analyzingImage", "40%"], ["scan.compress", "72%"]], job: "compress" },
+  "menu.rotate (image)": { scans: [["scan.rotating", "80%"]], job: "compress" },
+  "menu.ocr (image)": { scans: [["scan.ocr", "55%"]], job: "ocr" },
+  "menu.resize (video)": { scans: [["scan.analyzingVideo", "30%"], ["scan.resizing", "75%"]], job: "compress" },
+  "menu.trim (video)": { scans: [["scan.trimming", "95%"]], job: "compress" },
+  "menu.thumb (video)": { scans: [["scan.exportFrame", "80%"]], job: "convert" },
+  "menu.compress (video)": { scans: [["scan.analyzingVideo", "25%"], ["scan.compress", "70%"]], job: "compress" },
+  "menu.rotate (video)": { scans: [["scan.rotating", "60%"]], job: "compress" },
+  "menu.audio (video)": { scans: [["scan.extractAudio", "66%"], ["scan.writing", "88%"]], job: "compress" },
+  "menu.convert (image)": { scans: [["scan.writing", "64%"]], job: "convert" },
+  "menu.convert (video)": { scans: [["scan.converting", "50%"]], job: "convert" },
+  "menu.convert (audio)": { scans: [["scan.converting", "70%"]], job: "convert" },
+  "menu.preview (pdf)": { scans: [["scan.preview", "40%"]], job: "convert" },
+  "menu.merge (pdf)": { scans: [["scan.merging", "75%"]], job: "convert" },
+  "menu.convert (pdf)": { scans: [["scan.writing", "82%"]], job: "convert" },
+  "menu.dup (folder)": { scans: [["scan.scanFolder", "35%"], ["scan.compareHash", "70%"], ["scan.moveBin", "92%"]], job: "duplicate" },
+  "menu.empty (folder)": { scans: [["scan.scanning", "55%"], ["scan.moveBin", "90%"]], job: "duplicate" },
+  "menu.tree (folder)": { scans: [["scan.tree", "80%"]], job: "convert" },
+  "menu.rename (folder)": { scans: [["scan.renaming", "76%"]], job: "convert" },
+  "menu.analyze (folder)": { scans: [["scan.analyzing", "50%"], ["scan.report", "88%"]], job: "duplicate" },
+  "menu.compress (folder)": { scans: [["scan.compressFolder", "70%"]], job: "compress" },
+  "menu.extract (archive)": { scans: [["scan.extracting", "65%"], ["scan.writingFiles", "88%"]], job: "convert" },
 };
 
 const RESULTS = {
-  duplicate: { cls: "ic-ok", bar: "60%", title: "完了しました", desc: "12 件の重複を見つけ、ごみ箱に移動しました。" },
-  resize: { cls: "ic-ok", bar: "100%", title: "完了しました", desc: "新規ファイルとして保存されました。元のファイルは変更されていません。" },
-  compress: { cls: "ic-ok", bar: "100%", title: "完了しました", desc: "目標サイズに収まるよう調整し、新しいファイルとして保存しました。" },
-  convert: { cls: "ic-ok", bar: "100%", title: "完了しました", desc: "変換結果は元のファイルの隣に、新しいファイルとして作成されました。" },
-  ocr: { cls: "ic-ok", bar: "100%", title: "完了しました", desc: "文字を検出し、クリップボードにコピーしました。出力先は設定で変更できます。" },
+  duplicate: { cls: "ic-ok", bar: "60%", titleKey: "result.done", descKey: "result.dup" },
+  resize: { cls: "ic-ok", bar: "100%", titleKey: "result.done", descKey: "result.resize" },
+  compress: { cls: "ic-ok", bar: "100%", titleKey: "result.done", descKey: "result.compress" },
+  convert: { cls: "ic-ok", bar: "100%", titleKey: "result.done", descKey: "result.convert" },
+  ocr: { cls: "ic-ok", bar: "100%", titleKey: "result.done", descKey: "result.ocr" },
 };
 
-const applyTheme = (t) => { document.documentElement.dataset.theme = t; };
+const applyTheme = (th) => { document.documentElement.dataset.theme = th; };
 try {
   const saved = localStorage.getItem("flect-theme");
-  applyTheme(saved === "light" || saved === "dark"
-    ? saved
-    : matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  applyTheme(saved === "light" || saved === "dark" ? saved : "dark");
   $("#themeToggle").addEventListener("click", () => {
     const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
     applyTheme(next);
@@ -211,14 +209,14 @@ const subFor = (kind) =>
   : kind === "pdf" ? MENU.pdfSub
   : [];
 
-const runTask = async (kind, label) => {
-  const t = TASKS[`${label} (${kind})`];
-  if (t) {
-    await runScan((t.scans || []).map(([l, p]) => [l, p]));
-    await finishScan(true, t.job);
+const runTask = async (kind, k) => {
+  const tsk = TASKS[`${k} (${kind})`];
+  if (tsk) {
+    await runScan((tsk.scans || []).map(([l, p]) => [t(l), p]));
+    await finishScan(true, tsk.job);
     return;
   }
-  await runScan([[`${label}の設定を適用しています…`, "70%"]]);
+  await runScan([[t("scan.applying", { label: t(k) }), "70%"]]);
   await finishScan(true, "convert");
 };
 
@@ -227,11 +225,11 @@ const renderMenu = (name, kind) => {
   let html = headerHtml(name, kind);
   html += `<div class="ctx-sep"></div>`;
   for (const it of menuFor(kind)) {
-    html += `<button class="ctx-item" type="button" data-label="${it.t}">${itemSvg(it.s)}`
-      + `<span class="ct-lbl">${it.t}</span>${it.sub ? '<span class="ct-sub">›</span>' : ""}</button>`;
+    html += `<button class="ctx-item" type="button" data-k="${it.k}">${itemSvg(it.s)}`
+      + `<span class="ct-lbl">${t(it.k)}</span>${it.sub ? '<span class="ct-sub">›</span>' : ""}</button>`;
   }
   html += `<div class="ctx-sep"></div>`;
-  html += `<button class="ctx-item" type="button" data-label="カスタム…">${itemSvg("sort")}<span class="ct-lbl">カスタム…</span></button>`;
+  html += `<button class="ctx-item" type="button" data-k="ctx.custom">${itemSvg("sort")}<span class="ct-lbl">${t("ctx.custom")}</span></button>`;
   body.innerHTML = html;
   attachHandlers(body, name, kind, "main");
 };
@@ -241,10 +239,10 @@ const renderSubMenu = (name, kind) => {
   const subs = subFor(kind);
   let html = headerHtml(name, kind);
   html += `<div class="ctx-sep"></div>`;
-  html += `<button class="ctx-item" type="button" data-back="1">${itemSvg("resize")}<span class="ct-lbl">← 戻る</span></button>`;
+  html += `<button class="ctx-item" type="button" data-back="1">${itemSvg("resize")}<span class="ct-lbl">${t("ctx.back")}</span></button>`;
   html += `<div class="ctx-sep"></div>`;
   for (const f of subs) {
-    html += `<button class="ctx-item" type="button" data-to="${f.fmt}"><span class="ct-ic">${icons.convert}</span><span class="ct-lbl">to ${f.fmt}</span></button>`;
+    html += `<button class="ctx-item" type="button" data-to="${f.fmt}"><span class="ct-ic">${icons.convert}</span><span class="ct-lbl">${t("menu.to", { fmt: f.fmt })}</span></button>`;
   }
   body.innerHTML = html;
 
@@ -255,7 +253,7 @@ const renderSubMenu = (name, kind) => {
       const back = btn.dataset.back;
       if (back) { renderMenu(name, kind); return; }
       resetMenu();
-      runScan([["変換 (" + to + ") に書き出しています…", "60%"]])
+      runScan([[t("scan.convertTo", { fmt: to }), "60%"]])
         .then(() => finishScan(true, "convert"));
     });
   }
@@ -265,15 +263,15 @@ const attachHandlers = (body, name, kind, mode) => {
   for (const btn of $$(".ctx-item", body)) {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
-      const label = btn.dataset.label;
-      if (!label) return;
+      const k = btn.dataset.k;
+      if (!k) return;
       resetMenu();
-      if (mode === "main" && label === "変換" && subFor(kind).length) {
+      if (mode === "main" && k === "menu.convert" && subFor(kind).length) {
         renderSubMenu(name, kind);
         openMenuAt(parseFloat(menuX) || 320, parseFloat(menuY) || 320);
         return;
       }
-      runTask(kind, label);
+      runTask(kind, k);
     });
   }
 };
@@ -321,10 +319,10 @@ iconsEl.addEventListener("dblclick", (e) => {
   input.spellcheck = false;
   const okBtn = document.createElement("button");
   okBtn.textContent = "✓";
-  okBtn.title = "確定";
+  okBtn.title = t("rename.ok");
   const cancelBtn = document.createElement("button");
   cancelBtn.textContent = "✕";
-  cancelBtn.title = "キャンセル";
+  cancelBtn.title = t("rename.cancel");
   wrap.append(input, okBtn, cancelBtn);
 
   const wrapOff = () => { wrap.remove(); $("#renameBackdrop").classList.remove("show"); };
@@ -363,10 +361,10 @@ desk.addEventListener("contextmenu", (e) => {
   resetMenu();
   $$(".icon").forEach((i) => i.classList.remove("selected"));
   const body = $("#ctxBody");
-  body.innerHTML = headerHtml("デスクトップ", "desk")
+  body.innerHTML = headerHtml(t("desk.title"), "desk")
     + '<div class="ctx-sep"></div>'
-    + `<button class="ctx-item" type="button" data-row="1">${itemSvg("resize")}<span class="ct-lbl">設定を開く</span></button>`
-    + `<button class="ctx-item" type="button" data-row="2">${itemSvg("tree")}<span class="ct-lbl">この画面について</span></button>`;
+    + `<button class="ctx-item" type="button" data-row="1">${itemSvg("resize")}<span class="ct-lbl">${t("desk.settings")}</span></button>`
+    + `<button class="ctx-item" type="button" data-row="2">${itemSvg("tree")}<span class="ct-lbl">${t("desk.about")}</span></button>`;
   for (const b of $$(".ctx-item", body)) {
     b.addEventListener("click", (e2) => {
       e2.stopPropagation();
@@ -420,28 +418,28 @@ const finishScan = (ok, job) => new Promise((resolve) => {
   const r = RESULTS[job] || RESULTS.convert;
   const icon = $("#scanOverlay .scan-icon");
   icon.className = "scan-icon " + (ok ? r.cls : "ic-fail");
-  $("#scanTitle").textContent = ok ? r.title : "失敗しました";
-  $("#scanDesc").textContent = ok ? r.desc : "作成中のファイルを削除して終了しました。";
+  $("#scanTitle").textContent = ok ? t(r.titleKey) : t("result.failed");
+  $("#scanDesc").textContent = ok ? t(r.descKey) : t("scan.failDesc");
   $("#scanBar").style.transition = "none";
   $("#scanBar").style.width = (ok ? r.bar : "0%");
   setTimeout(() => {
     const ov = $("#scanOverlay");
     ov.classList.remove("open");
-    setTimeout(() => { icon.className = "scan-icon"; $("#scanTitle").textContent = "処理を開始します"; $("#scanDesc").textContent = ""; resolve(); }, 380);
+    setTimeout(() => { icon.className = "scan-icon"; $("#scanTitle").textContent = t("scan.start"); $("#scanDesc").textContent = ""; resolve(); }, 380);
   }, 2100);
 });
 
 const failScan = () => {
   $("#scanOverlay").classList.add("open");
-  $("#scanTitle").textContent = "失敗しました";
-  $("#scanDesc").textContent = "これはデモです。Flect は、失敗・キャンセル時に作成中のファイルを自動で削除します。";
+  $("#scanTitle").textContent = t("result.failed");
+  $("#scanDesc").textContent = t("scan.failDemo");
   const icon = $("#scanOverlay .scan-icon");
   icon.className = "scan-icon ic-fail";
   $("#scanBar").style.transition = "none";
   $("#scanBar").style.width = "0%";
   setTimeout(() => {
     $("#scanOverlay").classList.remove("open");
-    setTimeout(() => { icon.className = "scan-icon"; $("#scanTitle").textContent = "処理を開始します"; $("#scanDesc").textContent = ""; }, 380);
+    setTimeout(() => { icon.className = "scan-icon"; $("#scanTitle").textContent = t("scan.start"); $("#scanDesc").textContent = ""; }, 380);
   }, 2300);
 };
 
@@ -453,13 +451,13 @@ const openModal = () => {
     <div class="modal">
       <div class="modal-head">
         <span class="modal-mark">F</span>
-        <span class="modal-title">Flect — このデモについて</span>
-        <button class="modal-x" type="button" aria-label="閉じる">✕</button>
+        <span class="modal-title">${t("modal.title")}</span>
+        <button class="modal-x" type="button" aria-label="${t("modal.close")}">✕</button>
       </div>
       <div class="modal-body">
-        <p>このデスクトップは、Flect の動作イメージを再現した<strong>デモ</strong>です。実物の右クリックメニューではないため、項目名や挙動は実際のものと異なることがあります。</p>
-        <p>Flect は、選択したファイルの種類に応じた項目だけがエクスプローラーのメニューに表示されます。メニュー項目の追加・非表示は設定アプリの「一般 → 右クリックメニューの項目」から変更できます。</p>
-        <p class="modal-tip">デスクトップの何もない場所をもう一度右クリックすると、この項目を再び開けます。</p>
+        <p>${t("modal.p1")}</p>
+        <p>${t("modal.p2")}</p>
+        <p class="modal-tip">${t("modal.tip")}</p>
       </div>
     </div>`;
   document.body.appendChild(modalEl);
@@ -708,7 +706,7 @@ for (const btn of $$(".btn-primary")) {
 const scanTitleEl = $("#scanTitle");
 if (scanTitleEl && confetti) {
   new MutationObserver(() => {
-    if (scanTitleEl.textContent === "完了しました") {
+    if (scanTitleEl.textContent === t("result.done")) {
       const r = scanTitleEl.getBoundingClientRect();
       boom(r.left + r.width / 2, r.top + 10, false);
     }
@@ -716,7 +714,6 @@ if (scanTitleEl && confetti) {
 }
 
 const heroH1 = $(".hero h1");
-const gradSpan = $(".hero .grad");
 if (heroH1 && !reducedMotion) {
   const splitNode = (node) => {
     if (node.nodeType === Node.TEXT_NODE) {
@@ -747,41 +744,54 @@ if (heroH1 && !reducedMotion) {
   }
 }
 
-if (gradSpan && !reducedMotion) {
-  const words = ["万能ツール", "画像変換", "動画圧縮", "重複削除", "PDF結合", "OCR"];
-  const glyphs = "アイウエオカキクケコサシスセソタチツテトナニヌネノ01+*#";
-  const hold = async (ms) => {
+if (!reducedMotion) {
+  const glyphs = () => t("grad.glyphs");
+  const hold = async (el, ms) => {
     const end = performance.now() + ms;
     do {
       await wait(90);
-    } while (gradSpan.matches(":hover") || performance.now() < end);
+    } while (el.matches(":hover") || performance.now() < end);
   };
-  const scrambleTo = (word) => new Promise((resolve) => {
+  const scrambleTo = (el, word) => new Promise((resolve) => {
     let settled = 0;
     const tick = () => {
-      if (gradSpan.matches(":hover")) settled = word.length;
+      if (el.matches(":hover")) settled = word.length;
       else if (Math.random() < 0.75) settled += 1;
       let out = "";
+      const g = glyphs();
       for (let i = 0; i < word.length; i++) {
-        out += i < settled ? word[i] : glyphs[(Math.random() * glyphs.length) | 0];
+        out += i < settled ? word[i] : g[(Math.random() * g.length) | 0];
       }
-      gradSpan.textContent = out;
-      if (settled >= word.length) { gradSpan.textContent = word; resolve(); return; }
+      el.textContent = out;
+      if (settled >= word.length) { el.textContent = word; resolve(); return; }
       requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
   });
-  const startCycle = async () => {
-    gradSpan.textContent = words[0];
-    gradSpan.style.minWidth = gradSpan.offsetWidth + "px";
+  let gradCycle = 0;
+  const startGradCycle = async () => {
+    const id = ++gradCycle;
+    const el = $(".hero .grad");
+    if (!el) return;
+    const words = t("grad.words");
+    el.style.minWidth = "0px";
+    let maxW = 0;
+    for (const w of words) {
+      el.textContent = w;
+      maxW = Math.max(maxW, el.offsetWidth);
+    }
+    el.textContent = words[0];
+    el.style.minWidth = maxW + "px";
     let i = 0;
-    while (true) {
-      await hold(700);
+    while (id === gradCycle) {
+      await hold(el, 700);
+      if (id !== gradCycle) break;
       i = (i + 1) % words.length;
-      await scrambleTo(words[i]);
+      await scrambleTo(el, words[i]);
     }
   };
-  setTimeout(startCycle, 3600);
+  window.restartGrad = startGradCycle;
+  setTimeout(startGradCycle, 3600);
 }
 
 const statEls = $$(".hero-stats strong");

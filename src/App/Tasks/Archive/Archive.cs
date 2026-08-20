@@ -61,8 +61,6 @@ internal sealed class ArchiveExtract(Request request) : BatchTask(request)
     private static async Task ExtractTarGzAsync(string archive, string destination,
                                                 ITaskProgress progress)
     {
-        // 7-Zip only peels off the gzip layer; the inner .tar has to be
-        // extracted in a second pass.
         using var scratch = new ScratchDirectory(destination);
         await SevenZip.RunAsync(["x", archive, "-o" + scratch.Root, "-y"], progress);
 
