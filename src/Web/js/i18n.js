@@ -1,4 +1,3 @@
-/* Flect landing page - i18n dictionary and language switcher */
 const I18N = {
   en: {
     "meta.title": "Flect - All-in-one file editor that lives in Explorer",
