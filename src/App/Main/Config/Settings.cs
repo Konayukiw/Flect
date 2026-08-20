@@ -26,6 +26,8 @@ internal enum ThumbnailFormat { Png, Jpg }
 
 internal enum ArchiveCompressFormat { Zip, SevenZip, Tar, TarGz }
 
+internal enum BackgroundRemovalMode { AiWithFallback, AiOnly, ChromaKeyOnly }
+
 internal enum SjisFallback { ReplaceAndWarn, Substitute, Fail }
 
 internal enum JsonKeyOrder { Ordinal, IgnoreCase, Natural }
@@ -185,6 +187,7 @@ internal sealed class ImageSettings
     public bool AllowWebpFallback { get; set; } = true;
     public int WebpQuality { get; set; } = 80;
 
+    public BackgroundRemovalMode BackgroundMode { get; set; } = BackgroundRemovalMode.AiWithFallback;
     public string BackgroundKeyColor { get; set; } = "#00FF00";
     public double BackgroundTolerance { get; set; } = 25;
 

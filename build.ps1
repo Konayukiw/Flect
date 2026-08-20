@@ -38,12 +38,12 @@ $vsPath = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Compon
 if (-not $vsPath) { throw 'No Visual Studio installation with the C++ toolset was found.' }
 
 $msbuild = Join-Path $vsPath 'MSBuild\Current\Bin\MSBuild.exe'
-Write-Host '  shell extension...'
+Write-Host 'shell extension...'
 & $msbuild (Join-Path $repoRoot 'src\Shell\ShellExt.vcxproj') `
     /p:Configuration=$Configuration /p:Platform=x64 /v:minimal /nologo
 if ($LASTEXITCODE -ne 0) { throw 'The shell extension failed to build.' }
 
-Write-Host '  worker...'
+Write-Host 'worker...'
 Remove-Item -Recurse -Force $dist -ErrorAction SilentlyContinue
 
 $publishArgs = @(
@@ -69,12 +69,18 @@ if (Test-Path $thirdParty) {
     Get-ChildItem $thirdParty -File | Copy-Item -Destination $toolsOut -Force
 }
 
+$pythonTool = Join-Path $repoRoot 'tools\remove_bg.py'
+if (Test-Path $pythonTool) {
+    Copy-Item $pythonTool -Destination $toolsOut -Force
+    Write-Host 'remove_bg.py staged'
+}
+
 $missing = @('ffmpeg.exe', 'ffprobe.exe', 'cfr.jar', '7za.exe', '7z.exe') |
     Where-Object { -not (Test-Path (Join-Path $toolsOut $_)) }
 if ($missing) {
-    Write-Host ("  note: {0} not bundled - run fetch\get.ps1. " -f ($missing -join ', ')) `
+    Write-Host ("Note: {0} not bundled - run fetch\get.ps1. " -f ($missing -join ', ')) `
         -ForegroundColor Yellow
-    Write-Host '        Until then those commands fall back to whatever is on PATH.' -ForegroundColor Yellow
+    Write-Host 'Until then those commands fall back to whatever is on PATH.' -ForegroundColor Yellow
 }
 
 $size = (Get-ChildItem $dist -Recurse -File | Measure-Object -Property Length -Sum).Sum

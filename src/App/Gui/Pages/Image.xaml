@@ -89,29 +89,49 @@
         <Grid>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="150" />
-            <ColumnDefinition Width="220" />
+            <ColumnDefinition Width="320" />
             <ColumnDefinition Width="Auto" />
           </Grid.ColumnDefinitions>
           <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
           </Grid.RowDefinitions>
 
           <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource Settings.Label}"
-                     Text="{loc:T settings.image.background.color}" />
-          <gui:ColorField Grid.Row="0" Grid.Column="1" x:Name="KeyColorField" Margin="0,0,0,10" />
+                     Text="{loc:T settings.image.background.mode}" />
+          <ComboBox Grid.Row="0" Grid.Column="1" x:Name="BackgroundModeBox" Margin="0,0,0,4"
+                    SelectionChanged="OnBackgroundModeChanged">
+            <ComboBoxItem Content="{loc:T settings.image.background.mode.aiFallback}" Tag="AiWithFallback" />
+            <ComboBoxItem Content="{loc:T settings.image.background.mode.aiOnly}" Tag="AiOnly" />
+            <ComboBoxItem Content="{loc:T settings.image.background.mode.chromaOnly}" Tag="ChromaKeyOnly" />
+          </ComboBox>
 
-          <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Settings.Label}"
+          <TextBlock Grid.Row="1" Grid.Column="1" Margin="0,0,0,10" Style="{StaticResource Settings.SubHint}"
+                     Text="{loc:T settings.image.background.mode.hint}" />
+
+          <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource Settings.Label}"
+                     Text="{loc:T settings.image.background.color}" />
+          <gui:ColorField Grid.Row="2" Grid.Column="1" x:Name="KeyColorField" Margin="0,0,0,10" />
+
+          <TextBlock Grid.Row="3" Grid.Column="0" Style="{StaticResource Settings.Label}"
                      Text="{loc:T settings.image.background.tolerance}" />
-          <Slider Grid.Row="1" Grid.Column="1" x:Name="ToleranceSlider" Minimum="0" Maximum="100"
+          <Slider Grid.Row="3" Grid.Column="1" x:Name="ToleranceSlider" Minimum="0" Maximum="100"
                   TickFrequency="1" IsSnapToTickEnabled="True"
                   ValueChanged="OnToleranceChanged" VerticalAlignment="Center" />
-          <TextBlock Grid.Row="1" Grid.Column="2" x:Name="ToleranceLabel" Margin="12,0,0,0"
+          <TextBlock Grid.Row="3" Grid.Column="2" x:Name="ToleranceLabel" Margin="12,0,0,0"
                      MinWidth="34" Style="{StaticResource Settings.Label}" />
         </Grid>
 
-        <TextBlock Style="{StaticResource Settings.Hint}" Margin="0,12,0,0"
-                   Text="{loc:T settings.image.background.hint}" />
+        <StackPanel x:Name="ChromaFallbackPanel">
+          <TextBlock Style="{StaticResource Settings.Hint}" Margin="0,4,0,0"
+                     Text="{loc:T settings.image.background.hint}" />
+          <TextBlock x:Name="FallbackHint" Style="{StaticResource Settings.SubHint}" Margin="0,4,0,0"
+                     Text="{loc:T settings.image.background.fallbackHint}" />
+        </StackPanel>
+        <TextBlock x:Name="AiOnlyHint" Visibility="Collapsed" Style="{StaticResource Settings.SubHint}" Margin="0,8,0,0"
+                   Text="{loc:T settings.image.background.aiOnlyHint}" />
       </StackPanel>
     </Border>
 

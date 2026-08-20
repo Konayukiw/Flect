@@ -26,8 +26,15 @@ public partial class Image : UserControl, ISettingsPage
         WebpFallbackBox.IsChecked = image.AllowWebpFallback;
         WebpQualitySlider.Value = image.WebpQuality;
 
+        BackgroundModeBox.SelectedIndex = image.BackgroundMode switch
+        {
+            BackgroundRemovalMode.AiOnly => 1,
+            BackgroundRemovalMode.ChromaKeyOnly => 2,
+            _ => 0,
+        };
         KeyColorField.Value = image.BackgroundKeyColor;
         ToleranceSlider.Value = image.BackgroundTolerance;
+        UpdateBackgroundModeUi();
 
         MetaExifBox.IsChecked = image.Metadata.RemoveExif;
         MetaGpsBox.IsChecked = image.Metadata.RemoveGps;
@@ -54,6 +61,12 @@ public partial class Image : UserControl, ISettingsPage
         image.AllowWebpFallback = WebpFallbackBox.IsChecked == true;
         image.WebpQuality = (int)Math.Round(WebpQualitySlider.Value);
 
+        image.BackgroundMode = BackgroundModeBox.SelectedIndex switch
+        {
+            1 => BackgroundRemovalMode.AiOnly,
+            2 => BackgroundRemovalMode.ChromaKeyOnly,
+            _ => BackgroundRemovalMode.AiWithFallback,
+        };
         image.BackgroundKeyColor = KeyColorField.Value;
         image.BackgroundTolerance = Math.Round(ToleranceSlider.Value);
 
@@ -74,5 +87,26 @@ public partial class Image : UserControl, ISettingsPage
     {
         if (ToleranceLabel is null) return;
         ToleranceLabel.Text = Math.Round(e.NewValue).ToString(CultureInfo.CurrentCulture) + "%";
+    }
+
+    private void OnBackgroundModeChanged(object sender, SelectionChangedEventArgs e) => UpdateBackgroundModeUi();
+
+    private void UpdateBackgroundModeUi()
+    {
+        if (BackgroundModeBox is null || KeyColorField is null || ToleranceSlider is null) return;
+        var mode = BackgroundModeBox.SelectedIndex switch
+        {
+            1 => BackgroundRemovalMode.AiOnly,
+            2 => BackgroundRemovalMode.ChromaKeyOnly,
+            _ => BackgroundRemovalMode.AiWithFallback,
+        };
+        var isAiOnly = mode == BackgroundRemovalMode.AiOnly;
+        var isAiFallback = mode == BackgroundRemovalMode.AiWithFallback;
+        KeyColorField.IsEnabled = !isAiOnly;
+        ToleranceSlider.IsEnabled = !isAiOnly;
+        if (ToleranceLabel is not null) ToleranceLabel.Opacity = isAiOnly ? 0.4 : 1.0;
+        if (ChromaFallbackPanel is not null) ChromaFallbackPanel.Visibility = isAiOnly ? Visibility.Collapsed : Visibility.Visible;
+        if (FallbackHint is not null) FallbackHint.Visibility = isAiFallback ? Visibility.Visible : Visibility.Collapsed;
+        if (AiOnlyHint is not null) AiOnlyHint.Visibility = isAiOnly ? Visibility.Visible : Visibility.Collapsed;
     }
 }
