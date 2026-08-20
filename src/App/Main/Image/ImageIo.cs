@@ -27,6 +27,20 @@ internal static class ImageIo
         File.WriteAllBytes(path, EncodeHeif(image));
     }
 
+    public static void WriteSvg(IMagickImage<byte> image, string path)
+    {
+        var png = image.ToByteArray(MagickFormat.Png32);
+        var encoded = Convert.ToBase64String(png);
+        var svg = string.Format(
+            System.Globalization.CultureInfo.InvariantCulture,
+            "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{0}\" height=\"{1}\" " +
+            "viewBox=\"0 0 {0} {1}\">" +
+            "<image href=\"data:image/png;base64,{2}\" width=\"{0}\" height=\"{1}\"/>" +
+            "</svg>",
+            image.Width, image.Height, encoded);
+        File.WriteAllText(path, svg);
+    }
+
     public static byte[] EncodeHeif(IMagickImage<byte> image)
     {
         var png = image.ToByteArray(MagickFormat.Png32);

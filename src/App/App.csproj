@@ -37,6 +37,7 @@
     <Using Include="Optimizer.Tasks.Folder" />
     <Using Include="Optimizer.Tasks.Image" />
     <Using Include="Optimizer.Tasks.Video" />
+    <Using Include="Optimizer.Tasks.Archive" />
     <Using Include="Optimizer.Tasks.Audio" />
     <Using Include="Optimizer.Tasks.Pdf" />
     <Using Include="Optimizer.Tasks.Text" />

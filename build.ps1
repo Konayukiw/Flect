@@ -69,7 +69,7 @@ if (Test-Path $thirdParty) {
     Get-ChildItem $thirdParty -File | Copy-Item -Destination $toolsOut -Force
 }
 
-$missing = @('ffmpeg.exe', 'ffprobe.exe', 'cfr.jar') |
+$missing = @('ffmpeg.exe', 'ffprobe.exe', 'cfr.jar', '7za.exe', '7z.exe') |
     Where-Object { -not (Test-Path (Join-Path $toolsOut $_)) }
 if ($missing) {
     Write-Host ("  note: {0} not bundled - run fetch\get.ps1. " -f ($missing -join ', ')) `

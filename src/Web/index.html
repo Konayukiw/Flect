@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="ja" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>Flect - エクスプローラーで完結する万能ファイル編集ソフト</title>
+  <link rel="icon" href="assets/Flect.png">
+  <meta name="description" content="Windows のエクスプローラー上でファイルやフォルダを右クリックするだけで、画像・動画・音声・PDF の変換、圧縮、リサイズ、OCR、重複ファイルの削除などすべての作業が完了します。">
+  <meta name="theme-color" content="#05070c">
+  <meta property="og:title" content="Flect — 右クリックで完結する万能ツール">
+  <meta property="og:description" content="エクスプローラーから、画像・動画・音声・PDF の変換、圧縮、リサイズ、OCR、重複削除。すべての処理が右クリックだけで完結します。">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://konayukiw.github.io/Flect/">
+  <!-- og -->
+  <meta property="og:image" content="assets/og.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
+  <div class="dev-badge"><span>author: konayukiw</span></div>
+
+  <button class="theme-toggle" id="themeToggle" type="button" aria-label="テーマ切り替え">
+    <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </button>
+
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+
+  <header class="site-head">
+    <nav class="nav">
+      <a class="brand" href="#top" aria-label="Flect トップへ">
+        <span class="brand-mark" aria-hidden="true">
+          <img class="mark-a" src="assets/Flect.png" alt="">
+        </span>
+        <span class="brand-name">Flect</span>
+      </a>
+      <div class="nav-links">
+        <a href="#demo">デモ</a>
+        <a href="#features">機能</a>
+        <a href="#install">導入</a>
+        <a href="#faq">FAQ</a>
+        <a href="#gallery">ギャラリー</a>
+      </div>
+    </nav>
+  </header>
+
+  <div class="bg" aria-hidden="true">
+    <canvas id="particles"></canvas>
+    <div class="glow glow-a"></div>
+    <div class="glow glow-b"></div>
+  </div>
+
+  <main id="top">
+
+    <section class="hero">
+      <p class="hero-kicker">Windows 10 / 11 対応</p>
+      <h1>右クリックで<br class="sp-only">完結する<br><span class="grad">万能ツール</span></h1>
+      <p class="lead">
+        ブラウザで変換サイトを探すのも、動画編集ソフトで圧縮するのも、もう終わり。<br>
+        エクスプローラー上でファイルを右クリックするだけで、変換・圧縮・リサイズ・OCR・重複削除 - <br>
+        すべての作業が<strong>エクスプローラーだけで</strong>完結します。
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#install"><span>インストーラーをダウンロード</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="btn btn-ghost" href="#demo"><span>デモを試す</span></a>
+      </div>
+      <ul class="hero-stats">
+        <li><strong>60+</strong><span>メニュー項目</span></li>
+        <li><strong>0</strong><span>サーバー送信</span></li>
+      </ul>
+      <div class="scroll-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v16m-6-6l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </section>
+
+    <section class="demo" id="demo">
+      <div class="sec-head">
+        <span class="sec-tag">demo</span>
+        <h2>デモを試す</h2>
+        <p>デスクトップにあるファイルやフォルダを<em>右クリック</em>してみてください。Flect のメニューが開きます。<br>ファイル名をダブルクリックすると名前の変更も試せます。</p>
+      </div>
+
+      <div class="desk-wrap">
+        <div class="desk" id="desk" data-context-step="0">
+          <div class="desk-bar">
+            <h3 id="deskTitle">デスクトップ</h3>
+            <div class="desk-nav" aria-hidden="true"><span>←</span><span>→</span><span class="nav-up">↑</span></div>
+          </div>
+          <div class="desk-icons" id="deskIcons">
+            <button class="icon" type="button" data-kind="file" data-name="ダンス動画.mp4" data-size="1.2 GB" data-ext="mp4" tabindex="0">
+              <span class="ic ic-video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9 5-9 5V7zM13 7h7v10h-7z" fill="currentColor"/></svg></span>
+              <span class="nm">ダンス動画.mp4</span>
+            </button>
+            <button class="icon" type="button" data-kind="file" data-name="写真_0901.jpeg" data-size="4.8 MB" data-ext="jpeg" tabindex="0">
+              <span class="ic ic-image"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="10" r="1.6" fill="currentColor"/><path d="M3 17l5-5 4 4 3-3 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="nm">写真_0901.jpeg</span>
+            </button>
+            <button class="icon" type="button" data-kind="file" data-name="会議メモ.pdf" data-size="2.1 MB" data-ext="pdf" tabindex="0">
+              <span class="ic ic-pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l4 4v16H6z" fill="currentColor"/><path d="M14 2v4h4" fill="none" stroke="var(--bg)" stroke-width="1.4"/><rect x="9" y="10" width="6" height="1.6" rx="0.8" fill="var(--bg)"/><rect x="9" y="13" width="6" height="1.6" rx="0.8" fill="var(--bg)"/></svg></span>
+              <span class="nm">会議メモ.pdf</span>
+            </button>
+            <button class="icon" type="button" data-kind="file" data-name="倉庫整理.zip" data-size="340 MB" data-ext="zip" tabindex="0">
+              <span class="ic ic-zip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 3v3h3V3h3v3h3" stroke="currentColor" stroke-width="1.4" fill="none"/></svg></span>
+              <span class="nm">倉庫整理.zip</span>
+            </button>
+            <button class="icon" type="button" data-kind="folder" data-name="部活の写真" data-ext="null" tabindex="0">
+              <span class="ic ic-folder"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 2h9v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" fill="currentColor"/></svg></span>
+              <span class="nm">部活の写真</span>
+            </button>
+            <button class="icon" type="button" data-kind="folder" data-name="新入社員研修" data-ext="null" tabindex="0">
+              <span class="ic ic-folder"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 2h9v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" fill="currentColor"/></svg></span>
+              <span class="nm">新入社員研修</span>
+            </button>
+          </div>
+          <p class="desk-tip">右クリックで Flect メニューを開けます。Esc キーで閉じます。</p>
+        </div>
+      </div>
+
+      <div class="ctx" id="ctx" role="menu" aria-hidden="true">
+        <div class="ctx-f"></div>
+        <div class="ctx-body" id="ctxBody"></div>
+      </div>
+
+      <div class="scan-overlay" id="scanOverlay" aria-hidden="true">
+        <div class="scan-card">
+          <div class="scan-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4 12h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="2 6"/></svg></div>
+          <div class="scan-title" id="scanTitle">処理を開始します</div>
+          <div class="scan-desc" id="scanDesc"></div>
+          <div class="scan-track"><div class="scan-bar" id="scanBar"></div></div>
+          <div class="scan-msg">すべての処理は PC 上で実行されます。元のファイルは一切変更されません。</div>
+        </div>
+      </div>
+
+      <div id="renameBackdrop" class="rename-backdrop" aria-hidden="true"></div>
+    </section>
+
+    <section class="philo">
+      <p class="philo-line reveal">「変換ツールを探す時間」と<br class="sp-only">「ウィンドウを行き来する手間」。<br><em>その両方を、右クリック 1 回で削減します。 </em></p>
+      <p class="philo-sub reveal">Flect はシェル拡張としてエクスプローラーに統合される、Windows ネイティブのソフトウェアです。C++ / .NET で動作し、ファイルはローカル環境下で編集されるためサーバーに転送されません。</p>
+    </section>
+
+    <section class="pillars">
+      <div class="pillar reveal">
+        <svg viewBox="0 0 24 24" class="p-ic" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3 7-7 10-4-3-7-5-7-10V6l7-3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>元ファイルを守る</h3>
+        <p>処理結果は必ず<strong>新しいファイル</strong>として書き出されます。上書きも消去もされません。名前が重複するときは「(1)」などの接尾辞がつきます。</p>
+      </div>
+      <div class="pillar reveal">
+        <svg viewBox="0 0 24 24" class="p-ic" aria-hidden="true"><path d="M4 12h16M12 4v16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M6 8l-2 4 2 4M18 8l2 4-2 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>まとめて編集</h3>
+        <p>ファイルは何百個でも一括で選択できます。処理は選択全体に対して 1 回の実行で走ります - 1 個ずつ手動で行うなんてことはありません。</p>
+      </div>
+      <div class="pillar reveal">
+        <svg viewBox="0 0 24 24" class="p-ic" aria-hidden="true"><path d="M12 3L2 8l10 5 10-5-10-5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M4 12l8 4 8-4M4 16l8 4 8-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3>オフライン処理</h3>
+        <p>外部の依存ファイルもすべてインストーラーが自動でダウンロードします。アップロードもログ送信もなく、ファイルはどこにも送信されません。</p>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <div class="sec-head">
+        <span class="sec-tag">features</span>
+        <h2>必要な場所に、必要なメニュー</h2>
+        <p>ファイルの種類ごとに、そのファイルに必要な操作だけが右クリックメニューに並びます。</p>
+      </div>
+
+      <div class="feat-row reveal">
+        <div class="feat-copy">
+          <span class="feat-badge">画像</span>
+          <h3>画像：リサイズから背景透過まで</h3>
+          <ul class="feat-list">
+            <li><strong>リサイズ</strong> — 比率指定または絶対ピクセル指定。メニューから指定サイズをワンクリックで選べます。</li>
+            <li><strong>圧縮</strong> — 指定サイズまで圧縮します。画質は可能な限り維持されます。</li>
+            <li><strong>回転</strong> — 任意の角度。角は透過、アルファ非対応形式の場合指定色で塗りつぶされます。</li>
+            <li><strong>変換</strong> — PNG / JPG / WEBP / HEIC / ICO / GIF / SVG 間の変換が可能です。</li>
+            <li><strong>OCR</strong> — 画像から文字を読み取り、保存やコピーができます。</li>
+            <li><strong>メタデータ削除</strong> — EXIF・GPS 位置情報・コメント・カメラ情報を削除し、安全なSNS投稿を可能に。</li>
+            <li><strong>背景削除</strong> — クロマキーでグリーンバックなど特定の 1 色を透過できます。</li>
+          </ul>
+        </div>
+        <figure class="feat-shot">
+          <!-- image-conversion-example -->
+          <div class="shot"></div>
+          <figcaption>画像ファイルを右クリック → Flect メニュー</figcaption>
+        </figure>
+      </div>
+
+      <div class="feat-row flip reveal">
+        <div class="feat-copy">
+          <span class="feat-badge">動画 &amp; 音声</span>
+          <h3>動画：再エンコードなしの切り抜き</h3>
+          <ul class="feat-list">
+            <li><strong>トリム</strong> — クリックした瞬間に切り出し完了。デフォルトでは再エンコードを行わないため高速で書き出しが可能です。</li>
+            <li><strong>サムネイル</strong> — 動画の好きな 1 フレームを PNG / JPG の画像として書き出せます。</li>
+            <li><strong>圧縮</strong> — 目標サイズまで自動で調整します。画質やFPSの低下は最小限に抑えたまま圧縮されます。</li>
+            <li><strong>リサイズ / 回転</strong> — 比率指定または絶対ピクセル指定。メニューから指定サイズをワンクリックで選べます。</li>
+            <li><strong>変換</strong> — MP4 / MOV / MKV / M4A / AVI / WEBM / FLV / GIF 間の変換が可能です。</li>
+            <li><strong>音声抽出</strong> — 動画から音声ファイルの抽出ができます。</li>
+            <li><strong>品質と速度</strong> — コーデック (H.264 / H.265 / VP9 / AV1) やハードウェアエンコード (NVENC / Quick Sync / AMF) は設定で切り替え可能。</li>
+          </ul>
+        </div>
+        <figure class="feat-shot">
+          <!-- video-conversion-example -->
+          <div class="shot"></div>
+          <figcaption>動画 1 本でも、大量の音楽ファイルでもまとめて処理</figcaption>
+        </figure>
+      </div>
+
+      <div class="feat-row reveal">
+        <div class="feat-copy">
+          <span class="feat-badge">フォルダ</span>
+          <h3>フォルダ：整理の汚れ仕事を一手に</h3>
+          <ul class="feat-list">
+            <li><strong>重複削除</strong> — サイズ/ハッシュ/バイトが一致する重複ファイルをまとめて削除できます。</li>
+            <li><strong>空フォルダ削除</strong> — 溜め込んだ空フォルダを 1 クリックで削除できます。</li>
+            <li><strong>ツリー表示</strong> — フォルダ構成を視覚的に表示し、整理が容易になります。</li>
+            <li><strong>一括リネーム</strong> — フォルダ内のファイルをまとめて名前変更できます。</li>
+            <li><strong>解析</strong> — 容量を圧迫しているファイルや重複ファイルをまとめて視覚化します。</li>
+            <li><strong>圧縮</strong> — フォルダを ZIP / 7z / TAR / tar.gz アーカイブにまとめます。</li>
+            <li><strong>展開</strong> — ZIP / 7z / TAR / tar.gz / RAR を新しいフォルダに展開します。</li>
+          </ul>
+        </div>
+        <figure class="feat-shot">
+          <!-- folder-context-menu-example -->
+          <div class="shot"></div>
+          <figcaption>フォルダを右クリック → Flect メニュー</figcaption>
+        </figure>
+      </div>
+
+      <div class="feat-row flip reveal">
+        <div class="feat-copy">
+          <span class="feat-badge">テキスト &amp; ドキュメント</span>
+          <h3>テキスト：CSV、JSON、PDF</h3>
+          <ul class="feat-list">
+            <li><strong>PDF</strong> — プレビュー、複数ファイルの結合、PNG / JPG / TXT への書き出しに対応。</li>
+            <li><strong>テキスト</strong> — ファイルタイプの変換、文字コード (UTF-8 / UTF-16 / Shift_JIS…) の変更、改行コード (CRLF / LF) の切替。</li>
+            <li><strong>JSON</strong> — 整形、キーの並べ替えをルール付きで実行。</li>
+            <li><strong>JAR</strong> — ワンクリックで逆コンパイルし、ソースコードを新規フォルダに書き出します。</li>
+          </ul>
+        </div>
+        <figure class="feat-shot">
+          <!-- text-document-context-menu-example -->
+          <div class="shot"></div>
+          <figcaption>PDF のプレビュー、結合、書き出しも簡単に。 Adobe Acrobat Reader はもう必要ありません。</figcaption>
+        </figure>
+      </div>
+
+      <div class="table-scroll">
+        <table class="conv-table">
+          <caption>変換可能なファイルタイプの例</caption>
+          <thead>
+            <tr><th>入力</th><th>出力</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>PNG / JPG / WEBP / HEIC / ICO / GIF / SVG</td><td>同列の任意の形式へ</td></tr>
+            <tr><td>MP4 / MOV / MKV / M4A / AVI / WEBM / FLV</td><td>同列の任意の形式へ ＋ <strong>GIF</strong></td></tr>
+            <tr><td>MP3 / WAV / AIF / AIFF / AAC / OGG / WMA</td><td>同列の任意の形式へ ＋ <strong>M4A</strong></td></tr>
+            <tr><td>音声抽出</td><td>MP3 / M4A / WAV / AIF / AIFF / AAC / OGG / WMA</td></tr>
+            <tr><td>PDF</td><td>PNG / JPG / TXT</td></tr>
+            <tr><td>CSV</td><td>JSON / XML / HTML / MD</td></tr>
+            <tr><td>JSON</td><td>CSV / XML</td></tr>
+            <tr><td>INI / CFG / CONF</td><td>JSON / XML</td></tr>
+            <tr><td>JAR</td><td>逆コンパイル済み <code>.java</code> ソースコード</td></tr>
+            <tr><td>ZIP / 7z / TAR / tar.gz / RAR</td><td>新しいフォルダへの展開</td></tr>
+            <tr><td>フォルダ</td><td>ZIP / 7z / TAR / tar.gz のアーカイブ</td></tr>
+            <tr><td>テキストの文字コード</td><td>UTF-8 / UTF-8 (BOM) / UTF-16 / Shift_JIS</td></tr>
+            <tr><td>改行コード</td><td>CRLF (Windows) / LF (Unix)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="arch" id="arch">
+      <div class="sec-head">
+        <span class="sec-tag">how it works</span>
+        <h2>動作の仕組み</h2>
+        <p>エクスプローラーにメニューを表示する C++ シェル拡張と、実際の処理を担う .NET アプリケーションが連携しています。</p>
+      </div>
+      <div class="arch-grid">
+        <div class="arch-card reveal">
+          <span class="arch-x">C++</span>
+          <h3>シェル拡張</h3>
+          <p>エクスプローラーの中で右クリックメニューを表示するフロント担当。 Windows ネイティブ <code>IContextMenu</code> ハンドラなので動作が軽く、選んだファイルの情報をその場で的確に読み取れます。</p>
+          <ul>
+            <li>エクスプローラーの標準メニューとして動作</li>
+            <li>ファイル種別に応じたメニューを動的生成</li>
+            <li>Windows 11 では「その他のオプションを表示」配下に配置されます</li>
+          </ul>
+        </div>
+        <div class="arch-card reveal">
+          <span class="arch-x">.NET</span>
+          <h3>処理</h3>
+          <p>変換・圧縮・解析などの実処理と設定管理を担います。シェル拡張からはランチャー経由で呼び出され、進捗と結果を返します。</p>
+          <ul>
+            <li>FFmpeg / ImageMagick / PDFium などが同梱</li>
+            <li>進捗ウィンドウを表示し、失敗・キャンセル時はファイル処理をキャンセルし自動で削除します。</li>
+            <li>設定は <code>%APPDATA%</code> 配下の JSON ファイルで管理されています。</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="install" id="install">
+      <div class="sec-head">
+        <span class="sec-tag">setup</span>
+        <h2>インストールは 3 ステップ</h2>
+        <p>ダウンロードして、実行して、あとは右クリックするだけ。</p>
+      </div>
+      <ol class="steps">
+        <li class="reveal">
+          <span class="step-num">01</span>
+          <div>
+            <h3>インストーラーを入手</h3>
+            <p><a class="link" href="https://github.com/Konayukiw/Flect/releases/latest">Releases</a> から最新の <code>Flect-Setup.exe</code> をダウンロードします。<code>.NET 10 Desktop Runtime</code> がインストールされていない場合、セットアップが自動で検出して案内します。</p>
+          </div>
+        </li>
+        <li class="reveal">
+          <span class="step-num">02</span>
+          <div>
+            <h3>セットアップを実行</h3>
+            <p>ダウンロードしたインストーラーを実行するだけです。すべての変換・解析エンジンはインストーラーに同梱されています。セットアップ時にエクスプローラーが再起動することがありますが、これは正常な動作です。</p>
+          </div>
+        </li>
+        <li class="reveal">
+          <span class="step-num">03</span>
+          <div>
+            <h3>右クリックしてみる</h3>
+            <p>ファイルを右クリックして「その他のオプションを表示」を開くと、 Flect のメニューが表示されます。設定アプリでメニュー項目や圧縮プリセットを好みに調整できます。</p>
+            <p class="note">コマンドプロンプトで<code>reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve</code> を実行してエクスプローラーを再起動すると、Flect を第一階層の右クリックメニューに表示することもできます。元に戻すにはレジストリを削除して再起動します。</p>
+          </div>
+        </li>
+      </ol>
+      <div class="install-cta reveal">
+        <a class="btn btn-primary btn-lg" href="https://github.com/Konayukiw/Flect/releases/latest"><span>Releases からダウンロード</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="btn btn-ghost btn-lg" href="https://github.com/Konayukiw/Flect"><span>GitHub リポジトリ</span></a>
+      </div>
+      <div class="reqs reveal">
+        <h3>動作環境</h3>
+        <ul>
+          <li>64bit Windows 11 / Windows 10</li>
+          <li>.NET 10 Desktop Runtime（無い場合はセットアップが案内）</li>
+          <li>HEIC の書き出しを行う場合のみ <a class="link" href="https://www.microsoft.com/store/productId/9N4WGH0Z6VHQ" target="_blank" rel="noopener">HEVC Video Extensions</a> が必要です。</li>
+          <li>JAR の逆コンパイルのみ JDK / JRE が必要です。</li>
+          <li>OCR のみ Windows 言語パックが必要です。</li>
+        </ul>
+        <p class="reqs-note">画像・動画・PDF・逆コンパイルのエンジンはすべて同梱されています。追加ダウンロードなし、ファイルはサーバーに転送されず、ローカルで動作します。</p>
+      </div>
+    </section>
+
+    <section class="pkg" id="pkg">
+      <div class="sec-head">
+        <span class="sec-tag">for developers</span>
+        <h2>開発者向け</h2>
+        <p>PowerShell のスクリプトを実行するだけでビルド可能。</p>
+      </div>
+      <div class="code-grid">
+        <div class="code-card reveal">
+          <div class="code-head"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-title">build.ps1</span></div>
+          <pre class="code-body"><code>.\fetch\get.ps1<span class="cm"> / </span>.\build.ps1<span class="cm"> / </span>.\package.ps1</code></pre>
+        </div>
+        <div class="code-card reveal">
+          <div class="code-head"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-title">install.ps1</span></div>
+          <pre class="code-body"><code>.\install.ps1 -Force</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq" id="faq">
+      <div class="sec-head">
+        <span class="sec-tag">faq</span>
+        <h2>よくある質問</h2>
+      </div>
+      <div class="faq-list">
+        <details class="reveal">
+          <summary>Flect メニューが「その他のオプションを表示」の中にあり開きづらい</summary>
+          <p>右クリックメニューを Windows 10 仕様の形式に戻すことで右クリックメニューに直接表示可能です。コマンドプロンプトで<code>reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve</code> を実行し、エクスプローラーを再起動します。これはシステム全体に影響するため、好みでない場合はレジストリを削除して元に戻してください。</p>
+        </details>
+        <details class="reveal">
+          <summary>変換後のファイルはどこに作成される？</summary>
+          <p>新しいファイルとして作成されます。元ファイルは変更も削除もされません。名前が重複する場合は (1) のように連番を付けます。</p>
+        </details>
+        <details class="reveal">
+          <summary>削除したファイルは復元できる？</summary>
+          <p>デフォルトでは削除されたファイルはごみ箱に移動するので、復元できます。設定から完全に削除する方式に切り替えた場合のみ、復元できません。</p>
+        </details>
+        <details class="reveal">
+          <summary>「to HEIC」が失敗するのはなぜ？</summary>
+          <p>HEIC の書き出しには Microsoft の <strong>HEVC Video Extensions</strong> が必要です(読み込みは不要)。Flect はこのコーデックを同梱できないため、HEIC 書き出し時のみ WIC 経由で Windows 側のエンコーダーを使用します。</p>
+        </details>
+        <details class="reveal">
+          <summary>OCR で「言語の認識機能がない」と警告される</summary>
+          <p>Flect は Windows が搭載する文字認識機能を使用しています。設定 → OCR でインストール済みの言語が確認でき、言語パックの追加も案内されます。言語パックは容量が大きいことがあり、追加には管理者権限が必要です。</p>
+        </details>
+        <details class="reveal">
+          <summary>トリムした動画が、マークした位置より少し前から始まる</summary>
+          <p>再エンコードしない影響です。映像はキーフレームごとに保存されており、コピーだけで切るとキーフレームの開始点まで遡る必要があるため、数秒のずれが生じることがあります。正確な切り抜きを行いたい場合は、設定 → ビデオ → トリムで「指定した位置に合わせる」に切り替えてください。この場合、処理速度が低下します。</p>
+        </details>
+        <details class="reveal">
+          <summary>ンァーッ！右クリックメニューの項目が多すぎます！</summary>
+          <p>設定アプリの 一般 → 右クリックメニュー項目 で、非表示にしたい項目のチェックを外してください。</p>
+        </details>
+        <details class="reveal">
+          <summary>アンインストールしたい</summary>
+          <p>Windows の 設定 → アプリ から、他のアプリと同じようにアンインストールできます。</p>
+        </details>
+        <details class="reveal">
+          <summary>設定はどこに保存されますか？</summary>
+          <p><code>%APPDATA%\Flect\settings.json</code> に保存されます。エクスプローラーメニュー自体が必要とする値の一部は <code>HKCU\Software\Flect</code> にも保存されます。「設定をリセット」すると両方がクリアされ、シェル登録と学習済みエンコーダー結果はそのまま残ります。</p>
+        </details>
+      </div>
+      <div class="faq-foot reveal">お困りの内容が FAQ で解決しない場合は <a class="link" href="https://github.com/Konayukiw/Flect/issues" target="_blank" rel="noopener">GitHub Issues</a> へ問題を送信してください。動作ログを一緒に貼っていただけると助かります。</div>
+    </section>
+
+    <section class="final">
+      <p class="final-word">ファイル整理の「あの作業」、<br>右クリック 1 回に。</p>
+      <div class="final-actions">
+        <a class="btn btn-primary btn-lg" href="https://github.com/Konayukiw/Flect/releases/latest"><span>無料でダウンロード</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <p class="final-note">Apache License 2.0 のオープンソースソフトウェアです。<br>機能追加などのコントリビューションも歓迎しています。</p>
+    </section>
+
+  </main>
+
+  <footer class="site-foot">
+    <div class="foot-top">
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true">
+          <img src="assets/Flect.png" alt="">
+        </span>
+        <span class="brand-name">Flect</span>
+      </a>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <span class="foot-h">もっと見る</span>
+          <a href="#demo">デモ</a>
+          <a href="#features">機能</a>
+          <a href="#install">導入</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div class="foot-col">
+          <span class="foot-h">リンク</span>
+          <a href="https://github.com/Konayukiw/Flect" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/Konayukiw/Flect/releases/latest" target="_blank" rel="noopener">Releases</a>
+          <a href="https://github.com/Konayukiw/Flect/issues" target="_blank" rel="noopener">Issues</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <p>© <span id="year">2025</span> Konayukiw · Licensed under <a class="link" href="https://github.com/Konayukiw/Flect/blob/main/LICENSE" target="_blank" rel="noopener">Apache License 2.0</a></p>
+      <p class="foot-vibe">このページは Qwen 3.8 Max によって生成されました。</p>
+    </div>
+  </footer>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "animejs": "https://esm.sh/animejs@3.2.2",
+        "canvas-confetti": "https://esm.sh/canvas-confetti@1.9.3"
+      }
+    }
+  </script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

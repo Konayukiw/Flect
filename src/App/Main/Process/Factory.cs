@@ -9,6 +9,9 @@ internal static class Factory
         "folder.tree" => new FolderTree(request),
         "folder.rename" => new FolderRename(request),
         "folder.analyze" => new FolderAnalyze(request),
+        "folder.compress" => new FolderCompress(request),
+
+        "archive.extract" => new ArchiveExtract(request),
 
         "image.resize" => new ImageResize(request),
         "image.compress" => new ImageCompress(request),
@@ -20,6 +23,7 @@ internal static class Factory
 
         "video.resize" => new VideoResize(request),
         "video.trim" => new VideoTrim(request),
+        "video.thumbnail" => new VideoThumbnail(request),
         "video.compress" => new VideoCompress(request),
         "video.rotate" => new VideoRotate(request),
         "video.convert" => new VideoConvert(request),

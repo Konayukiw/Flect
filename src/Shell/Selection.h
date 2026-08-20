@@ -2,7 +2,7 @@
 
 #include "framework.h"
 
-enum class Category { None, Folder, Pdf, Image, Video, Audio, Text, Jar };
+enum class Category { None, Folder, Pdf, Image, Video, Audio, Text, Jar, Archive };
 
 struct SelectionInfo {
   std::vector<std::wstring> paths;

@@ -8,6 +8,9 @@ internal static class Tools
     public static string Ffmpeg => Resolve("ffmpeg.exe", "ffmpeg");
     public static string Ffprobe => Resolve("ffprobe.exe", "ffprobe");
 
+    public static string SevenZip => Resolve("7za.exe", "7-Zip");
+    public static string SevenZipFull => Resolve("7z.exe", "7-Zip");
+
     public static string CfrJar
     {
         get

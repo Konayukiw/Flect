@@ -14,8 +14,9 @@ struct FormatMapping {
 };
 
 constexpr FormatMapping kImageExtensions[] = {
-    {L"png", L"PNG"},   {L"jpg", L"JPG"},   {L"jpeg", L"JPG"}, {L"webp", L"WEBP"},
-    {L"heic", L"HEIC"}, {L"heif", L"HEIC"}, {L"ico", L"ICO"},  {L"gif", L"GIF"},
+    {L"png", L"PNG"}, {L"jpg", L"JPG"},  {L"jpeg", L"JPG"}, {L"webp", L"WEBP"},
+    {L"heic", L"HEIC"}, {L"heif", L"HEIC"}, {L"ico", L"ICO"}, {L"gif", L"GIF"},
+    {L"svg", L"SVG"},
 };
 
 constexpr FormatMapping kVideoExtensions[] = {
@@ -74,6 +75,16 @@ bool IsTextExtension(const std::wstring& extension) {
   return false;
 }
 
+bool EndsWithTarGz(const std::wstring& path) {
+  const size_t separator = path.find_last_of(L'\\');
+  const std::wstring name = separator == std::wstring::npos
+                                ? path
+                                : path.substr(separator + 1);
+  std::wstring lower = ToLower(name);
+  return lower.size() > 7 &&
+         lower.compare(lower.size() - 7, 7, L".tar.gz") == 0;
+}
+
 struct Classification {
   Category category = Category::None;
   const wchar_t* format = nullptr;
@@ -87,6 +98,12 @@ Classification Classify(const std::wstring& path, bool isDirectory) {
 
   if (extension == L"pdf") return {Category::Pdf, L"PDF"};
   if (extension == L"jar") return {Category::Jar, L"JAR"};
+
+  if (EndsWithTarGz(path)) return {Category::Archive, L"TAR.GZ"};
+  if (extension == L"zip") return {Category::Archive, L"ZIP"};
+  if (extension == L"7z") return {Category::Archive, L"7Z"};
+  if (extension == L"tar") return {Category::Archive, L"TAR"};
+  if (extension == L"rar") return {Category::Archive, L"RAR"};
 
   if (const wchar_t* image =
           Lookup(kImageExtensions, std::size(kImageExtensions), extension)) {
@@ -111,7 +128,7 @@ Classification Classify(const std::wstring& path, bool isDirectory) {
 
 const std::vector<std::wstring>& Sel::ImageFormats() {
   static const std::vector<std::wstring> formats = {L"PNG",  L"JPG", L"WEBP",
-                                                    L"HEIC", L"ICO", L"GIF"};
+                                                    L"HEIC", L"ICO", L"GIF", L"SVG"};
   return formats;
 }
 

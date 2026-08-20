@@ -36,7 +36,7 @@ Select as many files as you like - these run over the whole selection at once, n
 | **Resize** | Scale down by percentage, or to custom pixels |
 | **Compress** | Squeeze down to a target file size |
 | **Rotate** | Any angle - corners stay transparent, or turn white if the format has no alpha |
-| **Convert** | Between PNG, JPG, WEBP, HEIC, ICO and GIF |
+| **Convert** | Between PNG, JPG, WEBP, HEIC, ICO, GIF and SVG |
 | **OCR** | Read the text out of an image, to a file, the clipboard, or just on screen |
 | **Remove Metadata** | Strip EXIF, GPS coordinates, comments and camera information |
 | **Remove Background** | Make one colour transparent |
@@ -49,10 +49,11 @@ Select as many files as you like - these run over the whole selection at once, n
 | --- | --- |
 | **Resize** | Scale down by percentage or to custom pixels |
 | **Trim** | Scrub to the part you want and keep just that - instantly, no re-encoding |
+| **Thumbnail** | Export any single frame as a PNG or JPG image |
 | **Compress** | Hit a target size - including a one-click Discord preset |
 | **Rotate** | Any angle, with a chosen fill colour |
 | **Convert** | Between MP4, MOV, MKV, M4A, AVI, WEBM, FLV,  animated GIF |
-| **Extract Audio** | Pull the soundtrack out to MP3, M4A, WAV, AAC, OGG and more |
+| **Extract Audio** | Extract soundtrack out to MP3, M4A, WAV, AAC, OGG and more |
 
 ### Folders
 
@@ -63,8 +64,17 @@ Select as many files as you like - these run over the whole selection at once, n
 | **Tree** | Print the folder structure |
 | **Rename** | Batch rename with a custom prefix, suffix or numbering |
 | **Analyze** | Show total size, largest files, breakdown by file type, duplicates and empty folders |
+| **Compress** | Pack a folder into a ZIP, 7z, TAR or tar.gz |
 
-Duplicates are matched on size, hash, then a full byte-for-byte comparison - two files are only ever called duplicates once their contents genuinely match.
+Duplicates are matched on size, hash and per-byte comparison.
+
+### Archives
+
+| | |
+| --- | --- |
+| **Extract** | Unpack ZIP, 7z, TAR, tar.gz and RAR archives into a new folder |
+
+RAR is read-only: Flect can extract `.rar` files but cannot create them. This is technical capacity and not caused by my laziness.
 
 ### Text files
 
@@ -79,9 +89,9 @@ Duplicates are matched on size, hash, then a full byte-for-byte comparison - two
 
 | From | To |
 | --- | --- |
-| **PNG, JPG, WEBP, HEIC, ICO, GIF** | Any other format in this row |
-| **MP4, MOV, MKV, M4A, AVI, WEBM, FLV** | Any other format in this row + **GIF** |
-| **MP3, WAV, AIF, AIFF, AAC, OGG, WMA** | Any other format in this row + **M4A** |
+| **PNG, JPG, WEBP, HEIC, ICO, GIF, SVG** | Any other format in this row |
+| **MP4, MOV, MKV, M4A, AVI, WEBM, FLV** | Any other format in this row + GIF |
+| **MP3, WAV, AIF, AIFF, AAC, OGG, WMA** | Any other format in this row + M4A |
 | Video → **Extract Audio** | MP3, M4A, WAV, AIF, AIFF, AAC, OGG, WMA |
 | **PDF** | PNG, JPG, TXT |
 | **Any text file** | TXT |
@@ -90,6 +100,7 @@ Duplicates are matched on size, hash, then a full byte-for-byte comparison - two
 | **XML** | JSON |
 | **INI, CFG, CONF** | JSON, XML |
 | **JAR** | a folder of decompiled `.java` sources |
+| **Folder** | ZIP, 7z, TAR, tar.gz archive of the folder |
 | Text encodings | UTF-8, UTF-8 (BOM), UTF-16, Shift_JIS |
 | Line endings | CRLF (Windows), LF (Unix) |
 
@@ -97,14 +108,10 @@ Duplicates are matched on size, hash, then a full byte-for-byte comparison - two
 
 Open **Flect** from the Start menu.
 
-- **General** - Theme, language (English / 日本語 / 简体中文), when the progress window closes by
-  itself, and a checkbox for every context-menu entry so you can hide the ones you never use.
-- **Folder** - Duplicate matching rules, whether deletions use the Recycle Bin, folders to skip
-  while scanning, rename defaults, and what counts as an "empty" folder.
-- **Video** - codec, hardware acceleration (NVENC / Quick Sync / AMF), whether to favour speed or
-  quality, GIF export settings, and the rotation fill colour.
-- **Image** - WebP fallback for compression, the colour Remove Background keys out, and exactly
-  which metadata gets stripped.
+- **General** - Theme, language (English / 日本語 / 简体中文), when the progress window closes by itself, and a checkbox for every context-menu entry so you can hide the ones you never use.
+- **Folder** - Duplicate matching rules, whether deletions use the Recycle Bin, folders to skip while scanning, rename defaults, what counts as an "empty" folder, and the archive format used by folder compression (ZIP / 7z / TAR / tar.gz).
+- **Video** - codec, hardware acceleration (NVENC / Quick Sync / AMF), whether to favour speed or quality, GIF export settings, thumbnail format (PNG / JPG), JPG quality and maximum width, and the rotation fill colour.
+- **Image** - WebP fallback for compression, the colour Remove Background keys out, and exactly which metadata gets stripped.
 - **Text** - what to do with characters Shift_JIS cannot represent, and JSON key-sorting rules.
 - **OCR** - recognition language, where the text goes, and the output encoding.
 
@@ -254,6 +261,7 @@ Flect is two halves: C++ shell extension (`src/Shell`) to render the menu inside
 | Runtime | .NET 10 Desktop Runtime | Setup automatically checks |
 | Images | Magick.NET (ImageMagick) | NuGet |
 | Video | ffmpeg / ffprobe | `fetch\get.ps1` |
+| Archives | 7-Zip (7za.exe + 7z.exe) | `fetch\get.ps1` |
 | PDF | PDFtoImage / PDFium / PdfPig | NuGet |
 | Hashing | System.IO.Hashing | NuGet |
 | Encoding detection | UTF.Unknown | NuGet |
@@ -267,4 +275,4 @@ Flect is two halves: C++ shell extension (`src/Shell`) to render the menu inside
 
 Flect is licensed under the [Apache License 2.0](LICENSE).
 
-It bundles third-party components under their own licences including ImageMagick, FFmpeg (GPLv3), PDFium and CFR. Every component, its licence and the full licence text are listed in [THIRD PARTY NOTICE](THIRD-PARTY-NOTICE.md).
+It bundles third-party components under their own licences including ImageMagick, FFmpeg (GPLv3), PDFium, 7-Zip (LGPL) and CFR. Every component, its licence and the full licence text are listed in [THIRD PARTY NOTICE](THIRD-PARTY-NOTICE.md).

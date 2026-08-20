@@ -21,6 +21,10 @@ public partial class Video : UserControl, ISettingsPage
             (GifDither.Bayer, "settings.video.gif.dither.bayer"),
             (GifDither.FloydSteinberg, "settings.video.gif.dither.floyd"));
 
+        Fields.Fill(ThumbnailFormatBox,
+            (ThumbnailFormat.Png, "settings.video.thumbnail.format.png"),
+            (ThumbnailFormat.Jpg, "settings.video.thumbnail.format.jpg"));
+
         Fields.Fill(HardwareBox, (HardwareEncoder.None, "settings.video.hardware.none"));
     }
 
@@ -56,6 +60,10 @@ public partial class Video : UserControl, ISettingsPage
 
         TrimKeyframeBox.IsChecked = video.Trim.Accuracy == TrimAccuracy.Keyframe;
         TrimExactBox.IsChecked = video.Trim.Accuracy == TrimAccuracy.Exact;
+
+        Fields.Select(ThumbnailFormatBox, video.Thumbnail.Format);
+        Fields.ShowInt(ThumbnailQualityBox, video.Thumbnail.Quality);
+        Fields.ShowInt(ThumbnailWidthBox, video.Thumbnail.MaxWidth);
     }
 
     void ISettingsPage.Store(Settings settings)
@@ -89,6 +97,10 @@ public partial class Video : UserControl, ISettingsPage
         video.Trim.Accuracy = TrimExactBox.IsChecked == true
             ? TrimAccuracy.Exact
             : TrimAccuracy.Keyframe;
+
+        video.Thumbnail.Format = Fields.Selected(ThumbnailFormatBox, video.Thumbnail.Format);
+        video.Thumbnail.Quality = Fields.Int(ThumbnailQualityBox, video.Thumbnail.Quality, 1, 100);
+        video.Thumbnail.MaxWidth = Fields.Int(ThumbnailWidthBox, video.Thumbnail.MaxWidth, 0, 3840);
     }
 
     private async void LoadHardwareChoices()

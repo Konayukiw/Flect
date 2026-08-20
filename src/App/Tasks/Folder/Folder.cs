@@ -272,6 +272,42 @@ internal sealed class FolderRename(Request request) : TaskBase(request)
     }
 }
 
+internal sealed class FolderCompress(Request request) : BatchTask(request)
+{
+    public override string Title => Loc.T("menu.folder.compress");
+
+    protected override async Task ProcessAsync(string path, ITaskProgress progress)
+    {
+        var format = Settings.Current.Folder.Archive.CompressFormat;
+        var parent = Path.GetDirectoryName(path) ?? Directory.GetCurrentDirectory();
+        var name = Path.GetFileName(path);
+        var output = OutputPath.Derive(path, extension: Type(format));
+
+        progress.Indeterminate();
+        progress.Status(Loc.F("label.compress", name));
+
+        if (format == ArchiveCompressFormat.TarGz)
+        {
+            var intermediate = OutputPath.Scratch(output, ".tar");
+            using var working = new WorkingFile(intermediate);
+            await SevenZip.RunAsync(["a", "-ttar", intermediate, name], progress, parent);
+            await SevenZip.RunAsync(["a", "-tgzip", output, Path.GetFileName(intermediate)],
+                                    progress, parent);
+            return;
+        }
+
+        await SevenZip.RunAsync(["a", "-t" + Type(format), output, name], progress, parent);
+    }
+
+    private static string Type(ArchiveCompressFormat format) => format switch
+    {
+        ArchiveCompressFormat.SevenZip => "7z",
+        ArchiveCompressFormat.Tar => "tar",
+        ArchiveCompressFormat.TarGz => "tar.gz",
+        _ => "zip",
+    };
+}
+
 internal sealed class FolderAnalyze(Request request) : TaskBase(request)
 {
     private AnalyzeReport? _report;

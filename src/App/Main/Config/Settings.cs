@@ -20,6 +20,10 @@ internal enum GifDither { None, Bayer, FloydSteinberg }
 
 internal enum TrimAccuracy { Keyframe, Exact }
 
+internal enum ThumbnailFormat { Png, Jpg }
+
+internal enum ArchiveCompressFormat { Zip, SevenZip, Tar, TarGz }
+
 internal enum SjisFallback { ReplaceAndWarn, Substitute, Fail }
 
 internal enum JsonKeyOrder { Ordinal, IgnoreCase, Natural }
@@ -87,6 +91,11 @@ internal sealed class AnalyzeSettings
     public ExclusionRules Exclusions { get; set; } = new();
 }
 
+internal sealed class ArchiveSettings
+{
+    public ArchiveCompressFormat CompressFormat { get; set; } = ArchiveCompressFormat.Zip;
+}
+
 internal sealed class FolderSettings
 {
     public DuplicateSettings Duplicates { get; set; } = new();
@@ -96,6 +105,7 @@ internal sealed class FolderSettings
     public EmptyFolderSettings Empty { get; set; } = new();
     public TreeSettings Tree { get; set; } = new();
     public AnalyzeSettings Analyze { get; set; } = new();
+    public ArchiveSettings Archive { get; set; } = new();
 }
 
 internal sealed class VideoPresets
@@ -118,10 +128,18 @@ internal sealed class TrimSettings
     public TrimAccuracy Accuracy { get; set; } = TrimAccuracy.Keyframe;
 }
 
+internal sealed class ThumbnailSettings
+{
+    public ThumbnailFormat Format { get; set; } = ThumbnailFormat.Png;
+    public int Quality { get; set; } = 90;
+    public int MaxWidth { get; set; }
+}
+
 internal sealed class VideoSettings
 {
     public VideoPresets Presets { get; set; } = new();
     public TrimSettings Trim { get; set; } = new();
+    public ThumbnailSettings Thumbnail { get; set; } = new();
     public VideoCodecChoice Codec { get; set; } = VideoCodecChoice.H264;
     public HardwareEncoder Hardware { get; set; } = HardwareEncoder.None;
     public EncodePriority Priority { get; set; } = EncodePriority.Balanced;

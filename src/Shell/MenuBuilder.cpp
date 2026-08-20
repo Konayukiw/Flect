@@ -139,7 +139,12 @@ std::vector<MenuNode> BuildFolder(const LabelTable& text) {
       Leaf(L"folder.tree", text.tree, L"folder.tree"),
       Leaf(L"folder.rename", text.rename, L"folder.rename"),
       Leaf(L"folder.analyze", text.analyze, L"folder.analyze"),
+      Leaf(L"folder.compress", text.compress, L"folder.compress"),
   };
+}
+
+std::vector<MenuNode> BuildArchive(const LabelTable& text) {
+  return {Leaf(L"archive.extract", text.extract, L"archive.extract")};
 }
 
 std::vector<MenuNode> BuildPdf(const SelectionInfo& selection, const LabelTable& text) {
@@ -214,6 +219,7 @@ std::vector<MenuNode> BuildVideo(const SelectionInfo& selection, const ShellConf
   items.push_back(ResizeMenu(config, text, L"video", L"Video"));
   if (selection.paths.size() == 1) {
     items.push_back(Leaf(L"video.trim", text.trim, L"video.trim"));
+    items.push_back(Leaf(L"video.thumbnail", text.thumbnail, L"video.thumbnail"));
   }
   items.push_back(Popup(L"video.compress", text.compress, std::move(compress)));
   items.push_back(RotateMenu(config, text, L"video", L"Video"));
@@ -342,6 +348,9 @@ std::vector<MenuNode> MenuBuilder::Build(const SelectionInfo& selection,
       break;
     case Category::Jar:
       nodes = BuildJar(text);
+      break;
+    case Category::Archive:
+      nodes = BuildArchive(text);
       break;
     case Category::None:
     default:

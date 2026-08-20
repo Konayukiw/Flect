@@ -19,6 +19,12 @@ public partial class Folder : UserControl, ISettingsPage
             (ReportFormat.Json, "JSON"),
             (ReportFormat.Html, "HTML"),
             (ReportFormat.Txt, "TXT"));
+
+        Fields.Fill(CompressFormatBox,
+            (ArchiveCompressFormat.Zip, "settings.folder.compress.format.zip"),
+            (ArchiveCompressFormat.SevenZip, "settings.folder.compress.format.sevenzip"),
+            (ArchiveCompressFormat.Tar, "settings.folder.compress.format.tar"),
+            (ArchiveCompressFormat.TarGz, "settings.folder.compress.format.targz"));
     }
 
     void ISettingsPage.Load(Settings settings)
@@ -56,6 +62,8 @@ public partial class Folder : UserControl, ISettingsPage
 
         Fields.Select(ReportFormatBox, folder.Analyze.SaveFormat);
         AnalyzeExclusions.Value = folder.Analyze.Exclusions;
+
+        Fields.Select(CompressFormatBox, folder.Archive.CompressFormat);
     }
 
     void ISettingsPage.Store(Settings settings)
@@ -94,6 +102,9 @@ public partial class Folder : UserControl, ISettingsPage
 
         folder.Analyze.SaveFormat = Fields.Selected(ReportFormatBox, folder.Analyze.SaveFormat);
         folder.Analyze.Exclusions = AnalyzeExclusions.Value;
+
+        folder.Archive.CompressFormat =
+            Fields.Selected(CompressFormatBox, folder.Archive.CompressFormat);
     }
 
     private void OnDeleteModeChanged(object sender, RoutedEventArgs e)

@@ -18,7 +18,8 @@ internal abstract class ImageTask(Request request) : BatchTask(request)
         using var working = new WorkingFile(output);
         using var frames = new MagickImageCollection(path);
 
-        if (frames.Count > 1 && frames[0].Format == MagickFormat.Gif)
+        if (frames.Count > 1 && frames[0].Format == MagickFormat.Gif
+            && !string.Equals(OutputExtension, ".svg", StringComparison.OrdinalIgnoreCase))
         {
             frames.Coalesce();
             foreach (var frame in frames) Transform(frame);
@@ -30,7 +31,14 @@ internal abstract class ImageTask(Request request) : BatchTask(request)
 
         var chosen = frames.OrderByDescending(frame => (long)frame.Width * frame.Height).First();
         Transform(chosen);
-        ImageIo.Write(chosen, output);
+        if (string.Equals(OutputExtension, ".svg", StringComparison.OrdinalIgnoreCase))
+        {
+            ImageIo.WriteSvg(chosen, output);
+        }
+        else
+        {
+            ImageIo.Write(chosen, output);
+        }
         working.Keep();
     }, progress.Token);
 

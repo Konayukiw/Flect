@@ -26,7 +26,9 @@ struct LabelTable {
   const wchar_t* merge;
   const wchar_t* resize;
   const wchar_t* trim;
+  const wchar_t* thumbnail;
   const wchar_t* compress;
+  const wchar_t* extract;
   const wchar_t* rotate;
   const wchar_t* convert;
   const wchar_t* ocr;
@@ -54,7 +56,9 @@ inline constexpr LabelTable kEn = {
     L"Merge",
     L"Resize",
     L"Trim",
+    L"Thumbnail",
     L"Compress",
+    L"Extract...",
     L"Rotate",
     L"Convert",
     L"OCR",
@@ -80,7 +84,9 @@ inline constexpr LabelTable kJa = {
     L"結合", 
     L"リサイズ",
     L"トリム",
+    L"サムネイル",
     L"圧縮",
+    L"展開...",
     L"回転",
     L"変換",
     L"OCR",
@@ -106,7 +112,9 @@ inline constexpr LabelTable kZh = {
     L"合并",
     L"调整尺寸",
     L"剪切",
+    L"缩略图",
     L"压缩",
+    L"解压...",
     L"旋转",
     L"转换",
     L"文字识别",

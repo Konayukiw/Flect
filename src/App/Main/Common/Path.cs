@@ -18,15 +18,15 @@ internal static class OutputPath
         return candidate;
     }
 
-    public static string DeriveDirectory(string source, string suffix = "")
+    public static string DeriveDirectory(string source, string? stem = null, string suffix = "")
     {
         var directory = Path.GetDirectoryName(source) ?? Directory.GetCurrentDirectory();
-        var stem = Path.GetFileNameWithoutExtension(source) + suffix;
+        var baseName = (stem ?? Path.GetFileNameWithoutExtension(source)) + suffix;
 
-        var candidate = Path.Combine(directory, stem);
+        var candidate = Path.Combine(directory, baseName);
         for (int n = 2; Exists(candidate); n++)
         {
-            candidate = Path.Combine(directory, $"{stem} ({n})");
+            candidate = Path.Combine(directory, $"{baseName} ({n})");
         }
         return candidate;
     }

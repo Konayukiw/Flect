@@ -149,5 +149,25 @@
       </StackPanel>
     </Border>
 
+    <Border Style="{StaticResource Settings.Section}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource Settings.SectionTitle}"
+                   Text="{loc:T settings.folder.compress}" />
+
+        <Grid Margin="0,0,0,12">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="160" />
+          </Grid.ColumnDefinitions>
+          <TextBlock Grid.Column="0" Style="{StaticResource Settings.Label}" Margin="0,0,12,0"
+                     Text="{loc:T settings.folder.compress.format}" />
+          <ComboBox Grid.Column="1" x:Name="CompressFormatBox" />
+        </Grid>
+
+        <TextBlock Style="{StaticResource Settings.Hint}"
+                   Text="{loc:T settings.folder.compress.hint}" />
+      </StackPanel>
+    </Border>
+
   </StackPanel>
 </UserControl>
