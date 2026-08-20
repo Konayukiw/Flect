@@ -16,6 +16,12 @@ public partial class Video : UserControl, ISettingsPage
             (VideoCodecChoice.Vp9, "settings.video.codec.vp9"),
             (VideoCodecChoice.Av1, "settings.video.codec.av1"));
 
+        Fields.Fill(ContainerBox,
+            (VideoContainer.Auto, "settings.video.container.auto"),
+            (VideoContainer.Mp4, "settings.video.container.mp4"),
+            (VideoContainer.Mkv, "settings.video.container.mkv"),
+            (VideoContainer.WebM, "settings.video.container.webm"));
+
         Fields.Fill(GifDitherBox,
             (GifDither.None, "settings.video.gif.dither.none"),
             (GifDither.Bayer, "settings.video.gif.dither.bayer"),
@@ -44,6 +50,7 @@ public partial class Video : UserControl, ISettingsPage
         Fields.ShowNumber(RotateCBox, presets.RotateC);
 
         Fields.Select(CodecBox, video.Codec);
+        Fields.Select(ContainerBox, video.Container);
 
         _hardware = video.Hardware;
         LoadHardwareChoices();
@@ -82,6 +89,7 @@ public partial class Video : UserControl, ISettingsPage
         presets.RotateC = Fields.Number(RotateCBox, presets.RotateC, -360, 360);
 
         video.Codec = Fields.Selected(CodecBox, video.Codec);
+        video.Container = Fields.Selected(ContainerBox, video.Container);
         video.Hardware = Fields.Selected(HardwareBox, video.Hardware);
 
         video.Priority = PrioritySpeedBox.IsChecked == true ? EncodePriority.Speed

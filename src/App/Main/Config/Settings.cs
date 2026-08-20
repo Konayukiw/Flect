@@ -12,6 +12,8 @@ internal enum DeleteMethod { RecycleBin, Permanent }
 
 internal enum VideoCodecChoice { H264, H265, Vp9, Av1 }
 
+internal enum VideoContainer { Auto, Mp4, Mkv, WebM }
+
 internal enum HardwareEncoder { None, Nvenc, Qsv, Amf }
 
 internal enum EncodePriority { Speed, Balanced, Quality }
@@ -141,6 +143,7 @@ internal sealed class VideoSettings
     public TrimSettings Trim { get; set; } = new();
     public ThumbnailSettings Thumbnail { get; set; } = new();
     public VideoCodecChoice Codec { get; set; } = VideoCodecChoice.H264;
+    public VideoContainer Container { get; set; } = VideoContainer.Auto;
     public HardwareEncoder Hardware { get; set; } = HardwareEncoder.None;
     public EncodePriority Priority { get; set; } = EncodePriority.Balanced;
 

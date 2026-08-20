@@ -1,4 +1,5 @@
 using System.Globalization;
+using Optimizer.Main.Media.Compression;
 using Optimizer.Main.Process;
 
 namespace Optimizer.Tasks.Video;
@@ -453,7 +454,8 @@ internal sealed class VideoCompress(Request request) : VideoTask(request)
         }
 
         var plan = Planner.Build(info, _target);
-        var destination = OutputPath.Derive(path, "_compressed", info.HasVideo ? ".mp4" : ".m4a");
+        var destination = OutputPath.Derive(path, "_compressed",
+            info.HasVideo ? Command.Extension() : ".m4a");
 
         using var scratch = new ScratchDirectory(destination);
         var pipeline = new Pipeline(plan, progress);

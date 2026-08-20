@@ -1,4 +1,4 @@
-﻿using Optimizer.Main.Process;
+using Optimizer.Main.Process;
 
 namespace Optimizer.Main.Media.Compression;
 
@@ -12,7 +12,7 @@ internal sealed class Pipeline(Plan plan, ITaskProgress progress)
 
         if (plan.Strategy == InitialStrategy.Remux)
         {
-            var remux = scratch.PathFor("remux.mp4");
+            var remux = scratch.PathFor("remux" + Command.Extension());
             var size = await TryStageAsync(Command.Remux(input, remux), remux,
                                            "Repackaging", duration);
             if (size is long bytes) return new CompressionOutcome(remux, bytes, true);
@@ -20,7 +20,7 @@ internal sealed class Pipeline(Plan plan, ITaskProgress progress)
 
         if (plan.Source.VideoCopyable && plan.Audio.Mode == AudioMode.Encode)
         {
-            var audioOnly = scratch.PathFor("audio.mp4");
+            var audioOnly = scratch.PathFor("audio" + Command.Extension());
             var size = await TryStageAsync(Command.AudioOnly(input, audioOnly, plan),
                                            audioOnly, "Compressing audio", duration);
             if (size is long bytes) return new CompressionOutcome(audioOnly, bytes, true);
@@ -34,7 +34,7 @@ internal sealed class Pipeline(Plan plan, ITaskProgress progress)
         {
             progress.Token.ThrowIfCancellationRequested();
 
-            var encode = scratch.PathFor($"encode-{attempt}.mp4");
+            var encode = scratch.PathFor($"encode-{attempt}" + Command.Extension());
             var label = $"Encoding {plan.Profile.Width}x{plan.Profile.Height}" +
                         $"@{plan.Profile.Fps:0}fps · {videoKbps}kbps";
 

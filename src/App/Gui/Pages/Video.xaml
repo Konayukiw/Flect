@@ -72,6 +72,7 @@
           <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
           </Grid.RowDefinitions>
 
           <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource Settings.Label}"
@@ -79,8 +80,12 @@
           <ComboBox Grid.Row="0" Grid.Column="1" x:Name="CodecBox" Margin="0,0,0,8" />
 
           <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Settings.Label}"
+                     Text="{loc:T settings.video.container}" />
+          <ComboBox Grid.Row="1" Grid.Column="1" x:Name="ContainerBox" Margin="0,0,0,8" />
+
+          <TextBlock Grid.Row="2" Grid.Column="0" Style="{StaticResource Settings.Label}"
                      Text="{loc:T settings.video.hardware}" />
-          <ComboBox Grid.Row="1" Grid.Column="1" x:Name="HardwareBox" />
+          <ComboBox Grid.Row="2" Grid.Column="1" x:Name="HardwareBox" />
         </Grid>
 
         <TextBlock Style="{StaticResource Settings.Hint}" Margin="0,10,0,0"

@@ -8,12 +8,25 @@ internal static class Command
 
     private static readonly string[] FastStart = ["-movflags", "+faststart"];
 
+    public static string Extension() => Settings.Current.Video.Container switch
+    {
+        VideoContainer.Mkv => ".mkv",
+        VideoContainer.WebM => ".webm",
+        _ => ".mp4",
+    };
+
+    private static string[] ContainerFlags()
+    {
+        var container = Settings.Current.Video.Container;
+        return container is VideoContainer.Mkv or VideoContainer.WebM ? [] : FastStart;
+    }
+
     public static string[] Remux(string input, string output) =>
     [
         .. Ffmpeg.Preamble, "-i", input,
         .. TrackMaps,
         "-c", "copy",
-        .. FastStart,
+        .. ContainerFlags(),
         output,
     ];
 
@@ -23,7 +36,7 @@ internal static class Command
         .. TrackMaps,
         "-c:v", "copy",
         .. AudioCodec(plan),
-        .. FastStart,
+        .. ContainerFlags(),
         output,
     ];
 
@@ -47,7 +60,7 @@ internal static class Command
             .. Encoders.Bitrate(encoder, videoKbps, video.Priority),
             .. Encoders.PixelFormat(encoder),
             .. AudioCodec(plan),
-            .. FastStart,
+            .. ContainerFlags(),
             output,
         ];
     }
@@ -57,7 +70,7 @@ internal static class Command
         .. Ffmpeg.Preamble, "-i", input,
         "-vn",
         "-c:a", "aac", "-b:a", $"{audioKbps}k",
-        .. FastStart,
+        .. ContainerFlags(),
         output,
     ];
 
