@@ -62,27 +62,27 @@ if ($LASTEXITCODE -ne 0) { throw 'The worker failed to build.' }
 Copy-Item (Join-Path $repoRoot "build\shell\$Configuration\$shellDll") -Destination $dist -Force
 
 $thirdParty = Join-Path $repoRoot 'dependencies'
-$toolsOut = Join-Path $dist 'tools'
-New-Item -ItemType Directory -Force -Path $toolsOut | Out-Null
+$depsOut = Join-Path $dist 'deps'
+New-Item -ItemType Directory -Force -Path $depsOut | Out-Null
 
 if (Test-Path $thirdParty) {
-    Get-ChildItem $thirdParty -File | Copy-Item -Destination $toolsOut -Force
+    Get-ChildItem $thirdParty -File | Copy-Item -Destination $depsOut -Force
 }
 
-$pythonTool = Join-Path $repoRoot 'tools\remove_bg.py'
+$pythonTool = Join-Path $repoRoot 'deps\remove_bg.py'
 if (Test-Path $pythonTool) {
-    Copy-Item $pythonTool -Destination $toolsOut -Force
+    Copy-Item $pythonTool -Destination $depsOut -Force
     Write-Host 'remove_bg.py staged'
 }
 
-$pyObfTool = Join-Path $repoRoot 'tools\pyobfuscate'
+$pyObfTool = Join-Path $repoRoot 'deps\pyobfuscate'
 if (Test-Path $pyObfTool) {
-    Copy-Item $pyObfTool -Destination $toolsOut -Recurse -Force
+    Copy-Item $pyObfTool -Destination $depsOut -Recurse -Force
     Write-Host 'pyobfuscate staged'
 }
 
 $missing = @('ffmpeg.exe', 'ffprobe.exe', 'cfr.jar', '7za.exe', '7z.exe') |
-    Where-Object { -not (Test-Path (Join-Path $toolsOut $_)) }
+    Where-Object { -not (Test-Path (Join-Path $depsOut $_)) }
 if ($missing) {
     Write-Host ("Note: {0} not bundled - run fetch\get.ps1. " -f ($missing -join ', ')) `
         -ForegroundColor Yellow

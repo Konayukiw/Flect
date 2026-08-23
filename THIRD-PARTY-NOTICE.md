@@ -110,7 +110,7 @@ License Version 2.1 or later.
 
 The video processing tools `ffmpeg.exe` and `ffprobe.exe`, downloaded from
 the gyan.dev Windows builds (`ffmpeg-release-essentials.zip`) and bundled
-under `tools\` by `fetch\get.ps1`.
+under `deps\` by `fetch\get.ps1`.
 
 Per the gyan.dev builds page, all builds are 64-bit, static and licensed as
 **GPLv3**. Please note that these prebuilt binaries are therefore covered by
@@ -134,7 +134,7 @@ the GyanD/codexffmpeg repository, both linked above.
 The command-line tools `7za.exe` (standalone) and `7z.exe` with its `7z.dll`
 are used for archive compression (ZIP, 7z, TAR, tar.gz) and extraction
 (plus RAR, which `7za.exe` cannot read). They are downloaded from the
-official 7-Zip site and GitHub mirror and bundled under `tools\` by
+official 7-Zip site and GitHub mirror and bundled under `deps\` by
 `fetch\get.ps1`.
 
 7-Zip is licensed under the GNU Lesser General Public License, version 2.1
@@ -150,7 +150,7 @@ algorithm. The license text follows at the end of this file.
 ### CFR - MIT License
 
 A Java decompiler (`cfr.jar`), used to decompile `.jar` files. Downloaded
-from the CFR releases and bundled under `tools\` by `fetch\get.ps1`.
+from the CFR releases and bundled under `deps\` by `fetch\get.ps1`.
 
 - Project: <https://www.benf.org/other/cfr>
 - Copyright (c) 2011- Lee Benfield

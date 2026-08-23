@@ -21,13 +21,13 @@ internal static class BackgroundRemover
     {
         get
         {
-            var bundled = Path.Combine(AppContext.BaseDirectory, "tools", "remove_bg.py");
+            var bundled = Path.Combine(AppContext.BaseDirectory, "deps", "remove_bg.py");
             if (File.Exists(bundled)) return bundled;
 
             var dir = new DirectoryInfo(AppContext.BaseDirectory);
             for (int i = 0; i < 6 && dir is not null; i++)
             {
-                var candidate = Path.Combine(dir.FullName, "tools", "remove_bg.py");
+                var candidate = Path.Combine(dir.FullName, "deps", "remove_bg.py");
                 if (File.Exists(candidate)) return candidate;
                 dir = dir.Parent;
             }
@@ -35,7 +35,7 @@ internal static class BackgroundRemover
             var cur = new DirectoryInfo(Environment.CurrentDirectory);
             for (int i = 0; i < 6 && cur is not null; i++)
             {
-                var candidate = Path.Combine(cur.FullName, "tools", "remove_bg.py");
+                var candidate = Path.Combine(cur.FullName, "deps", "remove_bg.py");
                 if (File.Exists(candidate)) return candidate;
                 cur = cur.Parent;
             }

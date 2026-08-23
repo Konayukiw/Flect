@@ -15,10 +15,10 @@ internal static class Tools
     {
         get
         {
-            var bundled = Path.Combine(InstallDirectory, "tools", "cfr.jar");
+            var bundled = Path.Combine(InstallDirectory, "deps", "cfr.jar");
             if (File.Exists(bundled)) return bundled;
             throw new FileNotFoundException(
-                "cfr.jar was not found in the tools folder. Run fetch/get.ps1 to download it.");
+                "cfr.jar was not found in the deps folder. Run fetch/get.ps1 to download it.");
         }
     }
 
@@ -82,33 +82,33 @@ internal static class Tools
     {
         get
         {
-            var bundled = Path.Combine(InstallDirectory, "tools");
+            var bundled = Path.Combine(InstallDirectory, "deps");
             if (File.Exists(Path.Combine(bundled, "pyobfuscate", "core.py"))) return bundled;
 
             var dir = new DirectoryInfo(InstallDirectory);
             for (int i = 0; i < 7 && dir is not null; i++)
             {
-                var candidate = Path.Combine(dir.FullName, "tools");
+                var candidate = Path.Combine(dir.FullName, "deps");
                 if (File.Exists(Path.Combine(candidate, "pyobfuscate", "core.py"))) return candidate;
                 dir = dir.Parent;
             }
 
             throw new FileNotFoundException(
-                "The pyobfuscate tool was not found in the tools folder.");
+                "The pyobfuscate tool was not found in the deps folder.");
         }
     }
 
     private static string Resolve(string fileName, string displayName)
     {
-        var bundled = Path.Combine(InstallDirectory, "tools", fileName);
+        var bundled = Path.Combine(InstallDirectory, "deps", fileName);
         if (File.Exists(bundled)) return bundled;
 
         var onPath = FindOnPath(fileName);
         if (onPath is not null) return onPath;
 
         throw new FileNotFoundException(
-            $"{displayName} was not found in the tools folder or on PATH. " +
-            "Run fetch/get.ps1 to download the bundled tools.");
+            $"{displayName} was not found in the deps folder or on PATH. " +
+            "Run fetch/get.ps1 to download the bundled dependencies.");
     }
 
     private static string? FindOnPath(string fileName)

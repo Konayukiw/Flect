@@ -13,7 +13,7 @@
     ImageMagick and PDFium are not here because they arrive as NuGet packages
     (Magick.NET and PDFtoImage) and are already part of the build output.
 
-    Everything lands in dependencies\, which build.ps1 stages into dist\tools\.
+    Everything lands in dependencies\, which build.ps1 stages into dist\deps\.
     Re-running skips whatever is already present.
 #>
 
