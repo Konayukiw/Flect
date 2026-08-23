@@ -1,0 +1,176 @@
+<UserControl x:Class="Optimizer.Gui.Pages.Code"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:Optimizer.Main.Localization">
+
+  <StackPanel>
+
+    <Border Style="{StaticResource Settings.Section}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource Settings.SectionTitle}"
+                   Text="{loc:T settings.code.decompile}" />
+
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="110" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <TextBlock Grid.Column="0" Style="{StaticResource Settings.Label}"
+                     Text="{loc:T settings.code.decompile.output}" />
+          <TextBox Grid.Column="1" x:Name="DecompileOutputBox" Margin="0,0,8,0"
+                   Style="{StaticResource Settings.Field}" />
+          <Button Grid.Column="2" Content="{loc:T common.browse}" Click="OnBrowseDecompile"
+                  MinWidth="0" Padding="14,6" />
+        </Grid>
+
+        <TextBlock Style="{StaticResource Settings.Hint}" Margin="0,10,0,0"
+                   Text="{loc:T settings.code.decompile.output.hint}" />
+      </StackPanel>
+    </Border>
+
+    <Border Style="{StaticResource Settings.Section}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource Settings.SectionTitle}"
+                   Text="{loc:T settings.code.obfuscate}" />
+        <TextBlock Style="{StaticResource Settings.Hint}"
+                   Text="{loc:T settings.code.obf.hint}" />
+
+        <CheckBox x:Name="RenameBox" Content="{loc:T settings.code.obf.rename}" />
+        <CheckBox x:Name="RenameClassesBox" Margin="22,6,0,0"
+                  Content="{loc:T settings.code.obf.renameClasses}" />
+        <TextBlock Style="{StaticResource Settings.Hint}" Margin="22,2,0,10"
+                   Text="{loc:T settings.code.obf.renameClasses.hint}" />
+        <CheckBox x:Name="HideImportsBox" Content="{loc:T settings.code.obf.hideImports}" />
+        <CheckBox x:Name="ValueCalcBox" Margin="0,6,0,0"
+                  Content="{loc:T settings.code.obf.valueCalc}" />
+        <CheckBox x:Name="EncryptStringsBox" Margin="0,6,0,0"
+                  Content="{loc:T settings.code.obf.encryptStrings}" />
+
+        <Border Style="{StaticResource Settings.Separator}" />
+
+        <Grid Margin="0,0,0,8">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="170" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <TextBlock Grid.Column="0" Style="{StaticResource Settings.Label}"
+                     Text="{loc:T settings.code.obf.nameLength}" />
+          <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+            <TextBlock Style="{StaticResource Settings.Label}"
+                       Text="{loc:T settings.code.obf.min}" />
+            <TextBox x:Name="NameMinBox" Width="56" Margin="6,0,0,0"
+                     Style="{StaticResource Settings.Field}" />
+            <TextBlock Style="{StaticResource Settings.Label}" Margin="14,0,0,0"
+                       Text="{loc:T settings.code.obf.max}" />
+            <TextBox x:Name="NameMaxBox" Width="56" Margin="6,0,0,0"
+                     Style="{StaticResource Settings.Field}" />
+          </StackPanel>
+        </Grid>
+
+        <Grid Margin="0,0,0,8">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="170" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <TextBlock Grid.Column="0" Style="{StaticResource Settings.Label}"
+                     Text="{loc:T settings.code.obf.junk}" />
+          <TextBox Grid.Column="1" x:Name="JunkBox" Width="56"
+                   Style="{StaticResource Settings.Field}" />
+        </Grid>
+        <TextBlock Style="{StaticResource Settings.SubHint}"
+                   Text="{loc:T settings.code.obf.junk.hint}" />
+
+        <Grid Margin="0,0,0,8">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="170" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <TextBlock Grid.Column="0" Style="{StaticResource Settings.Label}"
+                     Text="{loc:T settings.code.obf.seed}" />
+          <TextBox Grid.Column="1" x:Name="SeedBox" Width="120"
+                   Style="{StaticResource Settings.Field}" />
+        </Grid>
+        <TextBlock Style="{StaticResource Settings.SubHint}"
+                   Text="{loc:T settings.code.obf.seed.hint}" />
+      </StackPanel>
+    </Border>
+
+    <Border Style="{StaticResource Settings.Section}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource Settings.SectionTitle}"
+                   Text="{loc:T settings.code.obf.strings}" />
+
+        <CheckBox x:Name="EnvKeyBox" Content="{loc:T settings.code.obf.envKey}" />
+        <TextBlock Style="{StaticResource Settings.Hint}" Margin="22,2,0,10"
+                   Text="{loc:T settings.code.obf.envKey.hint}" />
+        <CheckBox x:Name="XorBox" Content="{loc:T settings.code.obf.xor}" />
+        <CheckBox x:Name="SwapBox" Margin="0,6,0,0"
+                  Content="{loc:T settings.code.obf.swap}" />
+        <CheckBox x:Name="RotateBox" Margin="0,6,0,0"
+                  Content="{loc:T settings.code.obf.rotate}" />
+        <CheckBox x:Name="ShuffleBox" Margin="0,6,0,0"
+                  Content="{loc:T settings.code.obf.shuffle}" />
+        <CheckBox x:Name="Base85Box" Margin="0,6,0,0"
+                  Content="{loc:T settings.code.obf.base85}" />
+
+        <Border Style="{StaticResource Settings.Separator}" />
+
+        <Grid Margin="0,0,0,8">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="170" />
+            <ColumnDefinition Width="320" />
+          </Grid.ColumnDefinitions>
+          <TextBlock Grid.Column="0" Style="{StaticResource Settings.Label}"
+                     Text="{loc:T settings.code.obf.envKeyPath}" />
+          <TextBox Grid.Column="1" x:Name="EnvKeyPathBox"
+                   Style="{StaticResource Settings.Field}" />
+        </Grid>
+
+        <Grid Margin="0,0,0,8">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="170" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <TextBlock Grid.Column="0" Style="{StaticResource Settings.Label}"
+                     Text="{loc:T settings.code.obf.envKeyLayers}" />
+          <TextBox Grid.Column="1" x:Name="LayersBox" Width="56"
+                   Style="{StaticResource Settings.Field}" />
+        </Grid>
+      </StackPanel>
+    </Border>
+
+    <Border Style="{StaticResource Settings.Section}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource Settings.SectionTitle}"
+                   Text="{loc:T settings.code.obf.strong}" />
+
+        <CheckBox x:Name="AttrIndirectBox" Content="{loc:T settings.code.obf.attrIndirect}" />
+        <CheckBox x:Name="BuiltinsTableBox" Margin="0,6,0,0"
+                  Content="{loc:T settings.code.obf.builtinsTable}" />
+        <CheckBox x:Name="BoolNoneBox" Margin="0,6,0,0"
+                  Content="{loc:T settings.code.obf.boolNone}" />
+        <CheckBox x:Name="IntegerBox" Margin="0,6,0,0"
+                  Content="{loc:T settings.code.obf.integer}" />
+        <CheckBox x:Name="ArgReuseBox" Margin="0,6,0,0"
+                  Content="{loc:T settings.code.obf.argReuse}" />
+        <CheckBox x:Name="WrapJunkBox" Margin="0,6,0,0"
+                  Content="{loc:T settings.code.obf.wrapJunk}" />
+
+        <Border Style="{StaticResource Settings.Separator}" />
+
+        <Grid Margin="0,0,0,8">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="170" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+          <TextBlock Grid.Column="0" Style="{StaticResource Settings.Label}"
+                     Text="{loc:T settings.code.obf.argPool}" />
+          <TextBox Grid.Column="1" x:Name="PoolBox" Width="56"
+                   Style="{StaticResource Settings.Field}" />
+        </Grid>
+      </StackPanel>
+    </Border>
+
+  </StackPanel>
+</UserControl>

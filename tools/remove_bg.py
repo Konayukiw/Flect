@@ -2,7 +2,6 @@
 
 import argparse
 import json
-import os
 import sys
 from pathlib import Path
 
@@ -54,12 +53,6 @@ def main():
     args = parser.parse_args()
 
     providers = pick_providers(args.providers)
-
-    try:
-        sys.stderr.write(f"[remove_bg] model={args.model} providers={providers} U2NET_HOME={os.environ.get('U2NET_HOME','(default)')}\n")
-        sys.stderr.flush()
-    except Exception:
-        pass
 
     if args.manifest:
         manifest_path = Path(args.manifest)

@@ -166,6 +166,7 @@ SelectionInfo Sel::FromDataObject(IDataObject* dataObject) {
   }
 
   bool consistent = true;
+  bool allPython = true;
   size_t sizeProbes = 0;
   size_t gifProbes = 0;
   std::vector<std::wstring> gifPaths;
@@ -206,6 +207,8 @@ SelectionInfo Sel::FromDataObject(IDataObject* dataObject) {
       break;
     }
 
+    if (!isDirectory && ExtensionOf(path) != L"py") allPython = false;
+
     if (classification.format) info.formats.insert(classification.format);
 
     if (!isDirectory) {
@@ -235,6 +238,7 @@ SelectionInfo Sel::FromDataObject(IDataObject* dataObject) {
 
   info.allJson = info.category == Category::Text && info.formats.size() == 1 &&
                  *info.formats.begin() == L"JSON";
+  info.allPython = info.category == Category::Text && allPython;
 
   for (const std::wstring& gif : gifPaths) {
     if (GifProbe::IsAnimated(gif)) {

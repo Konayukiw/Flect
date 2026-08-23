@@ -14,6 +14,8 @@ struct SelectionInfo {
 
   bool allJson = false;
 
+  bool allPython = false;
+
   bool hasAnimatedGif = false;
 
   bool Empty() const noexcept { return paths.empty(); }

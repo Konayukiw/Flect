@@ -75,6 +75,12 @@ if (Test-Path $pythonTool) {
     Write-Host 'remove_bg.py staged'
 }
 
+$pyObfTool = Join-Path $repoRoot 'tools\pyobfuscate'
+if (Test-Path $pyObfTool) {
+    Copy-Item $pyObfTool -Destination $toolsOut -Recurse -Force
+    Write-Host 'pyobfuscate staged'
+}
+
 $missing = @('ffmpeg.exe', 'ffprobe.exe', 'cfr.jar', '7za.exe', '7z.exe') |
     Where-Object { -not (Test-Path (Join-Path $toolsOut $_)) }
 if ($missing) {

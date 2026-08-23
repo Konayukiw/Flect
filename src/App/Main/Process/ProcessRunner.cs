@@ -80,11 +80,12 @@ internal static class ProcessRunner
                                                             IEnumerable<string> arguments,
                                                             CancellationToken token,
                                                             Encoding? outputEncoding = null,
+                                                            string? workingDirectory = null,
                                                             Action<string>? onOutputLine = null,
                                                             ProcessPriorityClass? priority = null)
     {
         var result = await RunAsync(executable, arguments, token, outputEncoding,
-                                    onOutputLine: onOutputLine, priority: priority);
+                                    workingDirectory, onOutputLine, priority);
         if (result.Succeeded) return result;
 
         var detail = result.StandardError.Trim();

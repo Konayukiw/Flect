@@ -218,6 +218,48 @@ internal sealed class OcrSettings
     public bool SuppressLanguageNotice { get; set; }
 }
 
+internal sealed class DecompileSettings
+{
+    public string OutputPath { get; set; } = string.Empty;
+}
+
+internal sealed class ObfuscateSettings
+{
+    public int NameLengthMin { get; set; } = 3;
+    public int NameLengthMax { get; set; } = 3;
+    public int JunkFrequency { get; set; } = 6;
+    public string Seed { get; set; } = string.Empty;
+
+    public bool Rename { get; set; } = true;
+    public bool RenameClasses { get; set; } = true;
+    public bool HideImports { get; set; } = true;
+    public bool ValueCalc { get; set; } = true;
+    public bool EncryptStrings { get; set; } = true;
+
+    public bool UseEnvKey { get; set; } = true;
+    public string EnvKeyPath { get; set; } = "C:/Users/";
+    public int EnvKeyLayers { get; set; } = 3;
+    public bool UseXor { get; set; } = true;
+    public bool UseSwap { get; set; } = true;
+    public bool UseRotate { get; set; } = true;
+    public bool UseByteShuffle { get; set; } = true;
+    public bool UseBase85 { get; set; } = true;
+
+    public bool AttrIndirect { get; set; } = true;
+    public bool BuiltinsTable { get; set; } = true;
+    public bool BoolNoneExpr { get; set; } = true;
+    public bool IntegerEncode { get; set; } = true;
+    public bool ScopeArgReuse { get; set; } = true;
+    public int ArgPoolSize { get; set; } = 6;
+    public bool WrapJunkIf { get; set; } = true;
+}
+
+internal sealed class CodeSettings
+{
+    public DecompileSettings Decompile { get; set; } = new();
+    public ObfuscateSettings Obfuscate { get; set; } = new();
+}
+
 internal sealed class Settings
 {
     private const string FileName = "settings.json";
@@ -230,6 +272,7 @@ internal sealed class Settings
     public ImageSettings Image { get; set; } = new();
     public TextSettings Text { get; set; } = new();
     public OcrSettings Ocr { get; set; } = new();
+    public CodeSettings Code { get; set; } = new();
 
     public static Settings Current => _current ??= Load();
 

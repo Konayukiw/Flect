@@ -41,6 +41,7 @@ struct LabelTable {
   const wchar_t* prettyPrint;
   const wchar_t* sortKeys;
   const wchar_t* decompile;
+  const wchar_t* obfuscate;
   const wchar_t* custom;
 };
 
@@ -71,6 +72,7 @@ inline constexpr LabelTable kEn = {
     L"Pretty Print",
     L"Sort Keys",
     L"Decompile",
+    L"Obfuscate Python",
     L"Custom...",
 };
 
@@ -99,6 +101,7 @@ inline constexpr LabelTable kJa = {
     L"整形",
     L"キーを並べ替え",
     L"逆コンパイル",
+    L"難読化",
     L"カスタム...",
 };
 
@@ -127,6 +130,7 @@ inline constexpr LabelTable kZh = {
     L"格式化",
     L"按键排序",
     L"反编译",
+    L"混淆 Python",
     L"自定义...",
 };
 

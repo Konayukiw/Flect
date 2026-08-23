@@ -42,6 +42,8 @@ internal static class Factory
         "json.sort" => new JsonFormat(request, sortKeys: true),
 
         "jar.decompile" => new JarDecompile(request),
+        
+        "python.obfuscate" => new PythonObfuscate(request),
 
         _ => null,
     };

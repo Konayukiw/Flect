@@ -16,7 +16,7 @@ public partial class Progress : Window, ITaskProgress
     private readonly ObservableCollection<LogEntry> _log = [];
     private bool _finished;
     private int _errorCount;
-    private int _messageCount;
+    private int _warnCount;
 
     public Progress(string title)
     {
@@ -41,7 +41,12 @@ public partial class Progress : Window, ITaskProgress
     public void Indeterminate() => Post(() => Bar.IsIndeterminate = true);
 
     public void Info(string message) => Append(LogSeverity.Information, message);
-    public void Warn(string message) => Append(LogSeverity.Warning, message);
+
+    public void Warn(string message)
+    {
+        Interlocked.Increment(ref _warnCount);
+        Append(LogSeverity.Warning, message);
+    }
 
     public void Error(string message)
     {
@@ -74,7 +79,7 @@ public partial class Progress : Window, ITaskProgress
 
         return outcome switch
         {
-            TaskOutcome.Succeeded => general.CloseOnSuccess && _errorCount == 0 && _messageCount == 0,
+            TaskOutcome.Succeeded => general.CloseOnSuccess && _errorCount == 0 && _warnCount == 0,
             TaskOutcome.Cancelled => general.CloseOnCancel,
             _ => general.CloseOnFailure,
         };
@@ -82,7 +87,6 @@ public partial class Progress : Window, ITaskProgress
 
     private void Append(LogSeverity severity, string message)
     {
-        Interlocked.Increment(ref _messageCount);
         Post(() =>
         {
             _log.Add(new LogEntry(severity, message));

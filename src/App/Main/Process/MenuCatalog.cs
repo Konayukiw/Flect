@@ -136,7 +136,8 @@ internal static class MenuCatalog
                 MenuEntry.Leaf("text.lineEndings.CRLF", "to CRLF (Windows)", "menu.to"),
                 MenuEntry.Leaf("text.lineEndings.LF", "to LF (Unix)", "menu.to")),
             MenuEntry.Leaf("json.pretty", "Pretty Print"),
-            MenuEntry.Leaf("json.sort", "Sort Keys")),
+            MenuEntry.Leaf("json.sort", "Sort Keys"),
+            MenuEntry.Leaf("python.obfuscate", "Obfuscate Python")),
 
         MenuEntry.Group("jar", "JAR",
             MenuEntry.Leaf("jar.decompile", "Decompile")),

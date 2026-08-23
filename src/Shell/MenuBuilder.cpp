@@ -297,6 +297,9 @@ std::vector<MenuNode> BuildText(const SelectionInfo& selection, const LabelTable
     items.push_back(Leaf(L"json.pretty", text.prettyPrint, L"json.pretty"));
     items.push_back(Leaf(L"json.sort", text.sortKeys, L"json.sort"));
   }
+  if (selection.allPython) {
+    items.push_back(Leaf(L"python.obfuscate", text.obfuscate, L"python.obfuscate"));
+  }
   return items;
 }
 

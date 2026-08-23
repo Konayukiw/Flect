@@ -40,6 +40,64 @@ internal static class Tools
         }
     }
 
+    public static (string Executable, string[] PrefixArguments) Python
+    {
+        get
+        {
+            var venv = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                Branding.Name, "env", "Scripts", "python.exe");
+            if (File.Exists(venv)) return (venv, []);
+
+            var onPath = FindOnPath("python.exe");
+            if (onPath is not null) return (onPath, []);
+
+            var python3 = FindOnPath("python3.exe");
+            if (python3 is not null) return (python3, []);
+
+            var localPrograms = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+                "Programs", "Python");
+            if (Directory.Exists(localPrograms))
+            {
+                try
+                {
+                    var installed = Directory.EnumerateFiles(localPrograms, "python.exe",
+                                                              SearchOption.AllDirectories)
+                        .FirstOrDefault();
+                    if (installed is not null) return (installed, []);
+                }
+                catch (ArgumentException) {}
+            }
+
+            var launcher = FindOnPath("py.exe");
+            if (launcher is not null) return (launcher, ["-3"]);
+
+            throw new FileNotFoundException(
+                "Python was not found. Obfuscating a Python file needs Python 3.10 or newer.");
+        }
+    }
+
+    public static string PyObfuscateDirectory
+    {
+        get
+        {
+            var bundled = Path.Combine(InstallDirectory, "tools");
+            if (File.Exists(Path.Combine(bundled, "pyobfuscate", "core.py"))) return bundled;
+
+            var dir = new DirectoryInfo(InstallDirectory);
+            for (int i = 0; i < 7 && dir is not null; i++)
+            {
+                var candidate = Path.Combine(dir.FullName, "tools");
+                if (File.Exists(Path.Combine(candidate, "pyobfuscate", "core.py"))) return candidate;
+                dir = dir.Parent;
+            }
+
+            throw new FileNotFoundException(
+                "The pyobfuscate tool was not found in the tools folder.");
+        }
+    }
+
     private static string Resolve(string fileName, string displayName)
     {
         var bundled = Path.Combine(InstallDirectory, "tools", fileName);

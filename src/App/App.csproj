@@ -43,6 +43,7 @@
     <Using Include="Optimizer.Tasks.Text" />
     <Using Include="Optimizer.Tasks.Ocr" />
     <Using Include="Optimizer.Tasks.Jar" />
+    <Using Include="Optimizer.Tasks.Python" />
     <Using Include="Optimizer.Gui.Controls" />
     <Using Include="Optimizer.Gui.Dialogs" />
     <Using Include="Optimizer.Gui.Pages" />

@@ -12,7 +12,7 @@ public partial class SettingsGui : Window
     private static readonly string[] Titles =
     [
         "settings.nav.general", "settings.nav.folder", "settings.nav.video",
-        "settings.nav.image", "settings.nav.text", "settings.nav.ocr",
+        "settings.nav.image", "settings.nav.text", "settings.nav.ocr", "settings.nav.code",
     ];
 
     private readonly UserControl[] _pages;
@@ -27,7 +27,7 @@ public partial class SettingsGui : Window
         Backdrop.Apply(this);
 
         _settings = Settings.Load();
-        _pages = [PageGeneral, PageFolder, PageVideo, PageImage, PageText, PageOcr];
+        _pages = [PageGeneral, PageFolder, PageVideo, PageImage, PageText, PageOcr, PageCode];
 
         Title = Loc.T("settings.title");
         SubtitleText.Text = Version();
@@ -108,6 +108,7 @@ public partial class SettingsGui : Window
         3 => NavImage,
         4 => NavText,
         5 => NavOcr,
+        6 => NavCode,
         _ => NavGeneral,
     };
 

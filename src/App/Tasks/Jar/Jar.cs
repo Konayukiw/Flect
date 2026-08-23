@@ -9,7 +9,11 @@ internal sealed class JarDecompile(Request request) : BatchTask(request)
 
     protected override async Task ProcessAsync(string path, ITaskProgress progress)
     {
-        var destination = OutputPath.DeriveDirectory(path);
+        var root = Settings.Current.Code.Decompile.OutputPath.Trim();
+        var destination = root.Length > 0
+            ? OutputPath.DeriveDirectory(
+                Path.Combine(root, Path.GetFileNameWithoutExtension(path)))
+            : OutputPath.DeriveDirectory(path);
         Directory.CreateDirectory(destination);
 
         progress.Status(Loc.F("msg.decompiling", Path.GetFileName(path)));
