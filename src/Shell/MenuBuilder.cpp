@@ -221,6 +221,7 @@ std::vector<MenuNode> BuildVideo(const SelectionInfo& selection, const ShellConf
     items.push_back(Leaf(L"video.trim", text.trim, L"video.trim"));
     items.push_back(Leaf(L"video.thumbnail", text.thumbnail, L"video.thumbnail"));
   }
+  items.push_back(Leaf(L"video.subtitles", text.subtitles, L"video.subtitles"));
   items.push_back(Popup(L"video.compress", text.compress, std::move(compress)));
   items.push_back(RotateMenu(config, text, L"video", L"Video"));
 
@@ -246,6 +247,7 @@ std::vector<MenuNode> BuildAudio(const SelectionInfo& selection, const LabelTabl
   if (!convert.empty()) {
     items.push_back(Popup(L"audio.convert", text.convert, std::move(convert)));
   }
+  items.push_back(Leaf(L"audio.subtitles", text.subtitles, L"audio.subtitles"));
   return items;
 }
 

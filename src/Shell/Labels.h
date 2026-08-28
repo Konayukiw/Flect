@@ -42,16 +42,17 @@ struct LabelTable {
   const wchar_t* sortKeys;
   const wchar_t* decompile;
   const wchar_t* obfuscate;
+  const wchar_t* subtitles;
   const wchar_t* custom;
 };
 
 namespace Labels {
 
 inline constexpr LabelTable kEn = {
-    L"Remove Duplicate...",
+    L"Remove Duplicate",
     L"Remove Empty",
     L"Tree",
-    L"Rename...",
+    L"Rename",
     L"Analyze",
     L"Preview",
     L"Merge",
@@ -59,7 +60,7 @@ inline constexpr LabelTable kEn = {
     L"Trim",
     L"Thumbnail",
     L"Compress",
-    L"Extract...",
+    L"Extract",
     L"Rotate",
     L"Convert",
     L"OCR",
@@ -73,14 +74,15 @@ inline constexpr LabelTable kEn = {
     L"Sort Keys",
     L"Decompile",
     L"Obfuscate Python",
-    L"Custom...",
+    L"Subtitles",
+    L"Custom",
 };
 
 inline constexpr LabelTable kJa = {
     L"重複を削除...",
     L"空フォルダを削除",
     L"ツリー表示",
-    L"名前を一括変更...",
+    L"名前を一括変更",
     L"解析",
     L"プレビュー",
     L"結合", 
@@ -88,7 +90,7 @@ inline constexpr LabelTable kJa = {
     L"トリム",
     L"サムネイル",
     L"圧縮",
-    L"展開...",
+    L"展開",
     L"回転",
     L"変換",
     L"OCR",
@@ -102,14 +104,15 @@ inline constexpr LabelTable kJa = {
     L"キーを並べ替え",
     L"逆コンパイル",
     L"難読化",
-    L"カスタム...",
+    L"字幕",
+    L"カスタム",
 };
 
 inline constexpr LabelTable kZh = {
-    L"删除重复文件...",
+    L"删除重复文件",
     L"删除空文件夹",
     L"目录树",
-    L"批量重命名...",
+    L"批量重命名",
     L"分析",
     L"预览",
     L"合并",
@@ -117,7 +120,7 @@ inline constexpr LabelTable kZh = {
     L"剪切",
     L"缩略图",
     L"压缩",
-    L"解压...",
+    L"解压",
     L"旋转",
     L"转换",
     L"文字识别",
@@ -131,7 +134,8 @@ inline constexpr LabelTable kZh = {
     L"按键排序",
     L"反编译",
     L"混淆 Python",
-    L"自定义...",
+    L"字幕",
+    L"自定义",
 };
 
 inline Lang DetectSystem() {

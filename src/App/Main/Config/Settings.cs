@@ -24,6 +24,12 @@ internal enum TrimAccuracy { Keyframe, Exact }
 
 internal enum ThumbnailFormat { Png, Jpg }
 
+internal enum SubtitleModel { Tiny, Base, Small, Medium, LargeV3, Turbo }
+
+internal enum SubtitleDevice { Auto, Cpu }
+
+internal enum SubtitleOutput { Srt, Vtt, Txt }
+
 internal enum ArchiveCompressFormat { Zip, SevenZip, Tar, TarGz }
 
 internal enum BackgroundRemovalMode { AiWithFallback, AiOnly, ChromaKeyOnly }
@@ -139,6 +145,14 @@ internal sealed class ThumbnailSettings
     public int MaxWidth { get; set; }
 }
 
+internal sealed class SubtitlesSettings
+{
+    public SubtitleModel Model { get; set; } = SubtitleModel.Small;
+    public SubtitleDevice Device { get; set; } = SubtitleDevice.Auto;
+    public string Language { get; set; } = string.Empty;
+    public SubtitleOutput Output { get; set; } = SubtitleOutput.Srt;
+}
+
 internal sealed class VideoSettings
 {
     public VideoPresets Presets { get; set; } = new();
@@ -154,6 +168,8 @@ internal sealed class VideoSettings
     public GifDither GifDither { get; set; } = GifDither.Bayer;
 
     public string RotateFillColor { get; set; } = "#000000";
+
+    public SubtitlesSettings Subtitles { get; set; } = new();
 }
 
 internal sealed class ImagePresets

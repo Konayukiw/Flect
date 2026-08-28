@@ -1,9 +1,13 @@
+using System.Globalization;
 using System.Windows.Controls;
 
 namespace Optimizer.Gui.Pages;
 
 public partial class Video : UserControl, ISettingsPage
 {
+    private static readonly string[] SubtitleLanguages =
+        ["ja", "en", "zh", "ko", "es", "fr", "de", "it", "pt", "ru", "ar", "th", "vi"];
+
     private HardwareEncoder _hardware = HardwareEncoder.None;
 
     public Video()
@@ -31,7 +35,41 @@ public partial class Video : UserControl, ISettingsPage
             (ThumbnailFormat.Png, "settings.video.thumbnail.format.png"),
             (ThumbnailFormat.Jpg, "settings.video.thumbnail.format.jpg"));
 
+        Fields.Fill(SubtitleModelBox,
+            (SubtitleModel.Tiny, "settings.video.subtitles.model.tiny"),
+            (SubtitleModel.Base, "settings.video.subtitles.model.base"),
+            (SubtitleModel.Small, "settings.video.subtitles.model.small"),
+            (SubtitleModel.Medium, "settings.video.subtitles.model.medium"),
+            (SubtitleModel.LargeV3, "settings.video.subtitles.model.large"),
+            (SubtitleModel.Turbo, "settings.video.subtitles.model.turbo"));
+
+        Fields.Fill(SubtitleDeviceBox,
+            (SubtitleDevice.Auto, "settings.video.subtitles.device.auto"),
+            (SubtitleDevice.Cpu, "settings.video.subtitles.device.cpu"));
+
+        FillLanguageBox(SubtitleLanguageBox);
+
+        Fields.Fill(SubtitleOutputBox,
+            (SubtitleOutput.Srt, "settings.video.subtitles.output.srt"),
+            (SubtitleOutput.Vtt, "settings.video.subtitles.output.vtt"),
+            (SubtitleOutput.Txt, "settings.video.subtitles.output.txt"));
+
         Fields.Fill(HardwareBox, (HardwareEncoder.None, "settings.video.hardware.none"));
+    }
+
+    private static void FillLanguageBox(ComboBox box)
+    {
+        var items = new List<(string Value, string Label)>
+        {
+            (string.Empty, Loc.T("settings.video.subtitles.language.auto")),
+        };
+        foreach (var code in SubtitleLanguages)
+        {
+            string label = code;
+            try { label = CultureInfo.GetCultureInfo(code).NativeName; } catch (CultureNotFoundException) { }
+            items.Add((code, label));
+        }
+        Fields.FillText(box, items);
     }
 
     void ISettingsPage.Load(Settings settings)
@@ -71,6 +109,11 @@ public partial class Video : UserControl, ISettingsPage
         Fields.Select(ThumbnailFormatBox, video.Thumbnail.Format);
         Fields.ShowInt(ThumbnailQualityBox, video.Thumbnail.Quality);
         Fields.ShowInt(ThumbnailWidthBox, video.Thumbnail.MaxWidth);
+
+        Fields.Select(SubtitleModelBox, video.Subtitles.Model);
+        Fields.Select(SubtitleDeviceBox, video.Subtitles.Device);
+        Fields.Select(SubtitleLanguageBox, video.Subtitles.Language ?? string.Empty);
+        Fields.Select(SubtitleOutputBox, video.Subtitles.Output);
     }
 
     void ISettingsPage.Store(Settings settings)
@@ -109,6 +152,11 @@ public partial class Video : UserControl, ISettingsPage
         video.Thumbnail.Format = Fields.Selected(ThumbnailFormatBox, video.Thumbnail.Format);
         video.Thumbnail.Quality = Fields.Int(ThumbnailQualityBox, video.Thumbnail.Quality, 1, 100);
         video.Thumbnail.MaxWidth = Fields.Int(ThumbnailWidthBox, video.Thumbnail.MaxWidth, 0, 3840);
+
+        video.Subtitles.Model = Fields.Selected(SubtitleModelBox, video.Subtitles.Model);
+        video.Subtitles.Device = Fields.Selected(SubtitleDeviceBox, video.Subtitles.Device);
+        video.Subtitles.Language = Fields.Selected(SubtitleLanguageBox, string.Empty);
+        video.Subtitles.Output = Fields.Selected(SubtitleOutputBox, video.Subtitles.Output);
     }
 
     private async void LoadHardwareChoices()

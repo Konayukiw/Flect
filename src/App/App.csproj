@@ -31,6 +31,7 @@
     <Using Include="Optimizer.Main.Media" />
     <Using Include="Optimizer.Main.Media.Compression" />
     <Using Include="Optimizer.Main.Image" />
+    <Using Include="Optimizer.Main.Subtitles" />
     <Using Include="Optimizer.Main.Pdf" />
     <Using Include="Optimizer.Main.Text" />
     <Using Include="Optimizer.Main.Ocr" />
@@ -44,6 +45,7 @@
     <Using Include="Optimizer.Tasks.Ocr" />
     <Using Include="Optimizer.Tasks.Jar" />
     <Using Include="Optimizer.Tasks.Python" />
+    <Using Include="Optimizer.Tasks.Subtitles" />
     <Using Include="Optimizer.Gui.Controls" />
     <Using Include="Optimizer.Gui.Dialogs" />
     <Using Include="Optimizer.Gui.Pages" />

@@ -24,12 +24,14 @@ internal static class Factory
         "video.resize" => new VideoResize(request),
         "video.trim" => new VideoTrim(request),
         "video.thumbnail" => new VideoThumbnail(request),
+        "video.subtitles" => new MediaSubtitles(request),
         "video.compress" => new VideoCompress(request),
         "video.rotate" => new VideoRotate(request),
         "video.convert" => new VideoConvert(request),
         "video.extractAudio" => new VideoExtractAudio(request),
 
         "audio.convert" => new AudioConvert(request),
+        "audio.subtitles" => new MediaSubtitles(request),
 
         "pdf.preview" => new PdfPreview(request),
         "pdf.convert" => new PdfConvert(request),

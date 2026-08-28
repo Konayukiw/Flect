@@ -24,6 +24,13 @@ repository.
 | FFmpeg / FFprobe | Fetched by `fetch/get.ps1` | GPL-3.0 |
 | 7-Zip | 26.02 | LGPL-2.1-or-later with unRAR restriction |
 | CFR | 0.152 | MIT |
+| faster-whisper | pip-installed, first use | MIT |
+| CTranslate2 | pip-installed, first use | MIT |
+| PyAV | pip-installed, first use | BSD-3-Clause |
+| tokenizers | pip-installed, first use | Apache-2.0 |
+| huggingface-hub | pip-installed, first use | Apache-2.0 |
+| onnxruntime | pip-installed, first use | MIT |
+| OpenAI Whisper model weights | Downloaded on first use | MIT |
 
 ## Component Details
 
@@ -172,6 +179,33 @@ separately, under their own licenses.
   Distributed by Microsoft through the Microsoft Store under its own terms.
 - **Windows OCR (Windows.Media.Ocr)** — used for image text recognition; a
   built-in part of Windows. No third-party license applies.
+- **Python 3.10+** — required for the AI features (Remove Background,
+  Subtitles). Installed by the user, under the PSF License; Flect creates a
+  private virtual environment under `%LOCALAPPDATA%\Flect\env` on first use.
+- **faster-whisper** — the speech-to-text engine used to transcribe videos
+  and audio files into subtitles. MIT License. `pip install faster-whisper`.
+  Project: <https://github.com/SYSTRAN/faster-whisper>.
+- **CTranslate2** — the runtime that executes the Whisper models on CPU or
+  CUDA. MIT License; installed as a faster-whisper dependency.
+  Project: <https://github.com/OpenNMT/CTranslate2>.
+- **PyAV** — used by faster-whisper to decode audio. BSD-3-Clause; installed
+  as a dependency. Project: <https://github.com/PyAV-Org/PyAV>.
+- **tokenizers** — used by faster-whisper to prepare model input. Apache-2.0;
+  installed as a dependency. Project: <https://github.com/huggingface/tokenizers>.
+- **huggingface-hub** — used to download the Whisper models. Apache-2.0;
+  installed as a dependency. Project: <https://github.com/huggingface/huggingface_hub>.
+- **onnxruntime** — used by faster-whisper for the VAD filter. MIT; installed
+  as a dependency. Project: <https://github.com/microsoft/onnxruntime>.
+- **OpenAI Whisper model weights** — the neural network weights transcribed
+  to CTranslate2 by faster-whisper (the *tiny*, *base*, *small*, *medium*,
+  *large-v3* and *turbo* models, downloaded once from Hugging Face).
+  Released by OpenAI under the MIT License.
+  Project: <https://github.com/openai/whisper>.
+- **NVIDIA cuBLAS / cuDNN** — the NVIDIA CUDA libraries that CTranslate2
+  loads on the GPU, installed into the Flect environment automatically when
+  an NVIDIA GPU is detected (`nvidia-cublas-cu12`, `nvidia-cudnn-cu12`).
+  Distributed by NVIDIA under the NVIDIA CUDA Toolkit End User License
+  Agreement: <https://www.nvidia.com/en-us/about-nvidia/eula/>.
 
 ## Licenses
 
@@ -180,7 +214,7 @@ with the `LICENSE` file and is therefore not duplicated here.
 
 ### Apache License 2.0
 
-Applies to: Magick.NET, PdfPig, and Flect itself.
+Applies to: Magick.NET, PdfPig, tokenizers, huggingface-hub, and Flect itself.
 
 The full text is provided in the `LICENSE` file at the root of this
 repository. A copy can also be obtained at
@@ -188,7 +222,8 @@ repository. A copy can also be obtained at
 
 ### MIT License
 
-Applies to: PDFtoImage, SkiaSharp, System.IO.Hashing, CFR.
+Applies to: PDFtoImage, SkiaSharp, System.IO.Hashing, CFR, faster-whisper,
+CTranslate2, onnxruntime, OpenAI Whisper model weights.
 
 ```
 MIT License
@@ -219,7 +254,7 @@ the Component Details section above.
 
 ### BSD 3-Clause License
 
-Applies to: PDFium.
+Applies to: PDFium, PyAV.
 
 ```
 Copyright (c) <year> <owner>. All rights reserved.

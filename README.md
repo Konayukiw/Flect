@@ -50,6 +50,7 @@ Select as many files as you like - these run over the whole selection at once, n
 | **Resize** | Scale down by percentage or to custom pixels |
 | **Trim** | Scrub to the part you want and keep just that - instantly, no re-encoding |
 | **Thumbnail** | Export any single frame as a PNG or JPG image |
+| **Subtitles** | Transcribe the spoken words into an SRT, VTT or TXT file |
 | **Compress** | Hit a target size - including a one-click Discord preset |
 | **Rotate** | Any angle, with a chosen fill colour |
 | **Convert** | Between MP4, MOV, MKV, M4A, AVI, WEBM, FLV,  animated GIF |
@@ -110,10 +111,10 @@ Open **Flect** from the Start menu.
 
 - **General** - Theme, language (English / 日本語 / 简体中文), when the progress window closes by itself, and a checkbox for every context-menu entry so you can hide the ones you never use.
 - **Folder** - Duplicate matching rules, whether deletions use the Recycle Bin, folders to skip while scanning, rename defaults, what counts as an "empty" folder, and the archive format used by folder compression (ZIP / 7z / TAR / tar.gz).
-- **Video** - codec, hardware acceleration (NVENC / Quick Sync / AMF), whether to favour speed or quality, GIF export settings, thumbnail format (PNG / JPG), JPG quality and maximum width, and the rotation fill colour.
+- **Video** - Codec, hardware acceleration (NVENC / Quick Sync / AMF), whether to favour speed or quality, GIF export settings, thumbnail format (PNG / JPG), JPG quality and maximum width, the rotation fill colour, and the subtitle model, device, language and output format.
 - **Image** - WebP fallback for compression, the colour Remove Background keys out, and exactly which metadata gets stripped.
-- **Text** - what to do with characters Shift_JIS cannot represent, and JSON key-sorting rules.
-- **OCR** - recognition language, where the text goes, and the output encoding.
+- **Text** - What to do with characters Shift_JIS cannot represent, and JSON key-sorting rules.
+- **OCR** - Recognition language, where the text goes, and the output encoding.
 
 The menu presets (like `50%`, `10 MB`, `45°` entries) are editable here too.
 
@@ -126,8 +127,9 @@ The menu presets (like `50%`, `10 MB`, `45°` entries) are editable here too.
 | **HEVC Video Extensions** | Only to *write* `.heic` files. Reading HEIC works without it. From the Microsoft Store. |
 | **Java (JDK or JRE)** | Only to decompile `.jar` files. |
 | **Windows language pack** | Only for OCR, and only for the language you want to read. Flect's settings can open the installer for you. |
+| **Python 3.10+** | Only for the AI features (Remove Background, Subtitles). Flect creates a private environment on first use. Install from python.org or the Microsoft Store. |
 
-Everything else - the image, video, PDF and decompiler engines - ships inside the installer. There is nothing else to download and nothing is ever uploaded anywhere; every operation runs on your PC.
+Everything else - the image, video, PDF and decompiler engines - ships inside the installer. The AI features fetch their engine and model over the internet the first time you use them, and nothing is ever uploaded anywhere; every operation runs on your PC.
 
 ## FAQ
 
@@ -153,6 +155,16 @@ start explorer.exe
 ```
 
 Both restart Explorer, so your open Explorer windows will close. Nothing else is affected, and the change is per-user - no administrator rights needed.
+</details>
+　
+<details>
+<summary><b>Subtitles need Python and download a model?</b></summary>
+
+Yes - subtitles run on an AI model (Whisper by OpenAI) that Flect cannot ship inside the installer. Both are one-off:
+
+- **Python 3.10+**: the first time you add subtitles, Flect creates a private Python environment under `%LOCALAPPDATA%\Flect\env` and installs faster-whisper into it. The **Remove Background** AI feature shares that environment.
+- **The model** is downloaded once from Hugging Face into `%LOCALAPPDATA%\Flect\models`. The default *Small* model is about 480 MB; *Base* ~145 MB, *Medium* ~1.5 GB and *Large v3* ~3 GB. Pick the size in **Video → Subtitles**.
+- Nothing is uploaded. The audio never leaves your PC - transcription happens locally, and an NVIDIA GPU is used automatically when one is available (CUDA libraries are installed into the same environment).
 </details>
 　
 <details>
@@ -268,6 +280,7 @@ Flect is two halves: C++ shell extension (`src/Shell`) to render the menu inside
 | Decompile `.jar` | cfr.jar | `fetch\get.ps1` |
 | Decompile prerequisite | JDK / JRE | Installed by the user |
 | Write HEIC | Windows HEVC Video Extensions | Installed by the user |
+| Subtitles | faster-whisper | Installed at the first use |
 
 ---
 

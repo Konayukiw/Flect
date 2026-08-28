@@ -79,6 +79,7 @@ internal static class MenuCatalog
                 MenuEntry.Leaf("video.resize.custom", "Custom", "menu.custom")),
             MenuEntry.Leaf("video.trim", "Trim"),
             MenuEntry.Leaf("video.thumbnail", "Thumbnail"),
+            MenuEntry.Leaf("video.subtitles", "Subtitles"),
             MenuEntry.Group("video.compress", "Compress",
                 MenuEntry.Leaf("video.compress.discord", "Discord"),
                 MenuEntry.Leaf("video.compress.p1", "Preset 1", "menu.preset1"),
@@ -117,7 +118,8 @@ internal static class MenuCatalog
                 MenuEntry.Leaf("audio.convert.AIFF", "to AIFF", "menu.to"),
                 MenuEntry.Leaf("audio.convert.AAC", "to AAC", "menu.to"),
                 MenuEntry.Leaf("audio.convert.OGG", "to OGG", "menu.to"),
-                MenuEntry.Leaf("audio.convert.WMA", "to WMA", "menu.to"))),
+                MenuEntry.Leaf("audio.convert.WMA", "to WMA", "menu.to")),
+            MenuEntry.Leaf("audio.subtitles", "Subtitles")),
 
         MenuEntry.Group("text", "Text",
             MenuEntry.Group("text.convert", "Convert",

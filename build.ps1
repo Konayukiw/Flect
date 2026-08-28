@@ -69,10 +69,12 @@ if (Test-Path $thirdParty) {
     Get-ChildItem $thirdParty -File | Copy-Item -Destination $depsOut -Force
 }
 
-$pythonTool = Join-Path $repoRoot 'deps\remove_bg.py'
-if (Test-Path $pythonTool) {
-    Copy-Item $pythonTool -Destination $depsOut -Force
-    Write-Host 'remove_bg.py staged'
+foreach ($pyTool in @('remove_bg.py', 'subtitles.py')) {
+    $pythonTool = Join-Path $repoRoot "deps\$pyTool"
+    if (Test-Path $pythonTool) {
+        Copy-Item $pythonTool -Destination $depsOut -Force
+        Write-Host "$pyTool staged"
+    }
 }
 
 $pyObfTool = Join-Path $repoRoot 'deps\pyobfuscate'

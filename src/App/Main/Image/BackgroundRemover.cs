@@ -3,6 +3,7 @@ using System.Text.Json;
 
 namespace Optimizer.Main.Image;
 
+using Optimizer.Main.Common;
 using Optimizer.Main.Config;
 using Optimizer.Main.Localization;
 
@@ -173,14 +174,14 @@ internal static class BackgroundRemover
             progress.Status(Loc.T("msg.bgSettingUp"));
         }
 
-        var systemPython = FindSystemPython();
+        var systemPython = PythonHost.FindSystemPython();
         if (systemPython is null)
             throw new FileNotFoundException(Loc.T("msg.bgNoPython"));
 
         if (!File.Exists(EnvPython))
         {
             progress.Info(Loc.T("msg.bgCreatingEnv"));
-            var venvResult = await RunProcessAsync(systemPython, $"-m venv \"{EnvRoot}\"", token).ConfigureAwait(false);
+            var venvResult = await PythonHost.RunProcessAsync(systemPython, $"-m venv \"{EnvRoot}\"", token).ConfigureAwait(false);
             if (venvResult.ExitCode != 0)
                 throw new InvalidOperationException($"{Loc.T("msg.bgVenvFailed")}: {venvResult.Error}");
             if (!File.Exists(EnvPython))
@@ -188,15 +189,15 @@ internal static class BackgroundRemover
         }
 
         progress.Info(Loc.T("msg.bgUpgradingPip"));
-        var pipUpgrade = await RunProcessAsync(EnvPython, "-m pip install --upgrade pip --quiet --disable-pip-version-check", token).ConfigureAwait(false);
+        var pipUpgrade = await PythonHost.RunProcessAsync(EnvPython, "-m pip install --upgrade pip --quiet --disable-pip-version-check", token).ConfigureAwait(false);
 
         progress.Info(Loc.T("msg.bgInstallingDeps"));
         var installArgs = "-m pip install --quiet --disable-pip-version-check rembg pillow onnxruntime onnxruntime-directml";
-        var install = await RunProcessAsync(EnvPython, installArgs, token).ConfigureAwait(false);
+        var install = await PythonHost.RunProcessAsync(EnvPython, installArgs, token).ConfigureAwait(false);
         if (install.ExitCode != 0)
         {
             var fallbackArgs = "-m pip install --quiet --disable-pip-version-check rembg pillow onnxruntime";
-            var fallback = await RunProcessAsync(EnvPython, fallbackArgs, token).ConfigureAwait(false);
+            var fallback = await PythonHost.RunProcessAsync(EnvPython, fallbackArgs, token).ConfigureAwait(false);
             if (fallback.ExitCode != 0)
                 throw new InvalidOperationException($"{Loc.T("msg.bgInstallFailed")}: {fallback.Error}");
         }
@@ -209,124 +210,8 @@ internal static class BackgroundRemover
 
     private static async Task<bool> CanImportRembgAsync(CancellationToken token)
     {
-        var r = await RunProcessAsync(EnvPython, "-c \"import rembg, PIL, onnxruntime; print('ok')\"", token).ConfigureAwait(false);
+        var r = await PythonHost.RunProcessAsync(EnvPython, "-c \"import rembg, PIL, onnxruntime; print('ok')\"", token).ConfigureAwait(false);
         return r.ExitCode == 0 && r.Output.Contains("ok");
-    }
-
-    private static string? FindSystemPython()
-    {
-        var candidates = new List<string>();
-
-        var pyLauncher = FindOnPath("py.exe");
-        if (pyLauncher is not null)
-        {
-            candidates.Add(pyLauncher + " -3");
-        }
-
-        var python = FindOnPath("python.exe");
-        if (python is not null) candidates.Add(python);
-
-        var python3 = FindOnPath("python3.exe");
-        if (python3 is not null) candidates.Add(python3);
-
-        var localPrograms = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Programs", "Python");
-        if (Directory.Exists(localPrograms))
-        {
-            try
-            {
-                var exes = Directory.EnumerateFiles(localPrograms, "python.exe", SearchOption.AllDirectories).Take(3);
-                candidates.AddRange(exes);
-            }
-            catch { }
-        }
-
-        foreach (var cand in candidates)
-        {
-            try
-            {
-                string file, args;
-                if (cand.EndsWith(" -3", StringComparison.Ordinal))
-                {
-                    file = cand[..^3].Trim();
-                    args = "-3 --version";
-                }
-                else
-                {
-                    file = cand;
-                    args = "--version";
-                }
-                var psi = new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = file,
-                    Arguments = args,
-                    UseShellExecute = false,
-                    CreateNoWindow = true,
-                    RedirectStandardOutput = true,
-                    RedirectStandardError = true,
-                };
-                using var p = System.Diagnostics.Process.Start(psi);
-                if (p is null) continue;
-                p.WaitForExit(5000);
-                if (p.ExitCode == 0) return cand; 
-            }
-            catch { continue; }
-        }
-        return null;
-    }
-
-    private static string? FindOnPath(string fileName)
-    {
-        var path = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
-        foreach (var dir in path.Split(Path.PathSeparator, StringSplitOptions.RemoveEmptyEntries))
-        {
-            try
-            {
-                var candidate = Path.Combine(dir.Trim('"'), fileName);
-                if (File.Exists(candidate)) return candidate;
-            }
-            catch { }
-        }
-        return null;
-    }
-
-    private sealed record RunResult(int ExitCode, string Output, string Error);
-
-    private static Task<RunResult> RunProcessAsync(string fileName, string arguments, CancellationToken token)
-    {
-        var file = fileName;
-        var args = arguments;
-        if (fileName.EndsWith(" -3", StringComparison.Ordinal))
-        {
-            file = fileName[..^3].Trim();
-            args = "-3 " + arguments;
-        }
-
-        return Task.Run(() =>
-        {
-            var psi = new System.Diagnostics.ProcessStartInfo
-            {
-                FileName = file,
-                Arguments = args,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-            };
-            using var proc = new System.Diagnostics.Process { StartInfo = psi };
-            var output = new System.Text.StringBuilder();
-            var error = new System.Text.StringBuilder();
-            proc.OutputDataReceived += (_, e) => { if (e.Data is not null) output.AppendLine(e.Data); };
-            proc.ErrorDataReceived += (_, e) => { if (e.Data is not null) error.AppendLine(e.Data); };
-            proc.Start();
-            proc.BeginOutputReadLine();
-            proc.BeginErrorReadLine();
-            while (!proc.WaitForExit(200))
-            {
-                token.ThrowIfCancellationRequested();
-            }
-            proc.WaitForExit();
-            return new RunResult(proc.ExitCode, output.ToString(), error.ToString());
-        }, token);
     }
 
     private static Task WaitForExitAsync(System.Diagnostics.Process process, CancellationToken token)
