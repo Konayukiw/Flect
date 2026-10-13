@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title data-i18n="meta.title">Flect - All-in-one file editor that lives in Explorer</title>
+  <link rel="icon" href="assets/Flect.png">
+  <meta name="description" data-i18n="meta.desc" content="Right-click any file or folder in Windows Explorer to convert, compress, resize, run OCR, or remove duplicate images, videos, audio, and PDFs - everything finishes right there.">
+  <meta name="theme-color" content="#05070c">
+  <meta property="og:title" data-i18n="og.title" content="Flect - All-in-one tools with a right click">
+  <meta property="og:description" data-i18n="og.desc" content="From Explorer: convert, compress, resize, OCR, and dedupe images, videos, audio, and PDFs. All in a single right click.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://konayukiw.github.io/Flect/">
+  <!-- og -->
+  <meta property="og:image" content="assets/og.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700;800&family=Noto+Sans+SC:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="progress" id="progress" aria-hidden="true"></div>
+
+  <div class="dev-badge"><span>author: konayukiw</span></div>
+
+  <button class="theme-toggle" id="themeToggle" type="button" data-i18n-aria="theme.aria" aria-label="Toggle theme">
+    <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+  </button>
+
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+
+  <header class="site-head">
+    <nav class="nav">
+      <a class="brand" href="#top" data-i18n-aria="brand.aria" aria-label="Back to top">
+        <span class="brand-mark" aria-hidden="true">
+          <img class="mark-a" src="assets/Flect.png" alt="">
+        </span>
+        <span class="brand-name">Flect</span>
+      </a>
+      <div class="nav-right">
+        <div class="nav-links">
+          <a href="#demo" data-i18n="nav.demo">Demo</a>
+          <a href="#features" data-i18n="nav.features">Features</a>
+          <a href="#install" data-i18n="nav.install">Install</a>
+          <a href="#faq" data-i18n="nav.faq">FAQ</a>
+          <a href="#gallery" data-i18n="nav.gallery">Gallery</a>
+        </div>
+        <select class="lang-select" id="langSelect" data-i18n-aria="lang.aria" aria-label="Select language">
+          <option value="en">English</option>
+          <option value="ja">日本語</option>
+          <option value="zh">中文</option>
+        </select>
+      </div>
+    </nav>
+  </header>
+
+  <div class="bg" aria-hidden="true">
+    <canvas id="particles"></canvas>
+    <div class="glow glow-a"></div>
+    <div class="glow glow-b"></div>
+  </div>
+
+  <main id="top">
+
+    <section class="hero">
+      <p class="hero-kicker" data-i18n="hero.kicker">Works on Windows 10 / 11</p>
+      <h1 data-i18n="hero.title">One right <br class="sp-only">click for<br><span class="grad">Everything</span></h1>
+      <p class="lead" data-i18n="hero.lead">
+        No more hunting for converter websites in your browser, or squeezing videos in a dedicated editor.<br>
+        Just right-click a file in Explorer to convert, compress, resize, run OCR, or remove duplicates...<br>
+        Every task finishes <strong>right inside Explorer</strong>.
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#install"><span data-i18n="hero.btn.download">Download the Installer</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="btn btn-ghost" href="#demo"><span data-i18n="hero.btn.demo">Try the Demo</span></a>
+      </div>
+      <ul class="hero-stats">
+        <li><strong>60+</strong><span data-i18n="stat.menuItems">Menu items</span></li>
+        <li><strong>0</strong><span data-i18n="stat.server">Server uploads</span></li>
+      </ul>
+      <div class="scroll-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 4v16m-6-6l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+    </section>
+
+    <section class="demo" id="demo">
+      <div class="sec-head">
+        <span class="sec-tag">demo</span>
+        <h2 data-i18n="demo.title">Try the Demo</h2>
+        <p data-i18n="demo.desc">Right-click a file or folder on this desktop to open the Flect menu.<br>Double-click a file name to try renaming it too.</p>
+      </div>
+
+      <div class="desk-wrap">
+        <div class="desk" id="desk" data-context-step="0">
+          <div class="desk-bar">
+            <h3 id="deskTitle" data-i18n="desk.title">Desktop</h3>
+            <div class="desk-nav" aria-hidden="true"><span>←</span><span>→</span><span class="nav-up">↑</span></div>
+          </div>
+          <div class="desk-icons" id="deskIcons">
+            <button class="icon" type="button" data-kind="file" data-name="Dance Video.mp4" data-size="1.2 GB" data-ext="mp4" data-i18n-name="file.dance" tabindex="0">
+              <span class="ic ic-video"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7l9 5-9 5V7zM13 7h7v10h-7z" fill="currentColor"/></svg></span>
+              <span class="nm">Dance Video.mp4</span>
+            </button>
+            <button class="icon" type="button" data-kind="file" data-name="Photo_0901.jpeg" data-size="4.8 MB" data-ext="jpeg" data-i18n-name="file.photo" tabindex="0">
+              <span class="ic ic-image"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="10" r="1.6" fill="currentColor"/><path d="M3 17l5-5 4 4 3-3 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <span class="nm">Photo_0901.jpeg</span>
+            </button>
+            <button class="icon" type="button" data-kind="file" data-name="Meeting Notes.pdf" data-size="2.1 MB" data-ext="pdf" data-i18n-name="file.meeting" tabindex="0">
+              <span class="ic ic-pdf"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2h8l4 4v16H6z" fill="currentColor"/><path d="M14 2v4h4" fill="none" stroke="var(--bg)" stroke-width="1.4"/><rect x="9" y="10" width="6" height="1.6" rx="0.8" fill="var(--bg)"/><rect x="9" y="13" width="6" height="1.6" rx="0.8" fill="var(--bg)"/></svg></span>
+              <span class="nm">Meeting Notes.pdf</span>
+            </button>
+            <button class="icon" type="button" data-kind="file" data-name="Warehouse Cleanup.zip" data-size="340 MB" data-ext="zip" data-i18n-name="file.warehouse" tabindex="0">
+              <span class="ic ic-zip"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9 3v3h3V3h3v3h3" stroke="currentColor" stroke-width="1.4" fill="none"/></svg></span>
+              <span class="nm">Warehouse Cleanup.zip</span>
+            </button>
+            <button class="icon" type="button" data-kind="folder" data-name="Club Photos" data-ext="null" data-i18n-name="file.club" tabindex="0">
+              <span class="ic ic-folder"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 2h9v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" fill="currentColor"/></svg></span>
+              <span class="nm">Club Photos</span>
+            </button>
+            <button class="icon" type="button" data-kind="folder" data-name="New Hire Training" data-ext="null" data-i18n-name="file.orientation" tabindex="0">
+              <span class="ic ic-folder"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h7l2 2h9v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" fill="currentColor"/></svg></span>
+              <span class="nm">New Hire Training</span>
+            </button>
+          </div>
+          <p class="desk-tip" data-i18n="desk.tip">Right-click to open the Flect menu. Press Esc to close it.</p>
+        </div>
+      </div>
+
+      <div class="ctx" id="ctx" role="menu" aria-hidden="true">
+        <div class="ctx-f"></div>
+        <div class="ctx-body" id="ctxBody"></div>
+      </div>
+
+      <div class="scan-overlay" id="scanOverlay" aria-hidden="true">
+        <div class="scan-card">
+          <div class="scan-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7V5a1 1 0 0 1 1-1h2M17 4h2a1 1 0 0 1 1 1v2M20 17v2a1 1 0 0 1-1 1h-2M7 20H5a1 1 0 0 1-1-1v-2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M4 12h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="2 6"/></svg></div>
+          <div class="scan-title" id="scanTitle">処理を開始します</div>
+          <div class="scan-desc" id="scanDesc"></div>
+          <div class="scan-track"><div class="scan-bar" id="scanBar"></div></div>
+          <div class="scan-msg" data-i18n="scan.local">All processing happens on your PC. Your original files are never modified.</div>
+        </div>
+      </div>
+
+      <div id="renameBackdrop" class="rename-backdrop" aria-hidden="true"></div>
+    </section>
+
+    <section class="philo">
+      <p class="philo-line reveal" data-i18n="philo.line">The time spent hunting for a converter,<br class="sp-only"> and the hassle of hopping between windows.<br><em>One right click eliminates both. </em></p>
+      <p class="philo-sub reveal" data-i18n="philo.sub">Flect is a native Windows app that integrates into Explorer as a shell extension. Built with C++ / .NET, it edits files locally, so nothing is ever sent to a server.</p>
+    </section>
+
+    <section class="pillars">
+      <div class="pillar reveal">
+        <svg viewBox="0 0 24 24" class="p-ic" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3 7-7 10-4-3-7-5-7-10V6l7-3z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3 data-i18n="pillar.safe.t">Your Originals Are Safe</h3>
+        <p data-i18n="pillar.safe.d">Results are always written out as <strong>new files</strong> - nothing is overwritten or deleted. If a name is already taken, a suffix like "(1)" is added.</p>
+      </div>
+      <div class="pillar reveal">
+        <svg viewBox="0 0 24 24" class="p-ic" aria-hidden="true"><path d="M4 12h16M12 4v16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M6 8l-2 4 2 4M18 8l2 4-2 4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3 data-i18n="pillar.batch.t">Batch Editing</h3>
+        <p data-i18n="pillar.batch.d">Select hundreds of files at once. The whole selection is handled in a single run - no manual, one-by-one work.</p>
+      </div>
+      <div class="pillar reveal">
+        <svg viewBox="0 0 24 24" class="p-ic" aria-hidden="true"><path d="M12 3L2 8l10 5 10-5-10-5z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M4 12l8 4 8-4M4 16l8 4 8-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <h3 data-i18n="pillar.offline.t">Fully Offline</h3>
+        <p data-i18n="pillar.offline.d">All external dependencies are downloaded automatically by the installer. No uploads, no log collection - your files never leave your PC.</p>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <div class="sec-head">
+        <span class="sec-tag">features</span>
+        <h2 data-i18n="features.title">The Right Menu, Wherever You Need It</h2>
+        <p data-i18n="features.desc">For every file type, only the operations it actually needs show up in the right-click menu.</p>
+      </div>
+
+      <div class="feat-row reveal">
+        <div class="feat-copy">
+          <span class="feat-badge" data-i18n="feat.img.badge">Image</span>
+          <h3 data-i18n="feat.img.title">Images: From Resizing to Background Removal</h3>
+          <ul class="feat-list">
+            <li data-i18n="feat.img.1"><strong>Resize</strong> - by ratio or exact pixels, with preset sizes selectable in one click from the menu.</li>
+            <li data-i18n="feat.img.2"><strong>Compress</strong> - down to a target size while keeping quality as high as possible.</li>
+            <li data-i18n="feat.img.3"><strong>Rotate</strong> - to any angle. Corners become transparent, or are filled with a chosen color for formats without alpha.</li>
+            <li data-i18n="feat.img.4"><strong>Convert</strong> - between PNG, JPG, WEBP, HEIC, ICO, GIF, and SVG.</li>
+            <li data-i18n="feat.img.5"><strong>OCR</strong> - extract text from images, then save or copy it.</li>
+            <li data-i18n="feat.img.6"><strong>Metadata removal</strong> - strip EXIF, GPS location, comments, and camera info for safe sharing on social media.</li>
+            <li data-i18n="feat.img.7"><strong>Background removal</strong> - chroma-key out a single color such as a green screen.</li>
+          </ul>
+        </div>
+        <figure class="feat-shot">
+          <!-- image-conversion-example -->
+          <div class="shot"></div>
+          <figcaption data-i18n="feat.img.cap">Right-click an image → Flect menu</figcaption>
+        </figure>
+      </div>
+
+      <div class="feat-row flip reveal">
+        <div class="feat-copy">
+          <span class="feat-badge" data-i18n="feat.video.badge">Video & Audio</span>
+          <h3 data-i18n="feat.video.title">Video: Cuts Without Re-encoding</h3>
+          <ul class="feat-list">
+            <li data-i18n="feat.video.1"><strong>Trim</strong> - the cut finishes the moment you click. No re-encoding by default, so exports are fast.</li>
+            <li data-i18n="feat.video.2"><strong>Thumbnail</strong> - export any single frame as a PNG or JPG image.</li>
+            <li data-i18n="feat.video.3"><strong>Compress</strong> - automatically adjust to a target size with minimal quality or FPS loss.</li>
+            <li data-i18n="feat.video.4"><strong>Resize / rotate</strong> - by ratio or exact pixels, with presets one click away in the menu.</li>
+            <li data-i18n="feat.video.5"><strong>Convert</strong> - between MP4, MOV, MKV, M4A, AVI, WEBM, FLV, and GIF.</li>
+            <li data-i18n="feat.video.6"><strong>Audio extraction</strong> - pull the audio track out of any video.</li>
+            <li data-i18n="feat.video.7"><strong>Quality and speed</strong> - switch codecs (H.264 / H.265 / VP9 / AV1) and hardware encoding (NVENC / Quick Sync / AMF) in settings.</li>
+          </ul>
+        </div>
+        <figure class="feat-shot">
+          <!-- video-conversion-example -->
+          <div class="shot"></div>
+          <figcaption data-i18n="feat.video.cap">Process a single clip or thousands of audio files in one go</figcaption>
+        </figure>
+      </div>
+
+      <div class="feat-row reveal">
+        <div class="feat-copy">
+          <span class="feat-badge" data-i18n="feat.folder.badge">Folder</span>
+          <h3 data-i18n="feat.folder.title">Folders: All the Dirty Work of Tidying Up</h3>
+          <ul class="feat-list">
+            <li data-i18n="feat.folder.1"><strong>Duplicate removal</strong> - delete files that match by size, hash, and bytes in bulk.</li>
+            <li data-i18n="feat.folder.2"><strong>Empty folder cleanup</strong> - remove accumulated empty folders with one click.</li>
+            <li data-i18n="feat.folder.3"><strong>Tree view</strong> - visualize the folder structure to make organizing easier.</li>
+            <li data-i18n="feat.folder.4"><strong>Batch rename</strong> - rename all files inside a folder at once.</li>
+            <li data-i18n="feat.folder.5"><strong>Analyze</strong> - visualize which files take up space and where duplicates hide.</li>
+            <li data-i18n="feat.folder.6"><strong>Compress</strong> - bundle the folder into a ZIP / 7z / TAR / tar.gz archive.</li>
+            <li data-i18n="feat.folder.7"><strong>Extract</strong> - unpack ZIP / 7z / TAR / tar.gz / RAR into a new folder.</li>
+          </ul>
+        </div>
+        <figure class="feat-shot">
+          <!-- folder-context-menu-example -->
+          <div class="shot"></div>
+          <figcaption data-i18n="feat.folder.cap">Right-click a folder → Flect menu</figcaption>
+        </figure>
+      </div>
+
+      <div class="feat-row flip reveal">
+        <div class="feat-copy">
+          <span class="feat-badge" data-i18n="feat.text.badge">Text & Documents</span>
+          <h3 data-i18n="feat.text.title">Text: CSV, JSON, PDF</h3>
+          <ul class="feat-list">
+            <li data-i18n="feat.text.1"><strong>PDF</strong> - preview, merge multiple files, and export to PNG / JPG / TXT.</li>
+            <li data-i18n="feat.text.2"><strong>Text</strong> - convert file types, change character encodings (UTF-8 / UTF-16 / Shift_JIS...), and switch line endings (CRLF / LF).</li>
+            <li data-i18n="feat.text.3"><strong>JSON</strong> - beautify and reorder keys with rules.</li>
+            <li data-i18n="feat.text.4"><strong>JAR</strong> - decompile in one click and export the source code to a new folder.</li>
+          </ul>
+        </div>
+        <figure class="feat-shot">
+          <!-- text-document-context-menu-example -->
+          <div class="shot"></div>
+          <figcaption data-i18n="feat.text.cap">Preview, merge, and export PDFs with ease - no Adobe Acrobat Reader required.</figcaption>
+        </figure>
+      </div>
+
+      <div class="table-scroll">
+        <table class="conv-table">
+          <caption data-i18n="table.caption">Supported conversions (examples)</caption>
+          <thead>
+            <tr><th data-i18n="table.in">Input</th><th data-i18n="table.out">Output</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>PNG / JPG / WEBP / HEIC / ICO / GIF / SVG</td><td data-i18n="table.any">Any format in this column</td></tr>
+            <tr><td>MP4 / MOV / MKV / M4A / AVI / WEBM / FLV</td><td data-i18n="table.anyGif">Any format in this column + <strong>GIF</strong></td></tr>
+            <tr><td>MP3 / WAV / AIF / AIFF / AAC / OGG / WMA</td><td data-i18n="table.anyM4a">Any format in this column + <strong>M4A</strong></td></tr>
+            <tr><td data-i18n="table.audioExtract">Audio extraction</td><td>MP3 / M4A / WAV / AIF / AIFF / AAC / OGG / WMA</td></tr>
+            <tr><td>PDF</td><td>PNG / JPG / TXT</td></tr>
+            <tr><td>CSV</td><td>JSON / XML / HTML / MD</td></tr>
+            <tr><td>JSON</td><td>CSV / XML</td></tr>
+            <tr><td>INI / CFG / CONF</td><td>JSON / XML</td></tr>
+            <tr><td>JAR</td><td data-i18n="table.decompiled">Decompiled <code>.java</code> source code</td></tr>
+            <tr><td>ZIP / 7z / TAR / tar.gz / RAR</td><td data-i18n="table.extract">Extract to a new folder</td></tr>
+            <tr><td data-i18n="table.folder">Folder</td><td data-i18n="table.archive">Archive as ZIP / 7z / TAR / tar.gz</td></tr>
+            <tr><td data-i18n="table.encoding">Text encoding</td><td>UTF-8 / UTF-8 (BOM) / UTF-16 / Shift_JIS</td></tr>
+            <tr><td data-i18n="table.lineEnding">Line endings</td><td>CRLF (Windows) / LF (Unix)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="arch" id="arch">
+      <div class="sec-head">
+        <span class="sec-tag">how it works</span>
+        <h2 data-i18n="arch.title">How It Works</h2>
+        <p data-i18n="arch.desc">A C++ shell extension renders the menu inside Explorer, while a .NET application handles the actual work.</p>
+      </div>
+      <div class="arch-grid">
+        <div class="arch-card reveal">
+          <span class="arch-x">C++</span>
+          <h3 data-i18n="arch.shell.t">Shell Extension</h3>
+          <p data-i18n="arch.shell.d">The front end that renders the right-click menu inside Explorer. As a native Windows <code>IContextMenu</code> handler it stays lightweight and reads the selected file's info on the spot.</p>
+          <ul>
+            <li data-i18n="arch.shell.1">Runs as a standard Explorer menu</li>
+            <li data-i18n="arch.shell.2">Dynamically builds menus per file type</li>
+            <li data-i18n="arch.shell.3">Sits under "Show more options" on Windows 11</li>
+          </ul>
+        </div>
+        <div class="arch-card reveal">
+          <span class="arch-x">.NET</span>
+          <h3 data-i18n="arch.proc.t">Processing</h3>
+          <p data-i18n="arch.proc.d">Handles the real work - conversion, compression, analysis - and settings management. Invoked from the shell extension via a launcher, it reports progress and results back.</p>
+          <ul>
+            <li data-i18n="arch.proc.1">FFmpeg, ImageMagick, PDFium, and more bundled</li>
+            <li data-i18n="arch.proc.2">Shows a progress window; on failure or cancel, aborts and automatically deletes files being created</li>
+            <li data-i18n="arch.proc.3">Settings are stored in a JSON file under <code>%APPDATA%</code></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="install" id="install">
+      <div class="sec-head">
+        <span class="sec-tag">setup</span>
+        <h2 data-i18n="install.title">Installs in 3 Steps</h2>
+        <p data-i18n="install.desc">Download, run, and start right-clicking.</p>
+      </div>
+      <ol class="steps">
+        <li class="reveal">
+          <span class="step-num">01</span>
+          <div>
+            <h3 data-i18n="step.1t">Get the Installer</h3>
+            <p data-i18n="step.1d">Download the latest <code>Flect-Setup.exe</code> from <a class="link" href="https://github.com/Konayukiw/Flect/releases/latest">Releases</a>. If <code>.NET 10 Desktop Runtime</code> is missing, the setup detects it and guides you through.</p>
+          </div>
+        </li>
+        <li class="reveal">
+          <span class="step-num">02</span>
+          <div>
+            <h3 data-i18n="step.2t">Run the Setup</h3>
+            <p data-i18n="step.2d">Just run the downloaded installer - every conversion and analysis engine is bundled with it. Explorer may restart during setup; that's normal.</p>
+          </div>
+        </li>
+        <li class="reveal">
+          <span class="step-num">03</span>
+          <div>
+            <h3 data-i18n="step.3t">Try a Right Click</h3>
+            <p data-i18n="step.3d">Right-click a file and open "Show more options" to find the Flect menu. Tune menu items and compression presets in the settings app.</p>
+            <p class="note" data-i18n="step.3note">Run <code>reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve</code> in Command Prompt and restart Explorer to show Flect in the first-level context menu. To undo, delete the registry key and restart.</p>
+          </div>
+        </li>
+      </ol>
+      <div class="install-cta reveal">
+        <a class="btn btn-primary btn-lg" href="https://github.com/Konayukiw/Flect/releases/latest"><span data-i18n="install.download">Download from Releases</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+        <a class="btn btn-ghost btn-lg" href="https://github.com/Konayukiw/Flect"><span data-i18n="install.github">GitHub Repository</span></a>
+      </div>
+      <div class="reqs reveal">
+        <h3 data-i18n="reqs.title">System Requirements</h3>
+        <ul>
+          <li data-i18n="reqs.1">64-bit Windows 11 / Windows 10</li>
+          <li data-i18n="reqs.2">.NET 10 Desktop Runtime (the installer will guide you if it's missing)</li>
+          <li data-i18n="reqs.3">HEVC Video Extensions is only required for HEIC export: <a class="link" href="https://www.microsoft.com/store/productId/9N4WGH0Z6VHQ" target="_blank" rel="noopener">Microsoft Store</a>.</li>
+          <li data-i18n="reqs.4">JDK / JRE is only needed for JAR decompilation.</li>
+          <li data-i18n="reqs.5">A Windows language pack is only needed for OCR.</li>
+        </ul>
+        <p class="reqs-note" data-i18n="reqs.note">Engines for images, video, PDF, and decompilation are all bundled. No extra downloads, no server transfers - everything runs locally.</p>
+      </div>
+    </section>
+
+    <section class="pkg" id="pkg">
+      <div class="sec-head">
+        <span class="sec-tag">for developers</span>
+        <h2 data-i18n="pkg.title">For Developers</h2>
+        <p data-i18n="pkg.desc">Build with just a few PowerShell scripts.</p>
+      </div>
+      <div class="code-grid">
+        <div class="code-card reveal">
+          <div class="code-head"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-title">scripts</span></div>
+          <pre class="code-body"><code>.\scripts\fetch.ps1<span class="cm"> / </span>.\scripts\build.ps1<span class="cm"> / </span>.\scripts\package.ps1</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="faq" id="faq">
+      <div class="sec-head">
+        <span class="sec-tag">faq</span>
+        <h2 data-i18n="faq.title">Frequently Asked Questions</h2>
+      </div>
+      <div class="faq-list">
+        <details class="reveal">
+          <summary data-i18n="faq.q1">The Flect menu is buried under "Show more options"</summary>
+          <p data-i18n="faq.a1">Switch the context menu back to the Windows 10 style and Flect appears directly in it. Run <code>reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve</code> in Command Prompt and restart Explorer. This affects the whole system, so delete the key if you'd rather not keep it.</p>
+        </details>
+        <details class="reveal">
+          <summary data-i18n="faq.q2">Where do converted files go?</summary>
+          <p data-i18n="faq.a2">As new files next to the originals - nothing is modified or deleted. If a name already exists, a sequential number like (1) is added.</p>
+        </details>
+        <details class="reveal">
+          <summary data-i18n="faq.q3">Can I restore deleted files?</summary>
+          <p data-i18n="faq.a3">By default, deleted files go to the Recycle Bin, so yes. Only if you switch to permanent deletion in settings can they no longer be restored.</p>
+        </details>
+        <details class="reveal">
+          <summary data-i18n="faq.q4">Why does "to HEIC" fail?</summary>
+          <p data-i18n="faq.a4">HEIC export requires Microsoft's <strong>HEVC Video Extensions</strong> (reading doesn't). Flect can't bundle this codec, so it uses Windows' WIC encoder for HEIC export only.</p>
+        </details>
+        <details class="reveal">
+          <summary data-i18n="faq.q5">OCR warns me about a missing language</summary>
+          <p data-i18n="faq.a5">Flect uses Windows' built-in OCR. Check installed languages under Settings → OCR, where adding a language pack is also guided. Language packs can be large, and adding one may require administrator rights.</p>
+        </details>
+        <details class="reveal">
+          <summary data-i18n="faq.q6">Trimmed video starts a bit before the marked point</summary>
+          <p data-i18n="faq.a6">That's the result of not re-encoding. Video is stored by keyframes, and cutting by copy has to rewind to the nearest keyframe, which can shift the start by a few seconds. For precise cuts, switch Settings → Video → Trim to "Match the marked position" - it trades a bit of speed.</p>
+        </details>
+        <details class="reveal">
+          <summary data-i18n="faq.q7">Aaah! Too many items in the right-click menu!</summary>
+          <p data-i18n="faq.a7">Open the settings app and uncheck the items you want to hide under General → Right-Click Menu Items.</p>
+        </details>
+        <details class="reveal">
+          <summary data-i18n="faq.q8">I want to uninstall</summary>
+          <p data-i18n="faq.a8">Uninstall like any other app from Windows Settings → Apps.</p>
+        </details>
+        <details class="reveal">
+          <summary data-i18n="faq.q9">Where are settings stored?</summary>
+          <p data-i18n="faq.a9">In <code>%APPDATA%\Flect\settings.json</code>. Some values needed by the Explorer menu itself are also stored in <code>HKCU\Software\Flect</code>. "Reset settings" clears both while keeping shell registration and learned encoder results.</p>
+        </details>
+      </div>
+      <div class="faq-foot reveal" data-i18n="faq.foot">If your question isn't answered here, report it on <a class="link" href="https://github.com/Konayukiw/Flect/issues" target="_blank" rel="noopener">GitHub Issues</a> - attaching the activity log helps a lot.</div>
+    </section>
+
+    <section class="final">
+      <p class="final-word" data-i18n="final.word">That one chore of file organizing,<br>reduced to a single right click.</p>
+      <div class="final-actions">
+        <a class="btn btn-primary btn-lg" href="https://github.com/Konayukiw/Flect/releases/latest"><span data-i18n="final.download">Download Free</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+      <p class="final-note" data-i18n="final.note">An open-source project under the Apache License 2.0.<br>Contributions - including new features - are welcome.</p>
+    </section>
+
+  </main>
+
+  <footer class="site-foot">
+    <div class="foot-top">
+      <a class="brand" href="#top">
+        <span class="brand-mark" aria-hidden="true">
+          <img src="assets/Flect.png" alt="">
+        </span>
+        <span class="brand-name">Flect</span>
+      </a>
+      <div class="foot-cols">
+        <div class="foot-col">
+          <span class="foot-h" data-i18n="foot.more">Explore</span>
+          <a href="#demo" data-i18n="nav.demo">Demo</a>
+          <a href="#features" data-i18n="nav.features">Features</a>
+          <a href="#install" data-i18n="nav.install">Install</a>
+          <a href="#faq" data-i18n="nav.faq">FAQ</a>
+        </div>
+        <div class="foot-col">
+          <span class="foot-h" data-i18n="foot.links">Links</span>
+          <a href="https://github.com/Konayukiw/Flect" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://github.com/Konayukiw/Flect/releases/latest" target="_blank" rel="noopener">Releases</a>
+          <a href="https://github.com/Konayukiw/Flect/issues" target="_blank" rel="noopener">Issues</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <p>© <span id="year">2025</span> Konayukiw · Licensed under <a class="link" href="https://github.com/Konayukiw/Flect/blob/main/LICENSE" target="_blank" rel="noopener">Apache License 2.0</a></p>
+      <p class="foot-vibe" data-i18n="foot.vibe">This page was generated by Qwen 3.8 Max.</p>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "animejs": "https://esm.sh/animejs@3.2.2",
+        "canvas-confetti": "https://esm.sh/canvas-confetti@1.9.3"
+      }
+    }
+  </script>
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
