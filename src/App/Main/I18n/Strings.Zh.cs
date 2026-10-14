@@ -392,6 +392,7 @@ internal static partial class Strings
         ["msg.bgSettingUp"] = "正在为 AI 背景删除准备 Python 环境",
         ["msg.bgInstalling"] = "正在更新 AI 背景删除的 Python 环境",
         ["msg.bgCreatingEnv"] = "正在 %LOCALAPPDATA%\\Flect\\env 中创建虚拟环境",
+        ["msg.subtitlesCreatingEnv"] = "正在 %LOCALAPPDATA%\\Flect\\env 中创建字幕用的虚拟环境",
         ["msg.bgVenvFailed"] = "创建 Python 虚拟环境失败",
         ["msg.bgUpgradingPip"] = "正在升级 pip",
         ["msg.bgInstallingDeps"] = "正在安装 rembg 及其依赖（首次运行可能需要几分钟）",

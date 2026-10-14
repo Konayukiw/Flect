@@ -398,6 +398,7 @@ internal static partial class Strings
         ["msg.bgSettingUp"] = "Setting up Python environment for AI background removal",
         ["msg.bgInstalling"] = "Updating Python environment for AI background removal",
         ["msg.bgCreatingEnv"] = "Creating virtual environment in %LOCALAPPDATA%\\Flect\\env",
+        ["msg.subtitlesCreatingEnv"] = "Creating the subtitles virtual environment in %LOCALAPPDATA%\\Flect\\env",
         ["msg.bgVenvFailed"] = "Failed to create Python virtual environment",
         ["msg.bgUpgradingPip"] = "Upgrading pip",
         ["msg.bgInstallingDeps"] = "Installing rembg and dependencies (This may take a few minutes)",

@@ -12,8 +12,7 @@ internal static class Store
 
     private static readonly TimeSpan StaleAfter = TimeSpan.FromHours(1);
 
-    public static string Directory => Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), Branding.Name);
+    public static string Directory => Locations.Roaming;
 
     private static readonly JsonSerializerOptions Layout = new()
     {

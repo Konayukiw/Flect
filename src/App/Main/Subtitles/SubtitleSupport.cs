@@ -9,14 +9,9 @@ using Optimizer.Main.Process;
 
 internal static class SubtitleSupport
 {
-    private static readonly string EnvRoot = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        Branding.Name, "env");
-
+    private static readonly string EnvRoot = Path.Combine(Locations.Local, "env");
     private static readonly string EnvPython = Path.Combine(EnvRoot, "Scripts", "python.exe");
-    private static readonly string ModelsDir = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        Branding.Name, "models");
+    private static readonly string ModelsDir = Path.Combine(Locations.Local, "models");
 
     private static string ToolScript
     {

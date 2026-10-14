@@ -162,8 +162,6 @@ internal static partial class Strings
         ["settings.presets.slot"] = "枠 {0}",
         ["settings.presets.invalid"] = "読み取れなかったプリセット値が存在したため、既定値に戻しました。",
 
-        ["settings.video"] = "動画",
-
         ["settings.video.encoding"] = "エンコード",
         ["settings.video.codec"] = "コーデック",
         ["settings.video.codec.h264"] = "H.264 - 互換性が最も高い",
@@ -393,6 +391,7 @@ internal static partial class Strings
         ["msg.bgSettingUp"] = "AI背景除去のPython環境を準備しています.",
         ["msg.bgInstalling"] = "AI背景除去のPython環境を更新しています",
         ["msg.bgCreatingEnv"] = "%LOCALAPPDATA%\\Flect\\env に仮想環境を作成しています",
+        ["msg.subtitlesCreatingEnv"] = "%LOCALAPPDATA%\\Flect\\env に字幕用の仮想環境を作成しています",
         ["msg.bgVenvFailed"] = "Python仮想環境の作成に失敗しました",
         ["msg.bgUpgradingPip"] = "pipを更新しています...",
         ["msg.bgInstallingDeps"] = "rembgと依存関係をインストールしています（これには数分かかることがあります）",

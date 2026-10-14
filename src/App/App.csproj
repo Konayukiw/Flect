@@ -54,6 +54,10 @@
     <Using Include="Optimizer.Gui.Pages" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Flect.Evals" />
+  </ItemGroup>
+
   <PropertyGroup Condition="Exists('$(MSBuildThisFileDirectory)Assets\flect.ico')">
     <ApplicationIcon>Assets\flect.ico</ApplicationIcon>
   </PropertyGroup>

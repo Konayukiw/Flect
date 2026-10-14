@@ -1,0 +1,22 @@
+version: 2
+updates:
+  - package-ecosystem: nuget
+    directories:
+      - "/src/App"
+      - "/evals/Flect.Evals"
+    schedule:
+      interval: weekly
+    groups:
+      test-tools:
+        patterns:
+          - "xunit*"
+          - "Microsoft.NET.Test.Sdk"
+
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns:
+          - "*"
