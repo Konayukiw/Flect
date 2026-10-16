@@ -1,0 +1,88 @@
+<Window x:Class="Optimizer.Gui.Dialogs.PdfOrder"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:loc="clr-namespace:Optimizer.Main.Localization"
+        Width="560" Height="460" MinWidth="420" MinHeight="320"
+        WindowStartupLocation="CenterScreen" ShowInTaskbar="False">
+  <Grid Margin="18">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+
+    <StackPanel Grid.Row="0">
+      <TextBlock Style="{StaticResource Text.Heading}" Text="{loc:T dialog.pdfOrder.title}" />
+      <TextBlock Style="{StaticResource Text.Muted}" TextWrapping="Wrap" Margin="0,0,0,14"
+                 Text="{loc:T dialog.pdfOrder.body}" />
+    </StackPanel>
+
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+
+      <Border Grid.Column="0" Style="{StaticResource Panel.Card}" Padding="4">
+        <ListBox x:Name="RowList" BorderThickness="0" Background="Transparent"
+                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                 SelectionChanged="OnSelectionChanged">
+          <ListBox.ItemContainerStyle>
+            <Style TargetType="ListBoxItem">
+              <Setter Property="Padding" Value="8,5" />
+              <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+              <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+              <Setter Property="Template">
+                <Setter.Value>
+                  <ControlTemplate TargetType="ListBoxItem">
+                    <Border x:Name="Chrome" Background="Transparent"
+                            CornerRadius="{StaticResource Radius.Small}"
+                            Padding="{TemplateBinding Padding}">
+                      <ContentPresenter />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                      <Trigger Property="IsMouseOver" Value="True">
+                        <Setter TargetName="Chrome" Property="Background"
+                                Value="{DynamicResource Brush.Hover}" />
+                      </Trigger>
+                      <Trigger Property="IsSelected" Value="True">
+                        <Setter TargetName="Chrome" Property="Background"
+                                Value="{DynamicResource Brush.HoverSoft}" />
+                      </Trigger>
+                    </ControlTemplate.Triggers>
+                  </ControlTemplate>
+                </Setter.Value>
+              </Setter>
+            </Style>
+          </ListBox.ItemContainerStyle>
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Grid ToolTip="{Binding FullPath}">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="32" />
+                  <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding Position}" FontSize="12"
+                           Foreground="{DynamicResource Brush.TextMuted}" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="1" Text="{Binding Name}" FontSize="12"
+                           TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Border>
+
+      <StackPanel Grid.Column="1" Margin="12,0,0,0">
+        <Button x:Name="UpButton" Content="{loc:T dialog.pdfOrder.up}" Margin="0,0,0,8"
+                Click="OnUp" />
+        <Button x:Name="DownButton" Content="{loc:T dialog.pdfOrder.down}" Click="OnDown" />
+      </StackPanel>
+    </Grid>
+
+    <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+      <Button Content="{loc:T common.cancel}" IsCancel="True" Margin="0,0,8,0" Click="OnCancel" />
+      <Button Content="{loc:T menu.pdf.merge}" IsDefault="True" Style="{StaticResource Button.Primary}"
+              Click="OnAccept" />
+    </StackPanel>
+  </Grid>
+</Window>

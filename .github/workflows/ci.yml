@@ -1,0 +1,178 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+jobs:
+  i18n:
+    name: I18n missing key checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Check App and Web translations
+        run: node evals/i18n/check.mjs
+
+  build:
+    name: Build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore NuGet cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Pick the dependency cache month
+        id: month
+        shell: pwsh
+        run: '"value=$(Get-Date -Format yyyy-MM)" >> $env:GITHUB_OUTPUT'
+
+      - name: Restore third-party tools
+        uses: actions/cache@v6
+        with:
+          path: dependencies
+          key: deps-${{ hashFiles('scripts/fetch.ps1') }}-${{ steps.month.outputs.value }}
+
+      - name: Fetch third-party tools
+        shell: pwsh
+        run: ./scripts/fetch.ps1
+
+      - name: Build shell extension and worker
+        shell: pwsh
+        run: ./scripts/build.ps1
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+
+  installer:
+    name: Installer round trip
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+
+      - name: Install Inno Setup
+        run: choco install innosetup --version 6.7.1 --no-progress -y
+
+      - name: Package installer
+        shell: pwsh
+        run: ./scripts/package.ps1
+
+      - name: Install, upgrade, smoke test and uninstall
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem build/setup -Filter *.exe | Select-Object -First 1
+          ./evals/installer/Test-Installer.ps1 -Installer $installer.FullName -LogDirectory "$env:RUNNER_TEMP/installer-logs"
+
+      - name: Install and uninstall with install.ps1
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem build/setup -Filter *.exe | Select-Object -First 1
+          ./evals/installer/Test-InstallScript.ps1 -Installer $installer.FullName -LogDirectory "$env:RUNNER_TEMP/installer-logs"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: installer
+          path: build/setup/*.exe
+          retention-days: 7
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: installer-logs
+          path: ${{ runner.temp }}/installer-logs
+
+  evals:
+    name: Feature evals
+    runs-on: windows-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Restore NuGet cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('**/*.csproj', 'Directory.Build.props') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: Pick the dependency cache month
+        id: month
+        shell: pwsh
+        run: '"value=$(Get-Date -Format yyyy-MM)" >> $env:GITHUB_OUTPUT'
+
+      - name: Restore third-party tools
+        uses: actions/cache@v6
+        with:
+          path: dependencies
+          key: deps-${{ hashFiles('scripts/fetch.ps1') }}-${{ steps.month.outputs.value }}
+
+      - name: Fetch third-party tools
+        shell: pwsh
+        run: ./scripts/fetch.ps1
+
+      - name: Run feature evals
+        working-directory: evals
+        shell: pwsh
+        run: >
+          dotnet test --project Evals/Evals.csproj -c Release
+          --filter-not-trait "Category=AI"
+          --report-xunit-trx --report-xunit-trx-filename evals.trx
+          --results-directory "${{ runner.temp }}/evals-results"
+
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: evals-results
+          path: ${{ runner.temp }}/evals-results
+          retention-days: 14
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: evals-work
+          path: tests/evals-work
+          retention-days: 7
