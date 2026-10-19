@@ -162,6 +162,8 @@ RAR形式は読み取り専用です。Flect は`.rar`ファイルの展開に�
 <details>
 <summary><b>Flect を右クリックメニューの1版上の階層に表示させることはできますか？</b></summary>
 
+開発環境がある場合は、[Windows 11用の追加拡張](#windows-11用の追加拡張任意)を導入して、通常の右クリックメニューにFlectを追加できます。標準インストーラーとは別に導入する機能です。
+
 はい、Windows 11 の右クリックメニューを Windows 10 のものに戻すことで可能です。この設定はすべてのアプリに適用されますが、そのほうが使いやすいと感じる場合が多いと思われます。
 
 コマンドプロンプトまたはPowerShellを開き、以下のコマンドを実行してください。
@@ -285,6 +287,22 @@ Windowsの **[設定] › [アプリ] › [インストールされているア�
 
 - 実行がブロックされる場合は、コマンドの先頭に `powershell -ExecutionPolicy RemoteSigned -File ` を追加してください。
 - `scripts\package.ps1` の実行には Inno Setup が必要です (`winget install JRSoftware.InnoSetup`)
+
+### Windows 11用の追加拡張（任意）
+
+`src/ModernShell` の `IExplorerCommand` 実装とSparse MSIXパッケージにより、最初の右クリックメニューに **Flect** を追加できます。既存の分類・表示設定・プリセットを使い、変換処理は通常のFlect本体に引き渡します。Windowsのサブメニュー階層の制限に合わせて、形式や倍率は操作を選んだ後の小さなメニューで指定します。
+
+通常のFlectをインストール済みのWindows 11 x64環境に、Visual StudioのC++ビルドツールとWindows SDKを用意して実行してください。
+
+```powershell
+.\scripts\test-modern-menu.ps1                 # ビルドとCOMのテスト（登録不要）
+.\scripts\package-modern-menu.ps1              # このPC用の署名付きパッケージを作成
+.\scripts\register-modern-menu-elevated.ps1     # UACを表示して証明書とメニューを登録
+```
+
+開発用の署名鍵は `CurrentUser\My` にエクスポート不可で作成し、公開証明書のみを `build\modern` に出力します。登録時にはその証明書を `LocalMachine\TrustedPeople` に追加するため、管理者権限の確認が必要です。拡張は `%LOCALAPPDATA%\FlectModernMenu` に配置されます。登録後に表示されない場合や、更新時にDLLが使用中の場合は、サインアウトして再度サインインしてください。
+
+削除は `.\scripts\uninstall-modern-menu.ps1` で行います。署名証明書の信頼登録も削除する場合は `-RemoveLocalCertificate` を指定してください（UACが表示されます）。Flect本体と設定は保持されます。標準インストーラーへの組み込みやリリース用の署名は別途必要です。詳細は [英語の開発手順](README.md#optional-windows-11-context-menu)を参照してください。
 
 ### 依存関係
 

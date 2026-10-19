@@ -160,6 +160,8 @@ Everything else - the image, video, PDF and decompiler engines - ships inside th
 <details>
 <summary><b>Can I get Flect into the first right-click menu?</b></summary>
 
+Developers can install the [optional Windows 11 extension](#optional-windows-11-context-menu) to add Flect to the modern menu. It is separate from the standard installer.
+
 Yes, by switching Windows 11 back to the classic context menu. It affects every app - though most people find the classic menu more useful anyway.
 
 Open Terminal or Command Prompt and run:
@@ -289,6 +291,32 @@ Through **Settings › Apps › Installed apps** in Windows, like any other prog
 - `scripts\package.ps1` needs Inno Setup (`winget install JRSoftware.InnoSetup`).
 
 Flect is two halves: C++ shell extension (`src/Shell`) to render the menu inside Explorer, and a .NET worker (`src/App`) that does the actual processes and manages settings. The menu is a classic `IContextMenu` handler, which is why Windows 11 files it under "Show more options".
+
+### Optional Windows 11 context menu
+
+`src/ModernShell` adds **Flect** directly to Windows 11's initial right-click menu through `IExplorerCommand` and a sparse MSIX package. It reuses the existing file classification, menu labels, hidden-item settings, presets, and worker commands. The classic handler stays available.
+
+Windows supports only one level of `IExplorerCommand` subcommands. The modern Flect submenu therefore lists operations such as **Resize** and **Convert**; selecting one opens its format or preset choices in a small native popup. Operations without choices start the existing worker immediately. File inspection is deferred from Explorer's synchronous UI path, and the popup and worker run in separate processes.
+
+To build and try the optional extension, install normal Flect first and use an x64 Windows 11 machine with Visual Studio C++ build tools and a Windows SDK:
+
+```powershell
+.\scripts\test-modern-menu.ps1                 # Build and test COM contracts; no registration
+.\scripts\package-modern-menu.ps1              # Create and sign the sparse package locally
+.\scripts\register-modern-menu-elevated.ps1     # Request UAC, trust the local signer, and register
+```
+
+The local signing script creates a non-exportable code-signing key in `CurrentUser\My` and exports only the public certificate to the ignored `build\modern` directory. Registration adds that certificate to `LocalMachine\TrustedPeople`, so it requires administrator approval. The add-on binaries live in `%LOCALAPPDATA%\FlectModernMenu`, separate from the existing Flect installation. Explorer may need to be reopened or the user signed out and back in after registration. An add-on update that finds its DLL still loaded also requires signing out before retrying.
+
+This is an opt-in development package; the normal installer and release signing workflow are unchanged. A distributable release should use the project's production signing identity rather than sharing the locally generated development certificate.
+
+```powershell
+.\scripts\test-modern-menu.ps1 -InvokeWorker -Packaged   # Also test installed COM activation and JSON formatting
+.\scripts\uninstall-modern-menu.ps1                    # Remove the modern menu only
+.\scripts\uninstall-modern-menu.ps1 -RemoveLocalCertificate  # Also remove its machine trust entry (UAC)
+```
+
+The default smoke tests run without an installed worker or elevated permissions and are included in CI. They cover Unicode paths, multiple selection, unsupported and mixed selections, folders, submenu enumeration, COM lifetime, and packaged activation when requested. Uninstalling the add-on preserves the original Flect installation and its settings.
 
 ### Dependencies
 
