@@ -107,6 +107,8 @@ internal static partial class Strings
         ["settings.general.menu.hint"] = "未选中的项目不会出现在资源管理器菜单中。",
         ["settings.general.menu.all"] = "全选",
         ["settings.general.menu.none"] = "全部取消",
+        ["settings.general.autoUpdate"] = "自动更新",
+        ["settings.general.autoUpdate.hint"] = "登录Windows时检查GitHub上的最新版本，并在后台安装新版本。更新期间资源管理器可能会重启。",
 
         ["settings.folder.duplicates"] = "删除重复文件",
         ["settings.folder.dup.strictness"] = "满足以下条件视为重复",

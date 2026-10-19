@@ -130,5 +130,13 @@
       </StackPanel>
     </Border>
 
+    <Border Style="{StaticResource Settings.Section}">
+      <StackPanel>
+        <CheckBox x:Name="AutoUpdateBox" Content="{loc:T settings.general.autoUpdate}" />
+        <TextBlock Style="{StaticResource Settings.Hint}" Margin="0,6,0,0"
+                   Text="{loc:T settings.general.autoUpdate.hint}" />
+      </StackPanel>
+    </Border>
+
   </StackPanel>
 </UserControl>

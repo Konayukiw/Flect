@@ -106,6 +106,8 @@ internal static partial class Strings
         ["settings.general.menu.hint"] = "チェックを解除した項目はエクスプローラーのメニューに表示されません。",
         ["settings.general.menu.all"] = "すべて選択",
         ["settings.general.menu.none"] = "すべて解除",
+        ["settings.general.autoUpdate"] = "自動アップデート",
+        ["settings.general.autoUpdate.hint"] = "Windowsへのサインイン時にGitHubの最新リリースを確認し、新しいバージョンをバックグラウンドでインストールします。更新中にExplorerが再起動する場合があります。",
 
         ["settings.folder.duplicates"] = "重複項目を削除",
         ["settings.folder.dup.strictness"] = "重複とみなす条件",

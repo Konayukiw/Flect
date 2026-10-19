@@ -127,6 +127,7 @@ public partial class SettingsGui : Window
 
         foreach (var control in _pages) ((ISettingsPage)control).Store(_settings);
         _settings.Save();
+        AutoUpdate.ConfigureStartup(_settings.General.AutoUpdate);
 
         if (_settings.General.Theme != previousTheme)
         {
@@ -165,6 +166,7 @@ public partial class SettingsGui : Window
         if (answer != MessageBoxResult.OK) return;
 
         Settings.Reset();
+        AutoUpdate.ConfigureStartup(false);
         _settings = Settings.Load();
 
         Loc.Use(_settings.General.Language);

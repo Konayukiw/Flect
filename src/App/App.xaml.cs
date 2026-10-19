@@ -34,6 +34,12 @@ public partial class App : Application
     {
         try
         {
+            if (args.Length == 1 && args[0] == AutoUpdate.StartupArgument)
+            {
+                await AutoUpdate.RunAsync();
+                return;
+            }
+
             if (args.Length == 0)
             {
                 Gui.Pages.SettingsGui.Open();

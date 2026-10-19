@@ -113,6 +113,8 @@ internal static partial class Strings
         ["settings.general.menu.hint"] = "Unchecked entries are left out of the Explorer menu.",
         ["settings.general.menu.all"] = "Select all",
         ["settings.general.menu.none"] = "Clear all",
+        ["settings.general.autoUpdate"] = "Auto update",
+        ["settings.general.autoUpdate.hint"] = "When you sign in to Windows, check GitHub for the latest release and install newer versions in the background. Explorer may restart during an update.",
 
         ["settings.folder.duplicates"] = "Remove Duplicate",
         ["settings.folder.dup.strictness"] = "Treat files as duplicates when",

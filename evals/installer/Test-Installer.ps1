@@ -22,6 +22,8 @@ $clsidKey = "$classes\CLSID\$clsid"
 $handlerKeys = @("$classes\*\shellex\ContextMenuHandlers\$brand", "$classes\Directory\shellex\ContextMenuHandlers\$brand")
 $presetKey = "HKCU:\Software\$brand\Presets"
 $uninstallKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{$appId}_is1"
+$runKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Run'
+$startupName = "${brand}AutoUpdate"
 
 New-Item -ItemType Directory -Force -Path $LogDirectory | Out-Null
 $script:failures = 0
@@ -96,6 +98,9 @@ New-Item -ItemType Directory -Force -Path (Join-Path $app 'env'), (Join-Path $ap
 Set-Content -Path (Join-Path $app 'env\marker.txt') -Value 'env'
 Set-Content -Path (Join-Path $app 'models\marker.txt') -Value 'models'
 Set-Content -Path (Join-Path $app 'stale.txt') -Value 'left over from an older version'
+New-Item -Path $runKey -Force | Out-Null
+$startupCommand = '"' + (Join-Path $app "$brand.exe") + '" --auto-update'
+New-ItemProperty -Path $runKey -Name $startupName -Value $startupCommand -PropertyType String -Force | Out-Null
 
 Invoke-Setup 'upgrade'
 
@@ -104,6 +109,7 @@ Assert-That (Test-Path (Join-Path $app 'models\marker.txt')) 'upgrade - download
 Assert-That (-not (Test-Path (Join-Path $app 'stale.txt'))) 'upgrade - files from the previous version are cleared'
 Assert-That (Test-Path (Join-Path $app "$brand.exe")) 'upgrade - the worker is installed again'
 Assert-Registered 'upgrade'
+Assert-That ((Get-ItemProperty -Path $runKey).$startupName -eq $startupCommand) 'upgrade - auto-update startup registration survives'
 
 $uninstaller = Join-Path $app 'unins000.exe'
 Start-Process -FilePath $uninstaller -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/LOG=`"$(Join-Path $LogDirectory 'uninstall.log')`"") -Wait
@@ -112,6 +118,7 @@ while ((Test-Path $uninstallKey) -and (Get-Date) -lt $deadline) { Start-Sleep -M
 while ((Test-Path $uninstaller) -and (Get-Date) -lt $deadline) { Start-Sleep -Milliseconds 500 }
 
 Assert-That (-not (Test-Path $uninstallKey)) 'uninstall - the uninstall entry is removed'
+Assert-That ($null -eq (Get-Item -Path $runKey).GetValue($startupName)) 'uninstall - auto-update startup registration is removed'
 Assert-That (-not (Test-Path -LiteralPath $clsidKey)) 'uninstall - the CLSID registration is removed'
 foreach ($key in $handlerKeys) {
     Assert-That (-not (Test-Path -LiteralPath $key)) "uninstall - $key is removed"

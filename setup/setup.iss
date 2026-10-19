@@ -289,6 +289,7 @@ procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 begin
   if CurUninstallStep = usUninstall then
   begin
+    RegDeleteValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', '{#BrandName}AutoUpdate');
     StopWorker();
     ReleaseShellDll();
   end;
