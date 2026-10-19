@@ -1,0 +1,10 @@
+/build/
+/dist/
+/dependencies/
+/tests/
+/.vs/
+**/bin/
+**/obj/
+*.vcxproj.user
+
+AGENTS.md
