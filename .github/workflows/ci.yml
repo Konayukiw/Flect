@@ -81,7 +81,7 @@ jobs:
 
       - name: Build optional modern menu and test COM contracts
         shell: pwsh
-        run: ./scripts/test-modern-menu.ps1
+        run: ./scripts/modern-menu/test.ps1
 
   installer:
     name: Installer round trip

@@ -1,12 +1,12 @@
 param([switch]$RegisterOnly)
 $ErrorActionPreference = 'Stop'
-. (Join-Path $PSScriptRoot 'modern-menu-common.ps1')
-$repo = Split-Path $PSScriptRoot -Parent
+. (Join-Path $PSScriptRoot 'common.ps1')
+$repo = $ModernMenuRepo
 $destination = Join-Path $env:LOCALAPPDATA 'FlectModernMenu'
 $package = Join-Path $repo 'build\modern\FlectModernMenu.msix'
 $signature = Get-AuthenticodeSignature -LiteralPath $package
 if ($signature.Status -ne 'Valid') {
-    throw 'The Flect package signature is not trusted yet. Run register-modern-menu-elevated.ps1 to install its local signing certificate and register the menu.'
+    throw 'The Flect package signature is not trusted yet. Run register-elevated.ps1 to install its local signing certificate and register the menu.'
 }
 if (!$RegisterOnly) {
     $brand = Get-ModernMenuBrand

@@ -1,6 +1,6 @@
 $ErrorActionPreference = 'Stop'
-. (Join-Path $PSScriptRoot 'modern-menu-common.ps1')
-$repo = Split-Path $PSScriptRoot -Parent
+. (Join-Path $PSScriptRoot 'common.ps1')
+$repo = $ModernMenuRepo
 $subject = 'CN=Flect Local Menu'
 $cert = Get-ChildItem -Path 'Cert:\CurrentUser\My' -CodeSigningCert |
     Where-Object { $_.Subject -eq $subject -and $_.HasPrivateKey -and $_.NotAfter -gt (Get-Date).AddDays(30) } |

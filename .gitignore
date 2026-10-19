@@ -4,5 +4,4 @@
 /.vs/
 **/bin/
 **/obj/
-/modern-package/Assets/
 *.vcxproj.user

@@ -1,6 +1,6 @@
 param([switch]$RemoveLocalCertificate, [switch]$Elevated)
 $ErrorActionPreference = 'Stop'
-. (Join-Path $PSScriptRoot 'modern-menu-common.ps1')
+. (Join-Path $PSScriptRoot 'common.ps1')
 if ($RemoveLocalCertificate) {
     $principal = [Security.Principal.WindowsPrincipal]::new([Security.Principal.WindowsIdentity]::GetCurrent())
     if (!$principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)) {
@@ -14,7 +14,7 @@ if ($RemoveLocalCertificate) {
 }
 Get-AppxPackage -Name (Get-ModernMenuPackageName) | Remove-AppxPackage -ErrorAction Stop
 if ($RemoveLocalCertificate) {
-    $repo = Split-Path $PSScriptRoot -Parent
+    $repo = $ModernMenuRepo
     $cert = [Security.Cryptography.X509Certificates.X509Certificate2]::new((Join-Path $repo 'build\modern\FlectModernMenu.cer'))
     if ($cert.Subject -ne 'CN=Flect Local Menu') { throw 'Unexpected signing certificate.' }
     $path = 'Cert:\LocalMachine\TrustedPeople\' + $cert.Thumbprint

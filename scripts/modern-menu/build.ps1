@@ -1,7 +1,7 @@
 param([switch]$WithTests)
 $ErrorActionPreference = 'Stop'
-. (Join-Path $PSScriptRoot 'modern-menu-common.ps1')
-$repo = Split-Path $PSScriptRoot -Parent
+. (Join-Path $PSScriptRoot 'common.ps1')
+$repo = $ModernMenuRepo
 $generated = Join-Path $repo 'build\modern\generated'
 New-Item -ItemType Directory -Path $generated -Force | Out-Null
 $brand = Get-ModernMenuBrand

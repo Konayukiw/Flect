@@ -295,14 +295,14 @@ Windowsの **[設定] › [アプリ] › [インストールされているア�
 通常のFlectをインストール済みのWindows 11 x64環境に、Visual StudioのC++ビルドツールとWindows SDKを用意して実行してください。
 
 ```powershell
-.\scripts\test-modern-menu.ps1                 # ビルドとCOMのテスト（登録不要）
-.\scripts\package-modern-menu.ps1              # このPC用の署名付きパッケージを作成
-.\scripts\register-modern-menu-elevated.ps1     # UACを表示して証明書とメニューを登録
+.\scripts\modern-menu\test.ps1                 # ビルドとCOMのテスト（登録不要）
+.\scripts\modern-menu\package.ps1              # このPC用の署名付きパッケージを作成
+.\scripts\modern-menu\register-elevated.ps1     # UACを表示して証明書とメニューを登録
 ```
 
 開発用の署名鍵は `CurrentUser\My` にエクスポート不可で作成し、公開証明書のみを `build\modern` に出力します。登録時にはその証明書を `LocalMachine\TrustedPeople` に追加するため、管理者権限の確認が必要です。拡張は `%LOCALAPPDATA%\FlectModernMenu` に配置されます。登録後に表示されない場合や、更新時にDLLが使用中の場合は、サインアウトして再度サインインしてください。
 
-削除は `.\scripts\uninstall-modern-menu.ps1` で行います。署名証明書の信頼登録も削除する場合は `-RemoveLocalCertificate` を指定してください（UACが表示されます）。Flect本体と設定は保持されます。標準インストーラーへの組み込みやリリース用の署名は別途必要です。詳細は [英語の開発手順](README.md#optional-windows-11-context-menu)を参照してください。
+削除は `.\scripts\modern-menu\uninstall.ps1` で行います。署名証明書の信頼登録も削除する場合は `-RemoveLocalCertificate` を指定してください（UACが表示されます）。Flect本体と設定は保持されます。標準インストーラーへの組み込みやリリース用の署名は別途必要です。詳細は [英語の開発手順](README.md#optional-windows-11-context-menu)を参照してください。
 
 ### 依存関係
 

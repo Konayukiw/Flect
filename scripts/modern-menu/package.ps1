@@ -1,10 +1,10 @@
 $ErrorActionPreference = 'Stop'
-. (Join-Path $PSScriptRoot 'modern-menu-common.ps1')
-$repo = Split-Path $PSScriptRoot -Parent
+. (Join-Path $PSScriptRoot 'common.ps1')
+$repo = $ModernMenuRepo
 $layout = Join-Path $repo 'build\modern\layout'
 $assets = Join-Path $layout 'Assets'
 New-Item -ItemType Directory -Path $assets -Force | Out-Null
-Copy-Item -LiteralPath (Join-Path $repo 'modern-package\AppxManifest.xml') -Destination $layout -Force
+Copy-Item -LiteralPath (Join-Path $repo 'setup\modern-menu\AppxManifest.xml') -Destination $layout -Force
 Add-Type -AssemblyName System.Drawing
 $icon = [Drawing.Icon]::new((Join-Path $repo 'src\App\Assets\flect.ico'), 256, 256)
 $source = $icon.ToBitmap()
@@ -24,5 +24,5 @@ $package = Join-Path $repo 'build\modern\FlectModernMenu.msix'
 # /nv is required for a sparse package: executable files live at ExternalLocation.
 & $makeappx pack /d $layout /p $package /nv /o
 if ($LASTEXITCODE -ne 0) { throw 'MSIX creation failed.' }
-& (Join-Path $PSScriptRoot 'sign-modern-menu.ps1')
+& (Join-Path $PSScriptRoot 'sign.ps1')
 Write-Output ('Packaged: ' + $package)

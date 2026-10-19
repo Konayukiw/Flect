@@ -1,6 +1,7 @@
 param([switch]$Elevated)
 $ErrorActionPreference = 'Stop'
-$repo = Split-Path $PSScriptRoot -Parent
+. (Join-Path $PSScriptRoot 'common.ps1')
+$repo = $ModernMenuRepo
 $log = Join-Path $repo 'build\modern\registration.log'
 $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
 $principal = [Security.Principal.WindowsPrincipal]::new($identity)
@@ -36,7 +37,7 @@ try {
         Import-Certificate -FilePath $publicCert -CertStoreLocation 'Cert:\LocalMachine\TrustedPeople' | Out-Null
     }
     try {
-        & (Join-Path $PSScriptRoot 'install-modern-menu.ps1') | Format-List | Out-String | Write-Output
+        & (Join-Path $PSScriptRoot 'install.ps1') | Format-List | Out-String | Write-Output
     } catch {
         # Do not leave a newly trusted certificate behind after a failed install.
         if ($addedCertificate) { Remove-Item -LiteralPath $trustedPath -Force }

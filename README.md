@@ -301,9 +301,9 @@ Windows supports only one level of `IExplorerCommand` subcommands. The modern Fl
 To build and try the optional extension, install normal Flect first and use an x64 Windows 11 machine with Visual Studio C++ build tools and a Windows SDK:
 
 ```powershell
-.\scripts\test-modern-menu.ps1                 # Build and test COM contracts; no registration
-.\scripts\package-modern-menu.ps1              # Create and sign the sparse package locally
-.\scripts\register-modern-menu-elevated.ps1     # Request UAC, trust the local signer, and register
+.\scripts\modern-menu\test.ps1                 # Build and test COM contracts; no registration
+.\scripts\modern-menu\package.ps1              # Create and sign the sparse package locally
+.\scripts\modern-menu\register-elevated.ps1     # Request UAC, trust the local signer, and register
 ```
 
 The local signing script creates a non-exportable code-signing key in `CurrentUser\My` and exports only the public certificate to the ignored `build\modern` directory. Registration adds that certificate to `LocalMachine\TrustedPeople`, so it requires administrator approval. The add-on binaries live in `%LOCALAPPDATA%\FlectModernMenu`, separate from the existing Flect installation. Explorer may need to be reopened or the user signed out and back in after registration. An add-on update that finds its DLL still loaded also requires signing out before retrying.
@@ -311,9 +311,9 @@ The local signing script creates a non-exportable code-signing key in `CurrentUs
 This is an opt-in development package; the normal installer and release signing workflow are unchanged. A distributable release should use the project's production signing identity rather than sharing the locally generated development certificate.
 
 ```powershell
-.\scripts\test-modern-menu.ps1 -InvokeWorker -Packaged   # Also test installed COM activation and JSON formatting
-.\scripts\uninstall-modern-menu.ps1                    # Remove the modern menu only
-.\scripts\uninstall-modern-menu.ps1 -RemoveLocalCertificate  # Also remove its machine trust entry (UAC)
+.\scripts\modern-menu\test.ps1 -InvokeWorker -Packaged   # Also test installed COM activation and JSON formatting
+.\scripts\modern-menu\uninstall.ps1                    # Remove the modern menu only
+.\scripts\modern-menu\uninstall.ps1 -RemoveLocalCertificate  # Also remove its machine trust entry (UAC)
 ```
 
 The default smoke tests run without an installed worker or elevated permissions and are included in CI. They cover Unicode paths, multiple selection, unsupported and mixed selections, folders, submenu enumeration, COM lifetime, and packaged activation when requested. Uninstalling the add-on preserves the original Flect installation and its settings.
