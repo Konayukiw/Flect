@@ -291,5 +291,6 @@ begin
   begin
     StopWorker();
     ReleaseShellDll();
+    RegDeleteValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', '{#BrandName}AutoUpdate');
   end;
 end;

@@ -2,6 +2,7 @@ using System.Text;
 using System.Windows;
 
 using Optimizer.Main.Process;
+using Optimizer.Main.Update;
 
 namespace Optimizer;
 
@@ -19,6 +20,7 @@ public partial class App : Application
         Loc.Use(settings.General.Language);
         Theme.Apply(this, settings.General.Theme);
         AppIcon.Register();
+        Updater.SyncStartup(settings.General.AutoUpdate);
 
         Dispatcher.UnhandledException += (_, args) =>
         {
@@ -37,6 +39,13 @@ public partial class App : Application
             if (args.Length == 0)
             {
                 Gui.Pages.SettingsGui.Open();
+                return;
+            }
+
+            if (args.Any(a => string.Equals(a, "--check-update", StringComparison.OrdinalIgnoreCase) ||
+                              string.Equals(a, "--update", StringComparison.OrdinalIgnoreCase)))
+            {
+                await Updater.RunBackgroundUpdateAsync();
                 return;
             }
 

@@ -59,6 +59,7 @@ internal sealed class GeneralSettings
     public bool CloseOnSuccess { get; set; } = true;
     public bool CloseOnFailure { get; set; }
     public bool CloseOnCancel { get; set; } = true;
+    public bool AutoUpdate { get; set; } = true;
 
     public List<string> HiddenMenuItems { get; set; } = [];
 }

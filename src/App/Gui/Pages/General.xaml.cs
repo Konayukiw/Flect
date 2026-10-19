@@ -1,6 +1,8 @@
 using System.Windows;
 using System.Windows.Controls;
 
+using Optimizer.Main.Update;
+
 namespace Optimizer.Gui.Pages;
 
 public partial class General : UserControl, ISettingsPage
@@ -34,6 +36,8 @@ public partial class General : UserControl, ISettingsPage
         CloseOnFailureBox.IsChecked = general.CloseOnFailure;
         CloseOnCancelBox.IsChecked = general.CloseOnCancel;
 
+        AutoUpdateBox.IsChecked = general.AutoUpdate;
+
         var hidden = new HashSet<string>(general.HiddenMenuItems, StringComparer.OrdinalIgnoreCase);
         _menu = MenuOption.Build(MenuCatalog.Categories, hidden);
 
@@ -52,6 +56,9 @@ public partial class General : UserControl, ISettingsPage
         general.CloseOnSuccess = CloseOnSuccessBox.IsChecked == true;
         general.CloseOnFailure = CloseOnFailureBox.IsChecked == true;
         general.CloseOnCancel = CloseOnCancelBox.IsChecked == true;
+
+        general.AutoUpdate = AutoUpdateBox.IsChecked == true;
+        Updater.SetStartup(general.AutoUpdate);
 
         var hidden = new List<string>();
         MenuOption.CollectHidden(_menu, hidden);
