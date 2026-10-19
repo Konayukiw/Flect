@@ -73,7 +73,7 @@ jobs:
           path: dist
           retention-days: 7
 
-  modern-menu:
+  modern:
     name: Windows 11 menu build and COM smoke tests
     runs-on: windows-latest
     steps:
@@ -81,7 +81,7 @@ jobs:
 
       - name: Build optional modern menu and test COM contracts
         shell: pwsh
-        run: ./scripts/modern-menu/test.ps1
+        run: ./scripts/modern/test.ps1
 
   installer:
     name: Installer round trip

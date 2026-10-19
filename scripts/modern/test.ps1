@@ -2,7 +2,7 @@ param([switch]$InvokeWorker, [switch]$Packaged)
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'common.ps1')
 $repo = $ModernMenuRepo
-& (Join-Path $PSScriptRoot 'build.ps1') -WithTests
+Build-ModernMenu -WithTests
 $work = Join-Path $repo ('build\modern\smoke-' + [guid]::NewGuid().ToString('N'))
 $arguments = @($work)
 if ($InvokeWorker) { $arguments += '--invoke' }

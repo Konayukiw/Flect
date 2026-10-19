@@ -3,8 +3,6 @@
 #include <sstream>
 
 namespace {
-// GetModuleHandleEx obtains the module containing this function, including when
-// the bridge is loaded inside a COM surrogate rather than inside Explorer.
 std::wstring OwnPath() {
   HMODULE module = nullptr;
   if (!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
@@ -136,7 +134,6 @@ HRESULT Bridge::StartMenu(const std::vector<std::wstring>& paths, const std::wst
 }
 
 HRESULT Bridge::ReadSelection(const std::wstring& file, std::vector<std::wstring>& paths) {
-  // Read only our staged files. Arbitrary input files must never be deleted.
   wchar_t temp[32768]{};
   if (!GetTempPathW(ARRAYSIZE(temp), temp)) return E_FAIL;
   const std::wstring prefix = std::wstring(temp) + L"FlectModernMenu\\selection-";
@@ -171,8 +168,6 @@ HRESULT Bridge::ReadSelection(const std::wstring& file, std::vector<std::wstring
   return paths.empty() ? E_INVALIDARG : S_OK;
 }
 
-// The upstream Launcher resolves Flect.exe relative to Module::Directory.
-// Keep the add-on separate from the installation so Flect updates are safe.
 namespace Module {
 std::wstring Directory() { return Bridge::AppDirectory(); }
 }

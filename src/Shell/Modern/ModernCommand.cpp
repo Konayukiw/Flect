@@ -68,7 +68,6 @@ class Command final : public RuntimeClass<Classic, IExplorerCommand, IObjectWith
   }
   IFACEMETHODIMP GetCanonicalName(GUID* result) override {
     if (!result) return E_POINTER;
-    // The root has the registered identity; subcommands have stable distinct IDs.
     CLSIDFromString(Bridge::kClsid, result);
     if (!root_) {
       unsigned long hash = 2166136261u;
@@ -82,8 +81,6 @@ class Command final : public RuntimeClass<Classic, IExplorerCommand, IObjectWith
     if (!root_) { *state = ECS_ENABLED; return S_OK; }
     *state = ECS_HIDDEN;
     if (!items) { context_.reset(); return S_OK; }
-    // Classification includes file size/GIF probes. Ask Explorer to move that
-    // work off its synchronous UI path before reusing the upstream classifier.
     if (!slow) return E_PENDING;
     try {
       auto context = std::make_shared<MenuContext>();
@@ -119,8 +116,6 @@ class Command final : public RuntimeClass<Classic, IExplorerCommand, IObjectWith
   IFACEMETHODIMP Invoke(IShellItemArray* items, IBindCtx*) override {
     if (root_) return E_NOTIMPL;
     try {
-      // Capture the current selection again at invocation; do not process a
-      // selection left over from a previous right-click.
       auto selection = items ? Bridge::Selection(items) : context_->selection;
       if (selection.Empty()) return E_INVALIDARG;
       return Bridge::StartMenu(selection.paths, context_->nodes[index_].id);

@@ -33,13 +33,11 @@ try {
     $trustedPath = 'Cert:\LocalMachine\TrustedPeople\' + $cert.Thumbprint
     $addedCertificate = !(Test-Path -LiteralPath $trustedPath)
     if ($addedCertificate) {
-        # Trust only this code-signing leaf certificate, never a root CA.
         Import-Certificate -FilePath $publicCert -CertStoreLocation 'Cert:\LocalMachine\TrustedPeople' | Out-Null
     }
     try {
         & (Join-Path $PSScriptRoot 'install.ps1') | Format-List | Out-String | Write-Output
     } catch {
-        # Do not leave a newly trusted certificate behind after a failed install.
         if ($addedCertificate) { Remove-Item -LiteralPath $trustedPath -Force }
         throw
     }

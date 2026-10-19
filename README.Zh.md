@@ -161,6 +161,8 @@ RAR 只能解压：Flect 可以解压 `.rar` 文件，但无法创建。这是�
 <details>
 <summary><b>能让 Flect 直接显示在第一层右键菜单里吗？</b></summary>
 
+另外，如果具备开发环境，可以安装 [Windows 11 右键菜单扩展](#更好的-Windows-11-右键菜单)，让 Flect 直接显示在第一层右键菜单中。该扩展需要单独安装，不包含在标准安装程序中。
+
 可以，把 Windows 11 的右键菜单切换回经典样式即可。这项更改会影响所有应用，不过大多数人反而觉得经典菜单更好用。
 
 打开终端或命令提示符，运行以下命令：
@@ -290,6 +292,32 @@ Flect 使用 Windows 内置的文字识别功能，只能识别电脑上已安�
 - `scripts\package.ps1` 需要 Inno Setup（`winget install JRSoftware.InnoSetup`）。
 
 Flect 由两部分组成：用 C++ 编写的 Shell 扩展（`src/Shell`）负责在资源管理器中显示菜单，用 .NET 编写的工作程序（`src/App`）负责实际处理和管理设置。菜单是经典的 `IContextMenu` 处理程序，这也是 Windows 11 把它放进“显示更多选项”的原因。
+
+### 更好的 Windows 11 右键菜单
+
+`src/Shell/Modern` 通过 `IExplorerCommand` 和稀疏 MSIX 包，把 **Flect** 直接添加到 Windows 11 的第一层右键菜单中。它复用现有的文件分类、菜单标签、隐藏项设置、预设和处理命令。经典菜单仍然可用。
+
+Windows 只支持一层 `IExplorerCommand` 子命令。因此，现代版 Flect 子菜单会列出 **调整大小**、**转换** 等操作，选中后在小型原生弹出菜单中指定格式或倍率。不需要选择的操作会直接启动现有工作程序。文件检查会推迟到 Explorer 的同步 UI 路径之外，弹出菜单和工作程序分别在独立进程中运行。
+
+要构建并试用这个可选扩展，请先安装普通版 Flect，并使用带有 Visual Studio C++ 生成工具和 Windows SDK 的 Windows 11 x64 环境：
+
+```powershell
+.\scripts\modern\test.ps1                 # 构建并测试 COM 接口契约
+.\scripts\modern\package.ps1              # 在本机创建并签名稀疏包
+.\scripts\modern\register-elevated.ps1    # 请求 UAC，信任本地签名证书并注册
+```
+
+本地打包脚本会在 `CurrentUser\My` 中创建不可导出的代码签名密钥，并且只把公开证书导出到被 Git 忽略的 `build\modern` 目录。注册时会把该证书添加到 `LocalMachine\TrustedPeople`，因此需要管理员批准。扩展的二进制文件位于 `%LOCALAPPDATA%\FlectModernMenu`，与现有 Flect 安装分开。注册后可能需要重新打开 Explorer，或注销后重新登录。如果更新时 DLL 仍在使用中，也需要注销后重试。
+
+这是可选的开发用包，正常安装程序和发布签名流程不变。正式发布应使用项目的生产签名身份，而不是共用本地生成的开发证书。
+
+```powershell
+.\scripts\modern\test.ps1 -InvokeWorker -Packaged       # 同时测试已安装的 COM 激活和 JSON 格式化
+.\scripts\modern\uninstall.ps1                          # 仅删除现代菜单
+.\scripts\modern\uninstall.ps1 -RemoveLocalCertificate  # 同时删除其计算机信任项（UAC）
+```
+
+默认冒烟测试不需要已安装的工作程序或管理员权限，并且已包含在 CI 中。测试覆盖 Unicode 路径、多选、不支持与混合选择、文件夹、子命令枚举、COM 生命周期，以及在需要时测试已安装的包激活。卸载扩展会保留原有的 Flect 安装和设置。
 
 ### 依赖项
 

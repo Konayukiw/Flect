@@ -11,7 +11,7 @@
       <Optimization>MaxSpeed</Optimization>
       <ExceptionHandling>Sync</ExceptionHandling>
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;NOMINMAX;STRICT;UNICODE;_UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\Shell;$(MSBuildThisFileDirectory);$(RepoRoot)build\modern\generated;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..;$(MSBuildThisFileDirectory);$(RepoRoot)build\modern\generated;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
@@ -22,9 +22,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Bridge.cpp" />
-    <ClCompile Include="..\Shell\Config.cpp" />
-    <ClCompile Include="..\Shell\GifProbe.cpp" />
-    <ClCompile Include="..\Shell\MenuBuilder.cpp" />
-    <ClCompile Include="..\Shell\Selection.cpp" />
+    <ClCompile Include="..\Config.cpp" />
+    <ClCompile Include="..\GifProbe.cpp" />
+    <ClCompile Include="..\MenuBuilder.cpp" />
+    <ClCompile Include="..\Selection.cpp" />
   </ItemGroup>
 </Project>

@@ -20,5 +20,4 @@ if ($RemoveLocalCertificate) {
     $path = 'Cert:\LocalMachine\TrustedPeople\' + $cert.Thumbprint
     if (Test-Path -LiteralPath $path) { Remove-Item -LiteralPath $path -Force }
 }
-# Keep binaries/source for review. They can be removed after Explorer releases them.
 Write-Output 'Flect modern menu removed. Flect itself is still installed.'
