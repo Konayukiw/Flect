@@ -47,7 +47,7 @@ internal static class AutoUpdate
             using var timeout = new CancellationTokenSource(TimeSpan.FromMinutes(10));
             await CheckAndInstallAsync(client, Branding.Version,
                 Path.Combine(Path.GetTempPath(), Branding.Name + "-updates"),
-                start => Process.Start(start)?.Dispose(), timeout.Token);
+                start => System.Diagnostics.Process.Start(start)?.Dispose(), timeout.Token);
         }
         catch (Exception)
         {
