@@ -340,4 +340,16 @@ The default smoke tests run without an installed worker or elevated permissions 
 
 Flect is licensed under the [Apache License 2.0](LICENSE).
 
+If you reuse, redistribute, or incorporate source code from Flect into another project, you must:
+
+- Preserve all existing copyright, license, and attribution notices, as required by the Apache License 2.0.
+- Include appropriate attribution to the original author, [**Konayukiw**](@Konayukiw), in your project's `README.md`, `NOTICE`, `NOTICES`, `THIRD-PARTY-NOTICE`, `THIRD-PARTY-NOTICES` or `LICENSE` file.
+- Include a copy of the Apache License 2.0 and comply with its applicable terms.
+
+Suggested attribution:
+
+> Portions of this project are derived from [Flect](https://flect.konayuki.xyz), originally created by @Konayukiw.
+
+This attribution requirement applies to projects incorporating Flect's source code, not projects that merely use Flect as an end-user application.
+
 It bundles third-party components under their own licences including ImageMagick, FFmpeg (GPLv3), PDFium, 7-Zip (LGPL) and CFR. Every component, its licence and the full licence text are listed in [NOTICES](/NOTICES.md).
