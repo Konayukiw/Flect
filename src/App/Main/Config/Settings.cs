@@ -248,6 +248,11 @@ internal sealed class CodeSettings
     public DecompileSettings Decompile { get; set; } = new();
 }
 
+internal sealed class OutputSettings
+{
+    public Dictionary<string, string> Folders { get; set; } = [];
+}
+
 internal sealed class Settings
 {
     private const string FileName = "settings.json";
@@ -264,6 +269,7 @@ internal sealed class Settings
     public TextSettings Text { get; set; } = new();
     public OcrSettings Ocr { get; set; } = new();
     public CodeSettings Code { get; set; } = new();
+    public OutputSettings Output { get; set; } = new();
 
     public static Settings Current => _current ??= Load();
 

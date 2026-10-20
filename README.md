@@ -139,6 +139,7 @@ Open **Flect** from the Start menu.
 - **Image** - WebP fallback for compression, the colour Remove Background keys out, and exactly which metadata gets stripped.
 - **Text** - What to do with characters Shift_JIS cannot represent, and JSON key-sorting rules.
 - **OCR** - Recognition language, where the text goes, and the output encoding.
+- **Output** - Define where the processed files should go. For each features with new file generation, you can determine the path that output files directory. Both relative and absolute path are supported.
 
 The menu presets (like `50%`, `10 MB`, `45°` entries) are editable here too.
 

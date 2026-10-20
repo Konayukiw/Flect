@@ -14,9 +14,15 @@ internal interface ITaskProgress
     void Error(string message);
 }
 
-internal abstract class TaskBase(Request request)
+internal abstract class TaskBase
 {
-    protected Request Request { get; } = request;
+    protected TaskBase(Request request)
+    {
+        Request = request;
+        OutputPath.TaskId = request.Id;
+    }
+
+    protected Request Request { get; }
 
     public abstract string Title { get; }
 
