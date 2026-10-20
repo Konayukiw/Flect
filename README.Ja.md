@@ -148,8 +148,8 @@ RAR形式は読み取り専用です。Flect は`.rar`ファイルの展開に�
 
 | | |
 | --- | --- |
-| **Windows** | Windows 10 / Windows 11 (64-bit) |
-| **.NET 10 Desktop Runtime** | セットアップ時に確認が行われ、インストールされていない場合はダウンロードする必要があります |
+| **Windows** | Windows 10/11 x64、またはx64エミュレーションに対応するWindows 11 ARM64 |
+| **.NET 10 Desktop Runtime (x64)** | x64・ARM64のどちらでも必要です。セットアップ時に確認が行われ、未導入の場合はダウンロードが必要です |
 | **HEVC ビデオ拡張機能** | `.heic` ファイルの出力を行う場合にのみ必要です。読み込みには不要です。Microsoft Store から入手できます。 |
 | **Java Runtime** | `.jar` ファイルをデコンパイルする場合にのみ必要です。 |
 | **Windows 言語パック** | OCRを使用する場合にのみ必要です。読み取りたい言語に対応した言語パックをインストールしてください。Flect の設定画面からインストーラーを呼び出すことができます。 |
@@ -276,6 +276,10 @@ Windowsの **[設定] › [アプリ] › [インストールされているア�
 ## 開発
 
 ### ビルド
+
+Visual Studio InstallerでMSVCのx64/x86用とARM64用のビルドツールを導入してください。標準ビルドで両方の従来型メニュー拡張を作成し、インストーラーがExplorerに合う方を選びます。処理本体と同梱エンジンはx64版のままで、Windows 11 ARM64ではエミュレーションで動作します。追加のモダンメニューは引き続きWindows x64用です。
+
+ビルド後に `./evals/shell/test.ps1` でネイティブプロセスからメニューを検証できます。インストール済みの拡張から本体を起動するテストには `-ShellDll "$env:LOCALAPPDATA\Flect\FlectShell.dll" -InvokeWorker` を追加します。
 
 ```powershell
 .\scripts\fetch.ps1          # 依存関係のダウンロード

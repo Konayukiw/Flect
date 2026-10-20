@@ -33,7 +33,10 @@ jobs:
 
   build:
     name: Build
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [windows-latest, windows-11-arm]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
 
@@ -67,9 +70,13 @@ jobs:
         shell: pwsh
         run: ./scripts/build.ps1
 
+      - name: Test native classic menu COM contracts
+        shell: pwsh
+        run: ./evals/shell/test.ps1
+
       - uses: actions/upload-artifact@v7
         with:
-          name: dist
+          name: dist-${{ matrix.os }}
           path: dist
           retention-days: 7
 
@@ -86,17 +93,33 @@ jobs:
   installer:
     name: Installer round trip
     needs: build
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        os: [windows-latest, windows-11-arm]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v7
 
       - uses: actions/download-artifact@v8
         with:
-          name: dist
+          name: dist-${{ matrix.os }}
           path: dist
 
       - name: Install Inno Setup
         run: choco install innosetup --version 6.7.1 --no-progress -y
+
+      - name: Install x64 Desktop Runtime on Arm64
+        if: runner.arch == 'ARM64'
+        shell: pwsh
+        run: |
+          $runtime = Join-Path $env:RUNNER_TEMP 'windowsdesktop-runtime-win-x64.exe'
+          Invoke-WebRequest 'https://aka.ms/dotnet/10.0/windowsdesktop-runtime-win-x64.exe' -OutFile $runtime
+          $signature = Get-AuthenticodeSignature -LiteralPath $runtime
+          if ($signature.Status -ne 'Valid' -or $signature.SignerCertificate.Subject -notmatch 'O=Microsoft Corporation') {
+            throw 'The runtime installer is not signed by Microsoft.'
+          }
+          $process = Start-Process $runtime -ArgumentList '/install /quiet /norestart' -Wait -PassThru
+          if ($process.ExitCode -notin @(0, 3010)) { throw "Runtime installation failed: $($process.ExitCode)" }
 
       - name: Package installer
         shell: pwsh
@@ -116,14 +139,14 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: installer
+          name: installer-${{ matrix.os }}
           path: build/setup/*.exe
           retention-days: 7
 
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
-          name: installer-logs
+          name: installer-logs-${{ matrix.os }}
           path: ${{ runner.temp }}/installer-logs
 
   evals:

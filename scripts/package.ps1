@@ -36,6 +36,10 @@ if (-not (Test-Path (Join-Path $dist "${brand}Shell.dll"))) {
     throw "dist\ is empty or stale. Run .\scripts\build.ps1 first."
 }
 
+if (-not (Test-Path (Join-Path $dist "shell\arm64\${brand}Shell.dll"))) {
+    throw 'The ARM64 shell extension is missing. Run .\scripts\build.ps1 first.'
+}
+
 $iscc = @(
     "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
     "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",

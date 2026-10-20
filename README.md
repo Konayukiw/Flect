@@ -146,8 +146,8 @@ The menu presets (like `50%`, `10 MB`, `45°` entries) are editable here too.
 
 | | |
 | --- | --- |
-| **Windows** | 64-bit Windows 11 or Windows 10 |
-| **.NET 10 Desktop Runtime** | Required. Setup checks for it and offers the download if it is missing. |
+| **Windows** | Windows 10/11 x64, or Windows 11 Arm64 with x64 emulation |
+| **.NET 10 Desktop Runtime (x64)** | Required on both x64 and Arm64. Setup checks for it and offers the download if it is missing. |
 | **HEVC Video Extensions** | Only to *write* `.heic` files. Reading HEIC works without it. From the Microsoft Store. |
 | **Java (JDK or JRE)** | Only to decompile `.jar` files. |
 | **Windows language pack** | Only for OCR, and only for the language you want to read. Flect's settings can open the installer for you. |
@@ -280,6 +280,10 @@ Through **Settings › Apps › Installed apps** in Windows, like any other prog
 ## For development
 
 ### Build
+
+Install the MSVC x64/x86 and ARM64 build tools in Visual Studio Installer. The standard build produces both classic shell extensions; Setup installs the one matching Explorer. The worker and its bundled engines remain x64 and run under emulation on Windows 11 Arm64. The optional modern menu still requires x64 Windows.
+
+After building, run `./evals/shell/test.ps1` to test the classic menu in a native process. To also test the installed menu launching the worker, pass `-ShellDll "$env:LOCALAPPDATA\Flect\FlectShell.dll" -InvokeWorker`.
 
 ```powershell
 .\scripts\fetch.ps1          # Downloads dependencies

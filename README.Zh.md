@@ -147,8 +147,8 @@ RAR 只能解压：Flect 可以解压 `.rar` 文件，但无法创建。这是�
 
 | | |
 | --- | --- |
-| **Windows** | Windows 10 / Windows 11 (64-bit) |
-| **.NET 10 Desktop Runtime** | 安装程序会自动检测，缺少时会提示下载。 |
+| **Windows** | Windows 10/11 x64，或支持 x64 模拟的 Windows 11 Arm64 |
+| **.NET 10 Desktop Runtime (x64)** | x64 和 Arm64 均需要。安装程序会自动检测，缺少时会提示下载。 |
 | **HEVC 视频扩展** | 仅在*写入* `.heic` 文件时需要，读取 HEIC 不需要。可从 Microsoft Store 获取。 |
 | **Java（JDK 或 JRE）** | 仅在反编译 `.jar` 文件时需要。 |
 | **Windows 语言包** | 仅文字识别需要，而且只需安装要识别的语言。可以从 Flect 的设置中直接打开安装界面。 |
@@ -281,6 +281,10 @@ Flect 使用 Windows 内置的文字识别功能，只能识别电脑上已安�
 ## 开发
 
 ### 构建
+
+请在 Visual Studio Installer 中安装 MSVC 的 x64/x86 和 ARM64 生成工具。标准构建会生成两种经典菜单扩展，安装程序会选择与 Explorer 匹配的版本。工作程序和内置引擎仍为 x64，在 Windows 11 Arm64 上通过模拟运行。可选的现代菜单仍仅适用于 Windows x64。
+
+构建后运行 `./evals/shell/test.ps1`，在原生进程中测试经典菜单。要测试已安装的扩展启动工作程序，请添加 `-ShellDll "$env:LOCALAPPDATA\Flect\FlectShell.dll" -InvokeWorker`。
 
 ```powershell
 .\scripts\fetch.ps1          # 下载依赖项

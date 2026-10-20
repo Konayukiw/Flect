@@ -104,8 +104,17 @@ param(
     }
 
     function Test-Runtime {
-        $programs = if (${env:ProgramW6432}) { ${env:ProgramW6432} } else { $env:ProgramFiles }
-        $root = Join-Path $programs 'dotnet\shared\Microsoft.WindowsDesktop.App'
+        $registry = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine, [Microsoft.Win32.RegistryView]::Registry32)
+        try {
+            $key = $registry.OpenSubKey('SOFTWARE\dotnet\Setup\InstalledVersions\x64')
+            $location = $null
+            if ($key) {
+                try { $location = $key.GetValue('InstallLocation') } finally { $key.Dispose() }
+            }
+        }
+        finally { $registry.Dispose() }
+        if (-not $location) { return $false }
+        $root = Join-Path $location 'shared\Microsoft.WindowsDesktop.App'
         [bool](Get-ChildItem -LiteralPath $root -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "$runtimeMajor.*" })
     }
 
@@ -127,7 +136,7 @@ param(
         $winget = Get-Command winget.exe -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
         if ($winget) {
             Write-Step "Installing the .NET $runtimeMajor Desktop Runtime with winget"
-            & $winget.Source install --id $runtimePackage --exact --source winget --silent --accept-package-agreements --accept-source-agreements --disable-interactivity
+            & $winget.Source install --id $runtimePackage --exact --architecture x64 --source winget --silent --accept-package-agreements --accept-source-agreements --disable-interactivity
             if (Test-Runtime) { return }
             Write-Warning "winget did not install the runtime (exit code $LASTEXITCODE), so it will be downloaded from Microsoft instead."
         }

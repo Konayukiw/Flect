@@ -95,9 +95,9 @@ Flect/
 
 To build and test Flect locally, you need the following tools:
 
-- **OS**: Windows 10 or 11 (x64)
+- **OS**: Windows 10 or 11 (x64), or Windows 11 Arm64 with x64 emulation
 - **.NET SDK**: .NET 10.0 SDK
-- **C++ Build Tools**: Visual Studio 2022 or 2026 Build Tools with the "Desktop development with C++" workload
+- **C++ Build Tools**: Visual Studio 2022 or 2026 Build Tools with the "Desktop development with C++" workload and both the MSVC x64/x86 and ARM64 build tools
 - **Windows SDK**: Windows 10 SDK (10.0.19041.0 or newer)
 - **Node.js**: Node.js 20 or newer (For translation check `evals/i18n/check.mjs`)
 - **Java**: JDK 21 (For running JAR decompilation evaluations in `evals/Evals`)
@@ -150,6 +150,9 @@ Before submitting a pull request, run the following validation suites:
   ```powershell
   .\scripts\modern\test.ps1
   ```
+
+- **Classic Menu Tests**:
+  After building, run `./evals/shell/test.ps1` on x64 and Arm64 Windows. It loads the DLL in a process matching Explorer, creates the COM handler, and tests single and multiple selections. Pass `-ShellDll "$env:LOCALAPPDATA\Flect\FlectShell.dll" -InvokeWorker` to test the installed handler launching the x64 worker too. Use a test account with the JSON formatting menu enabled.
 
 ---
 

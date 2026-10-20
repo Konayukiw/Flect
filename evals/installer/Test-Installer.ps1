@@ -3,6 +3,8 @@ param(
     [Parameter(Mandatory)]
     [string]$Installer,
 
+    [string]$InstallDirectory,
+
     [string]$LogDirectory = (Join-Path ([System.IO.Path]::GetTempPath()) 'flect-installer-logs')
 )
 
@@ -17,6 +19,7 @@ $appId = $group.BrandAppId.Trim('{', '}')
 $version = $group.BrandVersion
 
 $app = Join-Path $env:LOCALAPPDATA $brand
+if ($InstallDirectory) { $app = [IO.Path]::GetFullPath($InstallDirectory) }
 $classes = 'HKCU:\Software\Classes'
 $clsidKey = "$classes\CLSID\$clsid"
 $handlerKeys = @("$classes\*\shellex\ContextMenuHandlers\$brand", "$classes\Directory\shellex\ContextMenuHandlers\$brand")
@@ -44,6 +47,7 @@ function Get-DefaultValue([string]$Key) {
 function Invoke-Setup([string]$Name) {
     $log = Join-Path $LogDirectory "$Name.log"
     $arguments = @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/LOG=`"$log`"")
+    if ($InstallDirectory) { $arguments += "/DIR=`"$app`"" }
     $process = Start-Process -FilePath $Installer -ArgumentList $arguments -Wait -PassThru
     Assert-That ($process.ExitCode -eq 0) "$Name finished with exit code 0 (got $($process.ExitCode))"
 }
@@ -60,8 +64,14 @@ function Assert-Registered([string]$Stage) {
     }
 }
 
-$runtime = Join-Path ${env:ProgramW6432} 'dotnet\shared\Microsoft.WindowsDesktop.App'
-$hasRuntime = (Test-Path $runtime) -and (Get-ChildItem $runtime -Directory | Where-Object Name -like '10.*')
+$runtimeRegistry = [Microsoft.Win32.RegistryKey]::OpenBaseKey([Microsoft.Win32.RegistryHive]::LocalMachine, [Microsoft.Win32.RegistryView]::Registry32)
+try {
+    $runtimeKey = $runtimeRegistry.OpenSubKey('SOFTWARE\dotnet\Setup\InstalledVersions\x64')
+    try { $runtimeRoot = if ($runtimeKey) { $runtimeKey.GetValue('InstallLocation') } } finally { if ($runtimeKey) { $runtimeKey.Dispose() } }
+}
+finally { $runtimeRegistry.Dispose() }
+$runtime = if ($runtimeRoot) { Join-Path $runtimeRoot 'shared\Microsoft.WindowsDesktop.App' } else { '' }
+$hasRuntime = $runtimeRoot -and (Test-Path $runtime) -and (Get-ChildItem $runtime -Directory | Where-Object Name -like '10.*')
 Assert-That ([bool]$hasRuntime) '.NET 10 Desktop Runtime is present for Setup'
 if (-not $hasRuntime) { exit 1 }
 
@@ -75,6 +85,7 @@ foreach ($file in @("$brand.exe", "${brand}Shell.dll", 'unins000.exe', 'deps\ffm
     Assert-That (Test-Path (Join-Path $app $file)) "install - $file is installed"
 }
 Assert-Registered 'install'
+& (Join-Path $repoRoot 'evals\shell\test.ps1') -ShellDll (Join-Path $app "${brand}Shell.dll") -InvokeWorker -Registered
 Assert-That ((Get-ItemProperty -Path $presetKey).'Video.CompressDiscord' -eq '20971520') 'install - legacy Discord preset was raised to 20 MiB'
 Assert-That ((Get-ItemProperty -Path $uninstallKey -ErrorAction SilentlyContinue).DisplayVersion -eq $version) "install - uninstall entry reports $version"
 
@@ -104,6 +115,7 @@ Assert-That (Test-Path (Join-Path $app 'models\marker.txt')) 'upgrade - download
 Assert-That (-not (Test-Path (Join-Path $app 'stale.txt'))) 'upgrade - files from the previous version are cleared'
 Assert-That (Test-Path (Join-Path $app "$brand.exe")) 'upgrade - the worker is installed again'
 Assert-Registered 'upgrade'
+& (Join-Path $repoRoot 'evals\shell\test.ps1') -ShellDll (Join-Path $app "${brand}Shell.dll") -InvokeWorker -Registered
 
 $uninstaller = Join-Path $app 'unins000.exe'
 Start-Process -FilePath $uninstaller -ArgumentList @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART', "/LOG=`"$(Join-Path $LogDirectory 'uninstall.log')`"") -Wait

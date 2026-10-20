@@ -41,7 +41,13 @@ $msbuild = Join-Path $vsPath 'MSBuild\Current\Bin\MSBuild.exe'
 Write-Host 'shell extension...'
 & $msbuild (Join-Path $repoRoot 'src\Shell\ShellExt.vcxproj') `
     /p:Configuration=$Configuration /p:Platform=x64 /v:minimal /nologo
-if ($LASTEXITCODE -ne 0) { throw 'The shell extension failed to build.' }
+if ($LASTEXITCODE -ne 0) { throw 'The x64 shell extension failed to build.' }
+
+& $msbuild (Join-Path $repoRoot 'src\Shell\ShellExt.vcxproj') `
+    /p:Configuration=$Configuration /p:Platform=ARM64 /v:minimal /nologo
+if ($LASTEXITCODE -ne 0) {
+    throw 'The ARM64 shell extension failed to build. Install the MSVC ARM64 build tools in Visual Studio Installer.'
+}
 
 Write-Host 'worker...'
 Remove-Item -Recurse -Force $dist -ErrorAction SilentlyContinue
@@ -60,6 +66,9 @@ else { $publishArgs += @('--self-contained', 'false') }
 if ($LASTEXITCODE -ne 0) { throw 'The worker failed to build.' }
 
 Copy-Item (Join-Path $repoRoot "build\shell\$Configuration\$shellDll") -Destination $dist -Force
+$arm64Shell = Join-Path $dist 'shell\arm64'
+New-Item -ItemType Directory -Force -Path $arm64Shell | Out-Null
+Copy-Item (Join-Path $repoRoot "build\shell\ARM64\$Configuration\$shellDll") -Destination $arm64Shell -Force
 
 $thirdParty = Join-Path $repoRoot 'dependencies'
 $depsOut = Join-Path $dist 'deps'

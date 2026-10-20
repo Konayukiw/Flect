@@ -48,7 +48,9 @@ FinishedLabelNoIcons=Setup is done.%n%nRight-click a file or folder and choose "
 FinishedLabel=Setup is done.%n%nRight-click a file or folder and choose "Show more options" (Shift+F10) to find {#BrandName}.%n%n{#BrandName} is in your app list: open it to change settings.
 
 [Files]
-Source: "{#DistDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#DistDir}\*"; DestDir: "{app}"; Excludes: "{#ShellDll},shell\*"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#DistDir}\{#ShellDll}"; DestDir: "{app}"; Check: not IsArm64; Flags: ignoreversion
+Source: "{#DistDir}\shell\arm64\{#ShellDll}"; DestDir: "{app}"; Check: IsArm64; Flags: ignoreversion
 
 [Icons]
 Name: "{userprograms}\{#BrandName}"; Filename: "{app}\{#WorkerExe}"; Comment: "{#BrandName} settings"
@@ -77,8 +79,14 @@ var
   Wanted: String;
 begin
   Result := False;
-  Root := ExpandConstant('{%ProgramW6432|C:\Program Files}') +
-          '\dotnet\shared\Microsoft.WindowsDesktop.App';
+  if not RegQueryStringValue(HKLM32, 'SOFTWARE\dotnet\Setup\InstalledVersions\x64',
+                             'InstallLocation', Root) then
+  begin
+    Root := ExpandConstant('{commonpf64}\dotnet');
+    if IsArm64 then
+      Root := Root + '\x64';
+  end;
+  Root := AddBackslash(Root) + 'shared\Microsoft.WindowsDesktop.App';
   if not DirExists(Root) then
     exit;
 
