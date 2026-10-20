@@ -341,4 +341,16 @@ Windows 只支持一层 `IExplorerCommand` 子命令。因此，现代版 Flect 
 
 Flect 采用 [Apache License 2.0](LICENSE) 授权。
 
+如果您复用、重新分发 Flect 的源代码，或将其集成到其他项目中，则必须：
+
+- 保留所有现有的版权、许可及署名声明（符合 Apache License 2.0 的要求）。
+- 在您项目的 `README.md`、`NOTICE`、`NOTICES`、`THIRD-PARTY-NOTICE`、`THIRD-PARTY-NOTICES` 或 `LICENSE` 文件中，注明原作者 [**Konayukiw**](@Konayukiw)。
+- 包含一份 Apache License 2.0 协议副本，并遵守其相关条款。
+
+建议的署名方式：
+
+> 本项目部分内容源自 [Flect](https://flect.konayuki.xyz)，由 @Konayukiw 最初创建。
+
+此署名要求仅适用于集成了 Flect 源代码的项目；若仅将 Flect 作为最终用户应用程序使用，则无需遵守此要求。
+
 Flect 随附的第三方组件遵循各自的许可证，包括 ImageMagick、FFmpeg (GPLv3)、PDFium、7-Zip (LGPL) 和 CFR。所有组件、对应的许可证及许可证全文，请参阅 [NOTICES](/NOTICES.md)。

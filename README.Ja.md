@@ -324,4 +324,16 @@ Windowsの **[設定] › [アプリ] › [インストールされているア�
 
 Flect は [Apache License 2.0](LICENSE) のライセンスに基づき配布されています。
 
+Flectのソースコードを再利用、再配布、または別のプロジェクトに組み込む場合は、以下の要件に従う必要があります。
+
+- Apache License 2.0の規定に基づき、既存の著作権表示、ライセンス表示、および帰属表示をすべて保持すること。
+- プロジェクト内の `README.md`、`NOTICE`、`NOTICES`、`THIRD-PARTY-NOTICE`、`THIRD-PARTY-NOTICES`、または `LICENSE` ファイルのいずれかに、オリジナルの制作者である [**Konayukiw**](@Konayukiw) への適切な帰属表示を含めること。
+- Apache License 2.0のコピーを含め、その適用される条項を遵守すること。
+
+帰属表示の例：
+
+> 本プロジェクトの一部は、@Konayukiw によって作成された [Flect](https://flect.konayuki.xyz) を利用しています。
+
+この帰属表示に関する要件は、Flectのソースコードをプロジェクトに組み込む場合に適用されます。単にエンドユーザー向けのアプリケーションとしてFlectを利用するだけのプロジェクトには適用されません。
+
 本ソフトウェアには、ImageMagick、FFmpeg (GPLv3)、PDFium、7-Zip (LGPL)、CFR などの各々のライセンスに基づくサードパーティ製コンポーネントが含まれています。各コンポーネント、そのライセンス、およびライセンス全文については、[NOTICES](/NOTICES.md) を参照してください。
