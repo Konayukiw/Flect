@@ -21,8 +21,38 @@ function Get-ModernMenuBrand {
     return $props.Project.PropertyGroup | Where-Object { $_.BrandName } | Select-Object -First 1
 }
 
+function Expand-ModernMenuBrand([string]$Text) {
+    $brand = Get-ModernMenuBrand
+    $values = @{}
+    foreach ($node in $brand.ChildNodes) {
+        if ($node.NodeType -eq 'Element') {
+            $values[$node.Name] = $node.InnerText
+        }
+    }
+    for ($pass = 0; $pass -lt 8; $pass++) {
+        $changed = $false
+        foreach ($name in $values.Keys) {
+            $token = '$(' + $name + ')'
+            if ($Text.Contains($token)) {
+                $Text = $Text.Replace($token, $values[$name])
+                $changed = $true
+            }
+        }
+        if (!$changed) { break }
+    }
+    if ($Text -match '\$\(') {
+        throw 'The modern menu manifest has an unresolved brand token.'
+    }
+    return $Text
+}
+
+function Get-ModernMenuManifestText {
+    $path = Join-Path $ModernMenuRepo 'setup\modern\AppxManifest.xml'
+    return Expand-ModernMenuBrand (Get-Content -LiteralPath $path -Raw -Encoding UTF8)
+}
+
 function Get-ModernMenuPackageName {
-    [xml]$manifest = Get-Content -LiteralPath (Join-Path $ModernMenuRepo 'setup\modern\AppxManifest.xml')
+    [xml]$manifest = Get-ModernMenuManifestText
     return [string]$manifest.Package.Identity.Name
 }
 

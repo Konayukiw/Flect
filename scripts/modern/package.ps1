@@ -5,7 +5,8 @@ Build-ModernMenu
 $layout = Join-Path $repo 'build\modern\layout'
 $assets = Join-Path $layout 'Assets'
 New-Item -ItemType Directory -Path $assets -Force | Out-Null
-Copy-Item -LiteralPath (Join-Path $repo 'setup\modern\AppxManifest.xml') -Destination $layout -Force
+$manifest = Get-ModernMenuManifestText
+[IO.File]::WriteAllText((Join-Path $layout 'AppxManifest.xml'), $manifest, [Text.UTF8Encoding]::new($false))
 Add-Type -AssemblyName System.Drawing
 $icon = [Drawing.Icon]::new((Join-Path $repo 'src\App\Assets\flect.ico'), 256, 256)
 $source = $icon.ToBitmap()

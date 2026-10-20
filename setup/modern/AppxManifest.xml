@@ -7,23 +7,23 @@
  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
  IgnorableNamespaces="uap uap10 desktop4 desktop5 com rescap">
- <Identity Name="Flect.ModernMenu" Publisher="CN=Flect Local Menu" Version="1.0.1.0" ProcessorArchitecture="x64" />
+ <Identity Name="$(BrandName).ModernMenu" Publisher="CN=Flect Local Menu" Version="1.0.1.0" ProcessorArchitecture="x64" />
  <Properties>
-  <DisplayName>Flect</DisplayName><PublisherDisplayName>Local Flect integration</PublisherDisplayName>
+  <DisplayName>$(BrandName)</DisplayName><PublisherDisplayName>Local $(BrandName) integration</PublisherDisplayName>
   <Logo>Assets\StoreLogo.png</Logo><uap10:AllowExternalContent>true</uap10:AllowExternalContent>
  </Properties>
  <Resources><Resource Language="en-us" /><Resource Language="ja-jp" /></Resources>
  <Dependencies><TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.22000.0" MaxVersionTested="10.0.26200.0" /></Dependencies>
  <Applications>
   <Application Id="FlectMenu" Executable="FlectMenu.exe" uap10:TrustLevel="mediumIL" uap10:RuntimeBehavior="win32App">
-   <uap:VisualElements DisplayName="Flect" Description="Flect Explorer menu" BackgroundColor="transparent" Square150x150Logo="Assets\Logo150.png" Square44x44Logo="Assets\Logo44.png" AppListEntry="none" />
+   <uap:VisualElements DisplayName="$(BrandName)" Description="$(BrandName) Explorer menu" BackgroundColor="transparent" Square150x150Logo="Assets\Logo150.png" Square44x44Logo="Assets\Logo44.png" AppListEntry="none" />
    <Extensions>
-    <com:Extension Category="windows.comServer"><com:ComServer><com:SurrogateServer DisplayName="Flect modern menu">
+    <com:Extension Category="windows.comServer"><com:ComServer><com:SurrogateServer DisplayName="$(BrandName) modern menu">
      <com:Class Id="7791A612-5066-4789-A781-D35675F87522" Path="FlectModernShell.dll" ThreadingModel="STA" />
     </com:SurrogateServer></com:ComServer></com:Extension>
     <desktop4:Extension Category="windows.fileExplorerContextMenus"><desktop4:FileExplorerContextMenus>
-     <desktop5:ItemType Type="*"><desktop5:Verb Id="Flect" Clsid="7791A612-5066-4789-A781-D35675F87522" /></desktop5:ItemType>
-     <desktop5:ItemType Type="Directory"><desktop5:Verb Id="Flect" Clsid="7791A612-5066-4789-A781-D35675F87522" /></desktop5:ItemType>
+     <desktop5:ItemType Type="*"><desktop5:Verb Id="$(BrandName)" Clsid="7791A612-5066-4789-A781-D35675F87522" /></desktop5:ItemType>
+     <desktop5:ItemType Type="Directory"><desktop5:Verb Id="$(BrandName)" Clsid="7791A612-5066-4789-A781-D35675F87522" /></desktop5:ItemType>
     </desktop4:FileExplorerContextMenus></desktop4:Extension>
    </Extensions>
   </Application>
