@@ -138,6 +138,23 @@
                    Text="{loc:T settings.general.update.hint}" />
 
         <CheckBox x:Name="AutoUpdateBox" Content="{loc:T settings.general.update.enable}" />
+
+        <Grid Margin="0,8,0,0">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+
+          <Button x:Name="CheckUpdateButton" Grid.Column="0"
+                  Content="{loc:T settings.general.update.check}"
+                  Style="{StaticResource Button.Secondary}"
+                  MinWidth="0" Padding="12,4" FontSize="12"
+                  Click="OnCheckUpdate" />
+
+          <TextBlock x:Name="UpdateStatusText" Grid.Column="1"
+                     Style="{StaticResource Settings.Hint}"
+                     Margin="10,0,0,0" VerticalAlignment="Center" />
+        </Grid>
       </StackPanel>
     </Border>
 

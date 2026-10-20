@@ -12,6 +12,15 @@ namespace Optimizer.Main.Update;
 
 internal sealed record AssetInfo(string Name, string DownloadUrl, long Size);
 
+internal enum UpdateStatus
+{
+    UpToDate,
+    Available,
+    Failed,
+}
+
+internal sealed record UpdateCheck(UpdateStatus Status, Version? Version = null, AssetInfo? Setup = null);
+
 internal static class Updater
 {
     private const string GitHubApiLatest = "https://api.github.com/repos/Konayukiw/Flect/releases/latest";
@@ -62,49 +71,50 @@ internal static class Updater
         { /* ignore */ }
     }
 
-    public static async Task RunBackgroundUpdateAsync(bool immediate = false)
+    public static async Task<UpdateCheck> CheckAsync()
     {
+        string? json = null;
         try
         {
-            if (!Settings.Current.General.AutoUpdate) return;
+            using var client = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("Flect-Updater");
+            client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
+            client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
 
-            if (!immediate && !Debugger.IsAttached)
+            for (int attempt = 0; attempt < 3; attempt++)
             {
-                await Task.Delay(5000);
-            }
-
-            string? json = null;
-            using (var client = new HttpClient { Timeout = TimeSpan.FromSeconds(30) })
-            {
-                client.DefaultRequestHeaders.UserAgent.ParseAdd("Flect-Updater");
-                client.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
-                client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
-
-                for (int attempt = 0; attempt < 3; attempt++)
+                try
                 {
-                    try
+                    using var response = await client.GetAsync(GitHubApiLatest);
+                    if (response.IsSuccessStatusCode)
                     {
-                        var response = await client.GetAsync(GitHubApiLatest);
-                        if (response.IsSuccessStatusCode)
-                        {
-                            json = await response.Content.ReadAsStringAsync();
-                            break;
-                        }
-                    }
-                    catch
-                    {
-                        if (attempt == 2) return;
-                        await Task.Delay(5000);
+                        json = await response.Content.ReadAsStringAsync();
+                        break;
                     }
                 }
+                catch
+                {
+                    if (attempt == 2) return new UpdateCheck(UpdateStatus.Failed);
+                    await Task.Delay(5000);
+                }
             }
+        }
+        catch
+        {
+            return new UpdateCheck(UpdateStatus.Failed);
+        }
 
-            if (string.IsNullOrWhiteSpace(json)) return;
+        if (string.IsNullOrWhiteSpace(json)) return new UpdateCheck(UpdateStatus.Failed);
 
+        try
+        {
             using var doc = JsonDocument.Parse(json);
             var root = doc.RootElement;
 
-            if (root.TryGetProperty("draft", out var draft) && draft.GetBoolean()) return;
+            if (root.TryGetProperty("draft", out var draft) && draft.GetBoolean())
+            {
+                return new UpdateCheck(UpdateStatus.Failed);
+            }
 
             var tagName = root.TryGetProperty("tag_name", out var tag) ? tag.GetString() : null;
             var releaseName = root.TryGetProperty("name", out var relName) ? relName.GetString() : null;
@@ -112,49 +122,65 @@ internal static class Updater
             if (!TryParseVersion(tagName, out var remoteVersion) &&
                 !TryParseVersion(releaseName, out remoteVersion))
             {
-                return;
+                return new UpdateCheck(UpdateStatus.Failed);
             }
 
             if (!TryParseVersion(Branding.Version, out var currentVersion))
             {
-                return;
+                return new UpdateCheck(UpdateStatus.Failed);
             }
 
             if (remoteVersion <= currentVersion)
             {
-                return;
+                return new UpdateCheck(UpdateStatus.UpToDate);
             }
 
             if (!root.TryGetProperty("assets", out var assets) || assets.ValueKind != JsonValueKind.Array)
             {
-                return;
+                return new UpdateCheck(UpdateStatus.Failed);
             }
 
             var setupAsset = FindSetupAsset(assets);
-            if (setupAsset is null) return;
+            if (setupAsset is null) return new UpdateCheck(UpdateStatus.Failed);
 
+            return new UpdateCheck(UpdateStatus.Available, remoteVersion, setupAsset);
+        }
+        catch
+        {
+            return new UpdateCheck(UpdateStatus.Failed);
+        }
+    }
+
+    public static async Task<bool> DownloadAndInstallAsync(AssetInfo setupAsset, bool showProgress = false)
+    {
+        try
+        {
             var tempDir = Path.Combine(Path.GetTempPath(), "FlectUpdate");
             Directory.CreateDirectory(tempDir);
             var setupPath = Path.Combine(tempDir, setupAsset.Name);
 
-            using (var downloadClient = new HttpClient { Timeout = TimeSpan.FromMinutes(5) })
+            using (var client = new HttpClient { Timeout = TimeSpan.FromMinutes(5) })
             {
-                downloadClient.DefaultRequestHeaders.UserAgent.ParseAdd("Flect-Updater");
-                using var response = await downloadClient.GetAsync(setupAsset.DownloadUrl, HttpCompletionOption.ResponseHeadersRead);
-                if (!response.IsSuccessStatusCode) return;
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("Flect-Updater");
+                using var response = await client.GetAsync(setupAsset.DownloadUrl, HttpCompletionOption.ResponseHeadersRead);
+                if (!response.IsSuccessStatusCode) return false;
 
                 using var stream = await response.Content.ReadAsStreamAsync();
                 using var file = new FileStream(setupPath, FileMode.Create, FileAccess.Write, FileShare.None);
                 await stream.CopyToAsync(file);
             }
 
-            if (!File.Exists(setupPath)) return;
+            if (!File.Exists(setupPath)) return false;
+
+            var setupArguments = showProgress
+                ? "/SILENT /SUPPRESSMSGBOXES /NORESTART /SP-"
+                : "/VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-";
 
             var scriptPath = Path.Combine(tempDir, "apply-update.cmd");
             var scriptContent =
                 $"@echo off\r\n" +
                 $"timeout /t 3 /nobreak >nul 2>&1 || ping 127.0.0.1 -n 4 >nul\r\n" +
-                $"\"{setupPath}\" /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /SP-\r\n" +
+                $"\"{setupPath}\" {setupArguments}\r\n" +
                 $"del \"%~f0\"\r\n";
 
             await File.WriteAllTextAsync(scriptPath, scriptContent, Encoding.ASCII);
@@ -167,12 +193,44 @@ internal static class Updater
                 UseShellExecute = true
             };
             System.Diagnostics.Process.Start(psi);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
-            Environment.Exit(0);
+    public static async Task RunBackgroundUpdateAsync(bool immediate = false)
+    {
+        try
+        {
+            if (!Settings.Current.General.AutoUpdate) return;
+
+            if (!immediate && !Debugger.IsAttached)
+            {
+                await Task.Delay(5000);
+            }
+
+            var check = await CheckAsync();
+            var setup = check.Setup;
+            if (check.Status != UpdateStatus.Available || setup is null) return;
+
+            if (await DownloadAndInstallAsync(setup))
+            {
+                Environment.Exit(0);
+            }
         }
         catch
         { /* ignore */ }
     }
+
+    internal static string FormatVersion(Version version) =>
+        version.Revision > 0
+            ? version.ToString(4)
+            : version.Build > 0
+                ? version.ToString(3)
+                : version.ToString(2);
 
     internal static bool TryParseVersion(string? text, out Version version)
     {

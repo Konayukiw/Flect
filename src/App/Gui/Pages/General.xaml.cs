@@ -8,6 +8,7 @@ namespace Optimizer.Gui.Pages;
 public partial class General : UserControl, ISettingsPage
 {
     private List<MenuOption> _menu = [];
+    private bool _checkingUpdate;
 
     public General()
     {
@@ -71,4 +72,67 @@ public partial class General : UserControl, ISettingsPage
     private void OnCheckAll(object sender, RoutedEventArgs e) => MenuOption.SetAll(_menu, true);
 
     private void OnCheckNone(object sender, RoutedEventArgs e) => MenuOption.SetAll(_menu, false);
+
+    private async void OnCheckUpdate(object sender, RoutedEventArgs e)
+    {
+        if (_checkingUpdate) return;
+
+        _checkingUpdate = true;
+        CheckUpdateButton.IsEnabled = false;
+        UpdateStatusText.Text = Loc.T("settings.general.update.checking");
+
+        try
+        {
+            var check = await Updater.CheckAsync();
+            var version = check.Version;
+            var setup = check.Setup;
+
+            if (check.Status == UpdateStatus.UpToDate)
+            {
+                UpdateStatusText.Text = Loc.T("settings.general.update.latest");
+                return;
+            }
+
+            if (check.Status != UpdateStatus.Available || version is null || setup is null)
+            {
+                UpdateStatusText.Text = Loc.T("settings.general.update.failed");
+                return;
+            }
+
+            var display = Updater.FormatVersion(version);
+            var answer = MessageBox.Show(
+                Window.GetWindow(this),
+                Loc.F("settings.general.update.confirm", display),
+                Branding.Name,
+                MessageBoxButton.OKCancel,
+                MessageBoxImage.Question,
+                MessageBoxResult.Cancel);
+
+            if (answer != MessageBoxResult.OK)
+            {
+                UpdateStatusText.Text = string.Empty;
+                return;
+            }
+
+            UpdateStatusText.Text = Loc.F("settings.general.update.downloading", display);
+
+            if (!await Updater.DownloadAndInstallAsync(setup, showProgress: true))
+            {
+                UpdateStatusText.Text = Loc.T("settings.general.update.downloadFailed");
+                return;
+            }
+
+            UpdateStatusText.Text = Loc.F("settings.general.update.installing", display);
+            Application.Current.Shutdown();
+        }
+        catch
+        {
+            UpdateStatusText.Text = Loc.T("settings.general.update.failed");
+        }
+        finally
+        {
+            _checkingUpdate = false;
+            CheckUpdateButton.IsEnabled = true;
+        }
+    }
 }

@@ -43,6 +43,16 @@ public sealed class UpdateTests
         Assert.False(current.CompareTo(patch) > 0);
     }
 
+    [Theory]
+    [InlineData("1.0.0", "1.0")]
+    [InlineData("1.0.1", "1.0.1")]
+    [InlineData("1.2.3.4", "1.2.3.4")]
+    public void FormatsVersionsWithoutEmptyComponents(string input, string expected)
+    {
+        Assert.True(Updater.TryParseVersion(input, out var version));
+        Assert.Equal(expected, Updater.FormatVersion(version));
+    }
+
     [Fact]
     public void FindsMatchingSetupAssetInReleaseJson()
     {
