@@ -7,7 +7,7 @@
  xmlns:com="http://schemas.microsoft.com/appx/manifest/com/windows10"
  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
  IgnorableNamespaces="uap uap10 desktop4 desktop5 com rescap">
- <Identity Name="$(BrandName).ModernMenu" Publisher="CN=Flect Local Menu" Version="1.0.1.0" ProcessorArchitecture="x64" />
+ <Identity Name="$(BrandName).ModernMenu" Publisher="CN=Flect Local Menu" Version="$(BrandPackageVersion)" ProcessorArchitecture="x64" />
  <Properties>
   <DisplayName>$(BrandName)</DisplayName><PublisherDisplayName>Local $(BrandName) integration</PublisherDisplayName>
   <Logo>Assets\StoreLogo.png</Logo><uap10:AllowExternalContent>true</uap10:AllowExternalContent>

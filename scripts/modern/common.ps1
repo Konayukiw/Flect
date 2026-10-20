@@ -21,14 +21,21 @@ function Get-ModernMenuBrand {
     return $props.Project.PropertyGroup | Where-Object { $_.BrandName } | Select-Object -First 1
 }
 
-function Expand-ModernMenuBrand([string]$Text) {
-    $brand = Get-ModernMenuBrand
+function Get-ModernMenuBrandValues {
+    [xml]$props = Get-Content -LiteralPath (Join-Path $ModernMenuRepo 'Directory.Build.props')
     $values = @{}
-    foreach ($node in $brand.ChildNodes) {
-        if ($node.NodeType -eq 'Element') {
-            $values[$node.Name] = $node.InnerText
+    foreach ($group in $props.Project.PropertyGroup) {
+        foreach ($node in $group.ChildNodes) {
+            if ($node.NodeType -eq 'Element' -and $node.Name -like 'Brand*') {
+                $values[$node.Name] = $node.InnerText
+            }
         }
     }
+    return $values
+}
+
+function Expand-ModernMenuBrand([string]$Text) {
+    $values = Get-ModernMenuBrandValues
     for ($pass = 0; $pass -lt 8; $pass++) {
         $changed = $false
         foreach ($name in $values.Keys) {

@@ -10,6 +10,7 @@
     <RepoRoot>$(MSBuildThisFileDirectory)</RepoRoot>
     <BrandShellDllName>$(BrandName)Shell</BrandShellDllName>
     <BrandAppExeName>$(BrandName)</BrandAppExeName>
+    <BrandPackageVersion>$(BrandVersion).0</BrandPackageVersion>
     <BrandBuildDir>$(RepoRoot)build\</BrandBuildDir>
     <BrandDistDir>$(RepoRoot)dist\</BrandDistDir>
     <BrandThirdPartyDir>$(RepoRoot)dependencies\</BrandThirdPartyDir>
