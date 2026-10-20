@@ -1,0 +1,87 @@
+name: Auto Reply
+
+on:
+  issues:
+    types: [opened]
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  reply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v9
+        with:
+          script: |
+            const item = context.payload.issue ?? context.payload.pull_request;
+            if (!item) return;
+            if (item.user.type === 'Bot') return;
+            if (['OWNER', 'MEMBER', 'COLLABORATOR'].includes(item.author_association)) return;
+
+            const marker = '<!-- flect-greeting -->';
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              per_page: 100,
+            });
+            if (comments.some((comment) => comment.body?.includes(marker))) return;
+
+            const isPullRequest = Boolean(context.payload.pull_request);
+            const labels = (item.labels ?? []).map((label) =>
+              typeof label === 'string' ? label : label.name,
+            );
+            const isSuggestion =
+              labels.some((label) => ['enhancement', 'feature-request'].includes(label)) ||
+              (item.title ?? '').startsWith('[Feature Suggestion]');
+            const lines = [];
+            if (isPullRequest) {
+              lines.push(
+                'Thanks for the pull request.',
+                '',
+                'A few things that make review faster:',
+                '- Keep the pull request to one topic.',
+                '- Run the build, i18n check, and evals described in CONTRIBUTING.md.',
+                '- Say which Windows versions and architectures you tested on.',
+                '- Attach screenshots or a recording for anything that changes Explorer or the settings UI.',
+                '- Disclose AI assistance and describe what you verified yourself.',
+                '',
+                'If this is your first pull request from a fork, a maintainer has to approve the CI run before it starts. That is normal and not a rejection so please wait until the maintainer approves it.',
+              );
+            } else if (isSuggestion) {
+              lines.push(
+                'Thanks for the feature suggestion.',
+                '',
+                'A few things that help me judge it:',
+                '- What are you trying to get done, and when does the current menu fall short?',
+                '- How should it appear in the menu or settings?',
+                '- Does it fit the small, fast menu that Flect aims for?',
+                '',
+                'Flect is maintained by one person, so a reply can take a few days. A suggestion is usually declined for scope, not because the idea is bad.',
+              );
+            } else {
+              lines.push(
+                'Thanks for opening an issue.',
+                '',
+                'To reproduce it, I usually need:',
+                '- Flect version (Open Flect from the app list)',
+                '- Windows version and build (run `winver`)',
+                '- x64 or ARM64',
+                '- The exact steps, the file type, and what you expected instead',
+                '- Screenshots, a recording, or logs if you have them',
+                '',
+                'Flect is maintained by one person, so a reply can take a few days.',
+              );
+            }
+            lines.push(marker);
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: lines.join('\n'),
+            });

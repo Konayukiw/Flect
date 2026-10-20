@@ -1,0 +1,70 @@
+name: Feature suggestion
+description: Suggest a new feature, an improvement, or another change to Flect.
+title: "[Feature Suggestion] "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature. Flect keeps its context menu small and fast, so please explain the use case as well as the feature.
+        Please write in English, Japanese, or Simplified Chinese. Check that the feature has not already been suggested before submitting.
+
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: When would you use this feature, and what are you trying to get done?
+      placeholder: I often work with ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What is difficult or impossible today?
+      placeholder: Right now I have to ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: feature
+    attributes:
+      label: Proposed feature
+      description: What should Flect do, and how should it appear in the menu or settings?
+      placeholder: Add a "..." entry under ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: benefit
+    attributes:
+      label: Benefit
+      description: Who benefits, and why is the existing behavior not enough?
+    validations:
+      required: false
+
+  - type: dropdown
+    id: surface
+    attributes:
+      label: Where should it appear?
+      options:
+        - Show more options (classic menu)
+        - Windows 11 modern menu
+        - Flect settings app
+        - Not sure
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I checked that this feature is not already implemented or suggested in the issues.
+          required: true
+        - label: I understand that Flect is maintained by one person and that a suggestion may be declined.
+          required: true
+        - label: I used AI assistance only for wording or research, and I have reviewed this suggestion for accuracy.
+          required: true
+

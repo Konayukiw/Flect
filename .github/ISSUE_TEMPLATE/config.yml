@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Contributing Guide
+    url: https://github.com/Konayukiw/Flect/blob/main/CONTRIBUTING.md
+    about: Read this before opening a pull request.
+  - name: README and FAQ
+    url: https://github.com/Konayukiw/Flect/blob/main/README.md#faq
+    about: Installation, requirements and common questions.

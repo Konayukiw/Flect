@@ -1,0 +1,111 @@
+name: Report bugs or issues
+description: Installation failure, unexpected behavior, or other issues. Please provide as much detail as possible.
+title: "[Issue] "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting an issue! Please fill out the following information as completely as possible.
+        Please check whether the issue has already been reported before submitting a new one. Feature suggestions have their own form.
+        ⚠ Do **NOT** include any personal information in your report.
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: OS
+      options:
+        - Windows 11 26H2
+        - Windows 11 25H2
+        - Windows 11 24H2
+        - Windows 11 23H2
+        - Windows 10 22H2
+        - Windows 10
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Flect version
+      description: "Open Flect from apps to check the version."
+      placeholder: 1.1
+    validations:
+      required: true
+
+  - type: dropdown
+    id: architecture
+    attributes:
+      label: Architecture
+      options:
+        - x64
+        - ARM64
+    validations:
+      required: true
+
+  - type: dropdown
+    id: feature
+    attributes:
+      label: The feature in question
+      options:
+        - Installation
+        - General
+        - Folder
+        - Video
+        - Image
+        - Text
+        - OCR
+        - Code
+        - Output
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: details
+    attributes:
+      label: What you did and what happened
+      description: |
+        Please describe the steps you took and what happened. If you can reproduce the issue, please provide the steps to do so.
+        If you are reporting a bug, please include a screenshot or video of the issue if possible.
+        Also including the details of your processed file if the issue relates to file processing helps us to fix the issue.
+      placeholder: |
+        1. Rotate a PNG image 90 degrees 
+        2. The image was not rotated
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected to happen
+    validations:
+      required: false
+  
+  - type: textarea
+    id: cause
+    attributes:
+      label: What you think caused the issue (Optional, if you have an idea)
+    validations:
+      required: false
+
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: How often it occurs
+      options:
+        - Every time
+        - Sometimes
+        - Once only
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched existing issues and this is not a duplicate.
+          required: true
+        - label: This is not a security vulnerability.
+          required: true
