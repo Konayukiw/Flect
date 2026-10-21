@@ -270,6 +270,14 @@ Flect 使用 Windows 内置的文字识别功能，只能识别电脑上已安�
 </details>
 　
 <details>
+<summary><b>杀毒软件把 Flect 判定为病毒</b></summary>
+
+Flect 的安装程序和可执行文件没有代码签名，因此 Windows SmartScreen 和部分杀毒软件可能会把它们当作未知程序并发出警告或进行隔离。这是缺少签名导致的误报，Flect 本身并不包含病毒。安装程序中打包了 ffmpeg 等外部工具，也更容易触发启发式检测。
+
+Flect 只通过 GitHub Releases 和官方网站（flect.konayuki.xyz）分发。每个 Release 都会公布文件的 SHA-256，你可以将下载文件的哈希与它比对，确认文件没有被篡改。如果哈希一致，可以在警告界面选择 **更多信息**，然后选择 **仍要运行**，或者把 Flect 的安装目录加入杀毒软件的排除项。不需要关闭整个杀毒软件。
+</details>
+　
+<details>
 <summary><b>已知限制</b></summary>
 
 - WebM 只能封装 VP9 或 AV1。选择 WebM 作为封装格式时，H.264 和 H.265 会换成 VP9，音频则编码为 Opus。选择 **自动** 时，VP9 保存为 `.webm`，其他编解码器保存为 `.mp4`。

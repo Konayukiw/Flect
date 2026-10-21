@@ -269,6 +269,14 @@ Through **Settings › Apps › Installed apps** in Windows, like any other prog
 </details>
 　
 <details>
+<summary><b>My antivirus flags Flect as a virus</b></summary>
+
+Flect's installer and executables are not code-signed, so Windows SmartScreen and some antivirus products may warn about them or quarantine them as unknown software. This is a false positive caused by the missing signature, not by anything Flect does. An installer that bundles tools such as ffmpeg is also more likely to trip heuristic detection.
+
+Flect is distributed only through GitHub Releases and the official site (flect.konayuki.xyz). Each release publishes the SHA-256 of its files, so you can compare it with your download to confirm it has not been altered. If the hashes match, choose **More info** and then **Run anyway** on the warning, or add Flect's install folder to your antivirus exclusions. You do not need to turn off your antivirus.
+</details>
+　
+<details>
 <summary><b>Known limitations</b></summary>
 
 - WebM can only hold VP9 or AV1. While WebM is the chosen container, H.264 and H.265 are swapped for VP9 and the audio is encoded as Opus. **Auto** saves VP9 as `.webm` and every other codec as `.mp4`.

@@ -404,6 +404,10 @@
           <summary data-i18n="faq.q9">Where are settings stored?</summary>
           <p data-i18n="faq.a9">In <code>%APPDATA%\Flect\settings.json</code>. Some values needed by the Explorer menu itself are also stored in <code>HKCU\Software\Flect</code>. "Reset settings" clears both while keeping shell registration and learned encoder results.</p>
         </details>
+        <details class="reveal">
+          <summary data-i18n="faq.q10">My antivirus flags Flect-Setup.exe as a virus</summary>
+          <p data-i18n="faq.a10">Flect's installer and executables are not code-signed, so Windows SmartScreen and some antivirus products may warn about them or quarantine them as unknown software. This is a false positive caused by the missing signature, not by anything Flect does. An installer that bundles tools such as ffmpeg is also more likely to trip heuristic detection.<br><br>Flect is distributed only through GitHub Releases and the official site (flect.konayuki.xyz). Each release publishes the SHA-256 of its files, so you can compare it with your download to confirm it has not been altered. If the hashes match, choose <strong>More info</strong> and then <strong>Run anyway</strong> on the warning, or add Flect's install folder to your antivirus exclusions. You do not need to turn off your antivirus.</p>
+        </details>
       </div>
       <div class="faq-foot reveal" data-i18n="faq.foot">If your question isn't answered here, report it on <a class="link" href="https://github.com/Konayukiw/Flect/issues" target="_blank" rel="noopener">GitHub Issues</a> - attaching the activity log helps a lot.</div>
     </section>

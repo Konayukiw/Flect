@@ -29,6 +29,7 @@
 
       <FontFamily x:Key="Font.Ui">pack://application:,,,/Assets/Fonts/#komorebi gothic P, Yu Gothic UI, Segoe UI Variable Text, Segoe UI</FontFamily>
       <FontFamily x:Key="Font.Display">pack://application:,,,/Assets/Fonts/#Inter Display, Segoe UI Variable Display, Segoe UI</FontFamily>
+      <FontFamily x:Key="Font.Symbol">Segoe Fluent Icons, Segoe MDL2 Assets</FontFamily>
       <FontFamily x:Key="Font.Mono">Cascadia Mono, Consolas, Courier New</FontFamily>
 
       <CornerRadius x:Key="Radius.Small">5</CornerRadius>
