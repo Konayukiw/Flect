@@ -5,8 +5,10 @@ import json
 import os
 import sys
 import time
+import wave
 from pathlib import Path
 
+import numpy as np
 import faster_whisper
 from faster_whisper import WhisperModel
 
@@ -14,6 +16,25 @@ LANGUAGE_CODES = ("ja", "en", "zh", "ko", "es", "fr", "de", "it", "pt", "ru",
                   "ar", "th", "vi")
 
 MIN_EMIT_INTERVAL = 0.5
+SAMPLE_RATE = 16000
+SAMPLE_WIDTH = 2
+
+
+def load_wav_audio(path):
+    try:
+        with wave.open(str(path), "rb") as handle:
+            if (handle.getnchannels() != 1 or
+                    handle.getframerate() != SAMPLE_RATE or
+                    handle.getsampwidth() != SAMPLE_WIDTH):
+                return None
+            frames = handle.readframes(handle.getnframes())
+    except (wave.Error, EOFError, OSError):
+        return None
+
+    if not frames:
+        return None
+
+    return np.frombuffer(frames, dtype=np.int16).astype(np.float32) / 32768.0
 
 
 def emit(obj):
@@ -107,8 +128,10 @@ def transcribe_one(model, entry, language, kind):
 
     emit({"input": target, "status": "start"})
 
+    audio = load_wav_audio(input_path)
+
     segments, info = model.transcribe(
-        str(input_path),
+        audio if audio is not None else str(input_path),
         language=None if language == "auto" else language,
         vad_filter=True,
         beam_size=5,
