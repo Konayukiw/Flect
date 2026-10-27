@@ -16,6 +16,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+. (Join-Path $PSScriptRoot 'version.ps1')
 $repoRoot = Split-Path -Parent $PSScriptRoot
 
 [xml]$props = Get-Content (Join-Path $repoRoot 'Directory.Build.props')
@@ -26,6 +27,7 @@ if (-not $brand) { throw 'BrandName is missing from Directory.Build.props' }
 if (-not $appId) { throw 'BrandAppId is missing from Directory.Build.props' }
 if (-not $Version) { $Version = $group.BrandVersion }
 if (-not $Version) { throw 'BrandVersion is missing from Directory.Build.props' }
+$Version = Format-BrandDisplayVersion $Version
 
 $appId = $appId.Trim('{', '}')
 
@@ -47,6 +49,7 @@ if (-not $iscc) {
 }
 
 New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
+Get-ChildItem -LiteralPath $outputDir -Filter *.exe -File -ErrorAction SilentlyContinue | Remove-Item -Force
 Write-Host "Packaging $brand $Version" -ForegroundColor Cyan
 
 $isccArgs = @(
@@ -66,5 +69,6 @@ $isccArgs += (Join-Path $repoRoot 'setup\setup.iss')
 
 if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed with exit code $LASTEXITCODE." }
 
-$setup = Get-ChildItem $outputDir -Filter "$brand-$Version-setup.exe" | Select-Object -First 1
+$setup = Get-ChildItem $outputDir -Filter "$brand-Setup.exe" | Select-Object -First 1
+if (-not $setup) { throw "Installer was not written to $outputDir." }
 Write-Host ("Built {0} ({1:N0} MB)" -f $setup.FullName, ($setup.Length / 1MB)) -ForegroundColor Green

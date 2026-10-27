@@ -55,6 +55,15 @@ param(
         }
     }
 
+    function Get-ReleaseVersionKey([string]$Text) {
+        if ([string]::IsNullOrWhiteSpace($Text)) { return $null }
+        $match = [regex]::Match($Text, '(\d+)\.(\d+)(?:\.(\d+))?(?:\.(\d+))?')
+        if (-not $match.Success) { return $null }
+        $build = if ($match.Groups[3].Success) { [int]$match.Groups[3].Value } else { 0 }
+        $revision = if ($match.Groups[4].Success) { [int]$match.Groups[4].Value } else { 0 }
+        return '{0}.{1}.{2}.{3}' -f [int]$match.Groups[1].Value, [int]$match.Groups[2].Value, $build, $revision
+    }
+
     function Find-Release {
         if (-not $Version) {
             $latest = Invoke-GitHub "$api/releases/latest"
@@ -63,20 +72,24 @@ param(
         }
 
         $wanted = $Version.Trim().TrimStart('v', 'V')
+        $wantedKey = Get-ReleaseVersionKey $wanted
+        $names = @($wanted, "v$wanted", "$brand-$wanted")
         for ($page = 1; $page -le 10; $page++) {
             $releases = Invoke-GitHub "$api/releases?per_page=100&page=$page"
             if (-not $releases) { break }
             foreach ($release in $releases) {
-                if (-not $release.draft -and "$($release.tag_name)".TrimStart('v', 'V') -eq $wanted) { return $release }
+                $tag = "$($release.tag_name)"
+                if ($release.draft) { continue }
+                if (($names -contains $tag) -or ($wantedKey -and (Get-ReleaseVersionKey $tag) -eq $wantedKey)) { return $release }
             }
         }
         throw "$brand $Version was not found. See $releasesPage"
     }
 
     function Find-Setup($Release) {
-        $pattern = '^' + [regex]::Escape($brand) + '-.*setup\.exe$'
-        $asset = $Release.assets | Where-Object { $_.name -match $pattern } | Select-Object -First 1
-        if (-not $asset) { throw "$brand $($Release.tag_name) has no Setup file attached. See $releasesPage" }
+        $name = "$brand-Setup.exe"
+        $asset = $Release.assets | Where-Object { $_.name -eq $name } | Select-Object -First 1
+        if (-not $asset) { throw "$brand $($Release.tag_name) has no $name attached. See $releasesPage" }
         $asset
     }
 

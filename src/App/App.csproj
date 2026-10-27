@@ -19,10 +19,10 @@
     <AssemblyName>$(BrandAppExeName)</AssemblyName>
     <Product>$(BrandName)</Product>
     <AssemblyTitle>$(BrandName)</AssemblyTitle>
-    <AssemblyVersion>$(BrandVersion)</AssemblyVersion>
-    <FileVersion>$(BrandVersion)</FileVersion>
-    <InformationalVersion>$(BrandVersion)</InformationalVersion>
-    <Version>$(BrandVersion)</Version>
+    <AssemblyVersion>$(BrandDisplayVersion)</AssemblyVersion>
+    <FileVersion>$(BrandDisplayVersion)</FileVersion>
+    <InformationalVersion>$(BrandDisplayVersion)</InformationalVersion>
+    <Version>$(BrandDisplayVersion)</Version>
   </PropertyGroup>
 
   <ItemGroup>
@@ -102,7 +102,7 @@
       <_BrandLine Include="internal static class Branding" />
       <_BrandLine Include="{" />
       <_BrandLine Include="    public const string Name = &quot;$(BrandName)&quot;%3B" />
-      <_BrandLine Include="    public const string Version = &quot;$(BrandVersion)&quot;%3B" />
+      <_BrandLine Include="    public const string Version = &quot;$(BrandDisplayVersion)&quot;%3B" />
       <_BrandLine Include="}" />
     </ItemGroup>
     <WriteLinesToFile File="$(IntermediateOutputPath)Branding.g.cs"

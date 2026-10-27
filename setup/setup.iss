@@ -35,7 +35,7 @@ ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 CloseApplications=no
 OutputDir={#OutputDir}
-OutputBaseFilename={#BrandName}-{#AppVersion}-setup
+OutputBaseFilename={#BrandName}-Setup
 #ifdef IconFile
 SetupIconFile={#IconFile}
 #endif

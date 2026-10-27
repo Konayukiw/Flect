@@ -1,3 +1,4 @@
+. (Join-Path $PSScriptRoot '..\version.ps1')
 $ModernMenuRepo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 
 function Get-ModernMenuSdkTool([string]$Name) {
@@ -30,6 +31,9 @@ function Get-ModernMenuBrandValues {
                 $values[$node.Name] = $node.InnerText
             }
         }
+    }
+    if ($values['BrandVersion']) {
+        $values['BrandPackageVersion'] = Format-BrandPackageVersion $values['BrandVersion']
     }
     return $values
 }

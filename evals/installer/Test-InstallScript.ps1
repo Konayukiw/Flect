@@ -16,7 +16,8 @@ $group = $props.Project.PropertyGroup | Where-Object { $_.BrandName } | Select-O
 $brand = $group.BrandName
 $clsid = $group.BrandClsid
 $appId = $group.BrandAppId
-$version = $group.BrandVersion
+. (Join-Path $repoRoot 'scripts\version.ps1')
+$version = Format-BrandDisplayVersion $group.BrandVersion
 
 $app = Join-Path $env:LOCALAPPDATA $brand
 $clsidKey = "HKCU:\Software\Classes\CLSID\$clsid"

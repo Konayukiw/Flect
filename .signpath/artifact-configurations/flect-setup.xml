@@ -1,0 +1,5 @@
+<artifact-configuration xmlns="http://signpath.io/artifact-configuration/v1">
+  <pe-file>
+    <authenticode-sign/>
+  </pe-file>
+</artifact-configuration>

@@ -4,13 +4,15 @@
     <BrandClsid>{4D038D4F-2125-48BE-8848-BA30A13AC7EA}</BrandClsid>
     <BrandAppId>{16C090EA-F07E-47B7-8811-B97D3BE26DDC}</BrandAppId>
     <BrandVersion>1.1</BrandVersion>
+    <BrandDisplayVersion>$(BrandVersion)</BrandDisplayVersion>
+    <BrandDisplayVersion Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(BrandDisplayVersion)', '^\d+\.\d+\.\d+\.0$'))">$([System.Text.RegularExpressions.Regex]::Replace('$(BrandDisplayVersion)', '\.0$', ''))</BrandDisplayVersion>
+    <BrandDisplayVersion Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(BrandDisplayVersion)', '^\d+\.\d+\.0$'))">$([System.Text.RegularExpressions.Regex]::Replace('$(BrandDisplayVersion)', '\.0$', ''))</BrandDisplayVersion>
   </PropertyGroup>
 
   <PropertyGroup>
     <RepoRoot>$(MSBuildThisFileDirectory)</RepoRoot>
     <BrandShellDllName>$(BrandName)Shell</BrandShellDllName>
     <BrandAppExeName>$(BrandName)</BrandAppExeName>
-    <BrandPackageVersion>$(BrandVersion).0</BrandPackageVersion>
     <BrandBuildDir>$(RepoRoot)build\</BrandBuildDir>
     <BrandDistDir>$(RepoRoot)dist\</BrandDistDir>
     <BrandThirdPartyDir>$(RepoRoot)dependencies\</BrandThirdPartyDir>

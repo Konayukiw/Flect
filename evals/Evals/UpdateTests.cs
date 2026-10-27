@@ -46,6 +46,10 @@ public sealed class UpdateTests
     [Theory]
     [InlineData("1.0.0", "1.0")]
     [InlineData("1.0.1", "1.0.1")]
+    [InlineData("1.2.0", "1.2")]
+    [InlineData("1.2.0.0", "1.2")]
+    [InlineData("1.2.1", "1.2.1")]
+    [InlineData("1.2.0.1", "1.2.0.1")]
     [InlineData("1.2.3.4", "1.2.3.4")]
     public void FormatsVersionsWithoutEmptyComponents(string input, string expected)
     {
