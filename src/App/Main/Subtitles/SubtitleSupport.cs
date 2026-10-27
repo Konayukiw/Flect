@@ -80,7 +80,7 @@ internal static class SubtitleSupport
 
         progress.Info(Loc.T("msg.subtitlesInstallingDeps"));
         var install = await PythonHost.RunProcessAsync(EnvPython,
-            ["-m", "pip", "install", "--quiet", "--disable-pip-version-check", "faster-whisper"], token).ConfigureAwait(false);
+            ["-m", "pip", "install", "--quiet", "--disable-pip-version-check", "faster-whisper", "av>=11,<19"], token).ConfigureAwait(false);
         if (install.ExitCode != 0)
             throw new InvalidOperationException($"{Loc.T("msg.subtitlesInstallFailed")}: {install.Error}");
 
@@ -132,7 +132,7 @@ internal static class SubtitleSupport
     private static async Task<bool> CanImportAsync(CancellationToken token)
     {
         var r = await PythonHost.RunProcessAsync(EnvPython,
-            ["-c", "import faster_whisper; print('ok')"], token).ConfigureAwait(false);
+            ["-c", "import av, faster_whisper; print('ok' if int(av.__version__.split('.')[0]) < 19 else 'no')"], token).ConfigureAwait(false);
         return r.ExitCode == 0 && r.Output.Contains("ok");
     }
 
