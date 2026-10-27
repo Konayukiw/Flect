@@ -6,9 +6,9 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const applyTheme = (th) => { document.documentElement.dataset.theme = th; };
 try {
   const saved = localStorage.getItem("flect-theme");
-  applyTheme(saved === "light" || saved === "dark" ? saved : "dark");
+  applyTheme(saved === "light" || saved === "dark" ? saved : "light");
   $("#themeToggle").addEventListener("click", () => {
-    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    const next = document.documentElement.dataset.theme === "dark" ? "light" : "light";
     applyTheme(next);
     try { localStorage.setItem("flect-theme", next); } catch {}
   });
