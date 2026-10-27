@@ -11,14 +11,14 @@ const I18N = {
     "nav.features": "Features",
     "nav.install": "Install",
     "nav.faq": "FAQ",
-    "nav.gallery": "Gallery",
     "hero.kicker": "Works on Windows 10 / 11",
     "hero.title": `One right <br class="sp-only">click for<br><span class="grad">Everything</span>`,
+    "grad.words": ["Everything", "Conversion", "Compression", "Resizing", "OCR", "Deduplication", "PDF Merging", "Chroma Key", "Decompiling"],
     "hero.lead": `No more hunting for converter websites in your browser, or squeezing videos in a dedicated editor.<br>Just right-click a file in Explorer to convert, compress, resize, run OCR, or remove duplicates...<br>Every task finishes <strong>right inside Explorer</strong>.`,
     "hero.btn.download": "Download the Installer",
-    "hero.btn.demo": "Try the Demo",
     "stat.menuItems": "Menu items",
-    "stat.server": "Server uploads",
+    "stat.stars": "GitHub Stars",
+    "stat.downloads": "Total downloads",
     "demo.title": "Try the Demo",
     "demo.desc": "Right-click a file or folder on this desktop and open Flect from the menu.<br>To rename, select an item and press F2, or click its name once more.",
     "desk.title": "Desktop",
@@ -41,40 +41,40 @@ const I18N = {
     "features.desc": "For every file type, only the operations it actually needs show up in the right-click menu.",
     "feat.img.badge": "Image",
     "feat.img.title": "Images: From Resizing to Background Removal",
-    "feat.img.1": "Resize - by ratio or exact pixels, with preset sizes selectable in one click from the menu.",
-    "feat.img.2": "Compress - down to a target size while keeping quality as high as possible.",
-    "feat.img.3": "Rotate - to any angle. Corners become transparent, or are filled with a chosen color for formats without alpha.",
-    "feat.img.4": "Convert - between PNG, JPG, WEBP, HEIC, ICO, GIF, and SVG.",
-    "feat.img.5": "OCR - extract text from images, then save or copy it.",
-    "feat.img.6": "Metadata removal - strip EXIF, GPS location, comments, and camera info for safe sharing on social media.",
-    "feat.img.7": "Background removal - chroma-key out a single color such as a green screen.",
+    "feat.img.1": "<strong>Resize</strong> - by ratio or exact pixels, with preset sizes selectable in one click from the menu.",
+    "feat.img.2": "<strong>Compress</strong> - down to a target size while keeping quality as high as possible.",
+    "feat.img.3": "<strong>Rotate</strong> - to any angle. Corners become transparent, or are filled with a chosen color for formats without alpha.",
+    "feat.img.4": "<strong>Convert</strong> - between PNG, JPG, WEBP, HEIC, ICO, GIF, and SVG.",
+    "feat.img.5": "<strong>OCR</strong> - extract text from images, then save or copy it.",
+    "feat.img.6": "<strong>Metadata removal</strong> - strip EXIF, GPS location, comments, and camera info for safe sharing on social media.",
+    "feat.img.7": "<strong>Background removal</strong> - chroma-key out a single color such as a green screen.",
     "feat.img.cap": "Right-click an image → Flect menu",
     "feat.video.badge": "Video & Audio",
     "feat.video.title": "Video: Cuts Without Re-encoding",
-    "feat.video.1": "Trim - the cut finishes the moment you click. No re-encoding by default, so exports are fast.",
-    "feat.video.2": "Thumbnail - export any single frame as a PNG or JPG image.",
-    "feat.video.3": "Compress - automatically adjust to a target size with minimal quality or FPS loss.",
-    "feat.video.4": "Resize / rotate - by ratio or exact pixels, with presets one click away in the menu.",
-    "feat.video.5": "Convert - between MP4, MOV, MKV, M4A, AVI, WEBM, FLV, and GIF.",
-    "feat.video.6": "Audio extraction - pull the audio track out of any video.",
-    "feat.video.7": "Quality and speed - switch codecs (H.264 / H.265 / VP9 / AV1) and hardware encoding (NVENC / Quick Sync / AMF) in settings.",
+    "feat.video.1": "<strong>Trim</strong> - the cut finishes the moment you click. No re-encoding by default, so exports are fast.",
+    "feat.video.2": "<strong>Thumbnail</strong> - export any single frame as a PNG or JPG image.",
+    "feat.video.3": "<strong>Compress</strong> - automatically adjust to a target size with minimal quality or FPS loss.",
+    "feat.video.4": "<strong>Resize / rotate</strong> - by ratio or exact pixels, with presets one click away in the menu.",
+    "feat.video.5": "<strong>Convert</strong> - between MP4, MOV, MKV, M4A, AVI, WEBM, FLV, and GIF.",
+    "feat.video.6": "<strong>Audio extraction</strong> - pull the audio track out of any video.",
+    "feat.video.7": "<strong>Quality and speed</strong> - switch codecs (H.264 / H.265 / VP9 / AV1) and hardware encoding (NVENC / Quick Sync / AMF) in settings.",
     "feat.video.cap": "Process a single clip or thousands of audio files in one go",
     "feat.folder.badge": "Folder",
     "feat.folder.title": "Folders: All the Dirty Work of Tidying Up",
-    "feat.folder.1": "Duplicate removal - delete files that match by size, hash, and bytes in bulk.",
-    "feat.folder.2": "Empty folder cleanup - remove accumulated empty folders with one click.",
-    "feat.folder.3": "Tree view - visualize the folder structure to make organizing easier.",
-    "feat.folder.4": "Batch rename - rename all files inside a folder at once.",
-    "feat.folder.5": "Analyze - visualize which files take up space and where duplicates hide.",
-    "feat.folder.6": "Compress - bundle the folder into a ZIP / 7z / TAR / tar.gz archive.",
-    "feat.folder.7": "Extract - unpack ZIP / 7z / TAR / tar.gz / RAR into a new folder.",
+    "feat.folder.1": "<strong>Duplicate removal</strong> - delete files that match by size, hash, and bytes in bulk.",
+    "feat.folder.2": "<strong>Empty folder cleanup</strong> - remove accumulated empty folders with one click.",
+    "feat.folder.3": "<strong>Tree view</strong> - visualize the folder structure to make organizing easier.",
+    "feat.folder.4": "<strong>Batch rename</strong> - rename all files inside a folder at once.",
+    "feat.folder.5": "<strong>Analyze</strong> - visualize which files take up space and where duplicates hide.",
+    "feat.folder.6": "<strong>Compress</strong> - bundle the folder into a ZIP / 7z / TAR / tar.gz archive.",
+    "feat.folder.7": "<strong>Extract</strong> - unpack ZIP / 7z / TAR / tar.gz / RAR into a new folder.",
     "feat.folder.cap": "Right-click a folder → Flect menu",
     "feat.text.badge": "Text & Documents",
     "feat.text.title": "Text: CSV, JSON, PDF",
-    "feat.text.1": "PDF - preview, merge multiple files, and export to PNG / JPG / TXT.",
-    "feat.text.2": "Text - convert file types, change character encodings (UTF-8 / UTF-16 / Shift_JIS...), and switch line endings (CRLF / LF).",
-    "feat.text.3": "JSON - beautify and reorder keys with rules.",
-    "feat.text.4": "JAR - decompile in one click and export the source code to a new folder.",
+    "feat.text.1": "<strong>PDF</strong> - preview, merge multiple files, and export to PNG / JPG / TXT.",
+    "feat.text.2": "<strong>Text</strong> - convert file types, change character encodings (UTF-8 / UTF-16 / Shift_JIS...), and switch line endings (CRLF / LF).",
+    "feat.text.3": "<strong>JSON</strong> - beautify and reorder keys with rules.",
+    "feat.text.4": "<strong>JAR</strong> - decompile in one click and export the source code to a new folder.",
     "feat.text.cap": "Preview, merge, and export PDFs with ease - no Adobe Acrobat Reader required.",
     "table.caption": "Supported conversions (examples)",
     "table.in": "Input",
@@ -99,14 +99,16 @@ const I18N = {
     "arch.proc.t": "Processing",
     "arch.proc.d": "Handles the real work - conversion, compression, analysis - and settings management. Invoked from the shell extension via a launcher, it reports progress and results back.",
     "arch.proc.1": "FFmpeg, ImageMagick, PDFium, and more bundled",
-    "arch.proc.2": "Shows a progress window; on failure or cancel, aborts and automatically deletes files being created",
+    "arch.proc.2": "Shows a progress window. On failure or cancel, it aborts and automatically deletes files being created",
     "arch.proc.3": "Settings are stored in a JSON file under <code>%APPDATA%</code>",
     "install.title": "Installs in 3 Steps",
     "install.desc": "Download, run, and start right-clicking.",
+    "install.tab.installer": "Installer (.exe)",
+    "install.tab.ps": "PowerShell (CLI)",
     "step.1t": "Get the Installer",
     "step.1d": `Download the latest <code>Flect-Setup.exe</code> from <a class="link" href="https://github.com/Konayukiw/Flect/releases/latest">Releases</a>. If <code>.NET 10 Desktop Runtime</code> is missing, the setup detects it and guides you through.`,
     "step.2t": "Run the Setup",
-    "step.2d": "Just run the downloaded installer - every conversion and analysis engine is bundled with it. Explorer may restart during setup; that's normal.",
+    "step.2d": "Just run the downloaded installer - every conversion and analysis engine is bundled with it. Explorer may restart during setup, which is normal.",
     "step.3t": "Try a Right Click",
     "step.3d": "Right-click a file and open \"Show more options\" to find the Flect menu. Tune menu items and compression presets in the settings app.",
     "step.3note": `Run <code>reg add "HKCU\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32" /f /ve</code> in Command Prompt and restart Explorer to show Flect in the first-level context menu. To undo, delete the registry key and restart.`,
@@ -259,9 +261,7 @@ const I18N = {
     "modal.close": "Close",
     "modal.p1": "This desktop is a <strong>demo</strong> that recreates how Flect works. It isn't the real context menu, so item names and behavior may differ.",
     "modal.p2": "Flect only shows items that fit the selected file type in Explorer's menu. Add or hide menu items under \"General → Right-click menu items\" in the settings app.",
-    "modal.tip": "Right-click an empty area of the desktop again to reopen this dialog.",
-    "grad.words": ["Everything", "Conversion", "Compression", "Sorting", "PDFs", "OCR"],
-    "grad.glyphs": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+*#"
+    "modal.tip": "Right-click an empty area of the desktop again to reopen this dialog."
   },
 
   ja: {
@@ -276,14 +276,14 @@ const I18N = {
     "nav.features": "機能",
     "nav.install": "導入",
     "nav.faq": "FAQ",
-    "nav.gallery": "ギャラリー",
     "hero.kicker": "Windows 10 / 11 対応",
     "hero.title": `右クリックで<br class="sp-only">完結する<br><span class="grad">万能ツール</span>`,
+    "grad.words": ["万能ツール", "画像変換", "動画圧縮", "リサイズ", "OCR抽出", "重複削除", "PDF結合", "背景透過", "逆コンパイル"],
     "hero.lead": `ブラウザで変換サイトを探すのも、動画編集ソフトで圧縮するのも、もう終わり。<br>ファイルを右クリックするだけで、変換・圧縮・リサイズ・OCR・重複削除...<br>すべての作業が<strong>エクスプローラーだけで</strong>完結します。`,
     "hero.btn.download": "インストーラーをダウンロード",
-    "hero.btn.demo": "デモを試す",
     "stat.menuItems": "メニュー項目",
-    "stat.server": "サーバー送信",
+    "stat.stars": "GitHub スター",
+    "stat.downloads": "累計ダウンロード",
     "demo.title": "デモを試す",
     "demo.desc": "デスクトップのファイルやフォルダを<em>右クリック</em>して、メニューから Flect を開いてみてください。<br>選択して F2 キーを押すか、選択中の名前をもう一度クリックすると名前を変更できます。",
     "desk.title": "デスクトップ",
@@ -368,6 +368,8 @@ const I18N = {
     "arch.proc.3": "設定は <code>%APPDATA%</code> 配下の JSON ファイルで管理されています。",
     "install.title": "インストールは 3 ステップ",
     "install.desc": "ダウンロードして、実行して、あとは右クリックするだけ。",
+    "install.tab.installer": "インストーラー (.exe)",
+    "install.tab.ps": "PowerShell (CLI)",
     "step.1t": "インストーラーを入手",
     "step.1d": `<a class="link" href="https://github.com/Konayukiw/Flect/releases/latest">Releases</a> から最新の <code>Flect-Setup.exe</code> をダウンロードします。<code>.NET 10 Desktop Runtime</code> がインストールされていない場合、セットアップが自動で検出して案内します。`,
     "step.2t": "セットアップを実行",
@@ -524,9 +526,7 @@ const I18N = {
     "modal.close": "閉じる",
     "modal.p1": "このデスクトップは、Flect の動作イメージを再現した<strong>デモ</strong>です。実物の右クリックメニューではないため、項目名や挙動は実際のものと異なることがあります。",
     "modal.p2": "Flect は、選択したファイルの種類に応じた項目だけがエクスプローラーのメニューに表示されます。メニュー項目の追加・非表示は設定アプリの「一般 → 右クリックメニューの項目」から変更できます。",
-    "modal.tip": "デスクトップの何もない場所をもう一度右クリックすると、この項目を再び開けます。",
-    "grad.words": ["万能ツール", "画像変換", "動画圧縮", "重複削除", "PDF結合", "OCR"],
-    "grad.glyphs": "アイウエオカキクケコサシスセソタチツテトナニヌネノ01+*#"
+    "modal.tip": "デスクトップの何もない場所をもう一度右クリックすると、この項目を再び開けます。"
   },
 
   zh: {
@@ -541,14 +541,14 @@ const I18N = {
     "nav.features": "功能",
     "nav.install": "安装",
     "nav.faq": "FAQ",
-    "nav.gallery": "图库",
     "hero.kicker": "支持 Windows 10 / 11",
     "hero.title": `一次右键<br class="sp-only">搞定一切<br><span class="grad">全能工具</span>`,
+    "grad.words": ["全能工具", "格式转换", "视频压缩", "尺寸调整", "OCR 识别", "重复清理", "PDF 合并", "背景抠图", "反编译"],
     "hero.lead": `再也不用在浏览器里寻找转换网站，也不用打开视频软件手动压缩。<br>只需在资源管理器中右键点击文件，转换、压缩、调整大小、OCR、去重……<br>所有操作都<strong>在资源管理器中</strong>完成。`,
     "hero.btn.download": "下载安装程序",
-    "hero.btn.demo": "试试演示",
     "stat.menuItems": "菜单项",
-    "stat.server": "服务器上传",
+    "stat.stars": "GitHub 星标",
+    "stat.downloads": "累计下载",
     "demo.title": "试试演示",
     "demo.desc": "在这个桌面上<em>右键点击</em>文件或文件夹，然后从菜单中打开 Flect。<br>选中后按 F2，或再次单击已选中的名称，即可重命名。",
     "desk.title": "桌面",
@@ -573,7 +573,7 @@ const I18N = {
     "feat.img.title": "图片：从调整大小到抠图",
     "feat.img.1": "<strong>调整大小</strong> - 支持按比例或按像素精确指定，可从菜单一键选择预设尺寸。",
     "feat.img.2": "<strong>压缩</strong> - 压缩到指定大小以内，并尽可能保持画质。",
-    "feat.img.3": "<strong>旋转</strong> - 支持任意角度，四角自动透明；不支持透明度的格式会用指定颜色填充。",
+    "feat.img.3": "<strong>旋转</strong> - 支持任意角度，四角自动透明，不支持透明度的格式会用指定颜色填充。",
     "feat.img.4": "<strong>转换</strong> - 支持 PNG / JPG / WEBP / HEIC / ICO / GIF / SVG 之间互转。",
     "feat.img.5": "<strong>OCR</strong> - 从图片中识别文字，可保存或复制。",
     "feat.img.6": "<strong>删除元数据</strong> - 清除 EXIF、GPS 位置、注释和相机信息，放心分享到社交平台。",
@@ -633,6 +633,8 @@ const I18N = {
     "arch.proc.3": "设置保存在 <code>%APPDATA%</code> 下的 JSON 文件中",
     "install.title": "3 步完成安装",
     "install.desc": "下载、运行，然后就可以右键使用了。",
+    "install.tab.installer": "安装程序 (.exe)",
+    "install.tab.ps": "PowerShell (CLI)",
     "step.1t": "获取安装程序",
     "step.1d": `从 <a class="link" href="https://github.com/Konayukiw/Flect/releases/latest">Releases</a> 下载最新的 <code>Flect-Setup.exe</code>。若未安装 <code>.NET 10 Desktop Runtime</code>，安装程序会自动检测并引导安装。`,
     "step.2t": "运行安装程序",
@@ -789,9 +791,7 @@ const I18N = {
     "modal.close": "关闭",
     "modal.p1": "这个桌面是模拟 Flect 工作方式的<strong>演示</strong>，并非真正的右键菜单，项目名称和实际行为可能有所不同。",
     "modal.p2": "Flect 只会根据所选文件类型在资源管理器菜单中显示对应项目。可在设置应用的“常规 → 右键菜单项”中添加或隐藏菜单项。",
-    "modal.tip": "再次右键点击桌面空白处，即可重新打开此对话框。",
-    "grad.words": ["全能工具", "图片转换", "视频压缩", "去重清理", "PDF 合并", "OCR"],
-    "grad.glyphs": "压缩转换图片视频处理工具文件0123456789+*#"
+    "modal.tip": "再次右键点击桌面空白处，即可重新打开此对话框。"
   }
 };
 
@@ -835,8 +835,8 @@ const setLang = (lang, save = true) => {
   const sel = document.getElementById("langSelect");
   if (sel) sel.value = lang;
 
-  if (typeof window.restartGrad === "function") window.restartGrad();
-  if (save) { try { localStorage.setItem("flect-lang", lang); } catch { /* ignore */ } }
+  if (save) { try { localStorage.setItem("flect-lang", lang); } catch {} }
+  dispatchEvent(new CustomEvent("langchange"));
 };
 
 const detectLang = () => {
@@ -850,7 +850,7 @@ const detectLang = () => {
 
 (() => {
   let saved = null;
-  try { saved = localStorage.getItem("flect-lang"); } catch { /* ignore */ }
+  try { saved = localStorage.getItem("flect-lang"); } catch {}
   setLang(saved && Object.hasOwn(I18N, saved) ? saved : detectLang(), false);
   const sel = document.getElementById("langSelect");
   if (sel) sel.addEventListener("change", () => setLang(sel.value));

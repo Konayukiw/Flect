@@ -1,9 +1,3 @@
-let anime = null;
-try {
-  const m = await import("animejs");
-  anime = m.default || m;
-} catch { anime = null; }
-
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
@@ -16,9 +10,9 @@ try {
   $("#themeToggle").addEventListener("click", () => {
     const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
     applyTheme(next);
-    try { localStorage.setItem("flect-theme", next); } catch { /* ignore */ }
+    try { localStorage.setItem("flect-theme", next); } catch {}
   });
-} catch {/* ignore */}
+} catch {}
 
 try {
   const { hostname, pathname, protocol } = location;
@@ -27,29 +21,37 @@ try {
     badge.textContent = "under development";
     badge.classList.add("show");
   }
-} catch { /* ignore */ }
+} catch {}
 
-const cursor = $("#cursor");
-const finePointer = matchMedia("(min-width: 1080px) and (pointer: fine)");
-let cursorRaf = 0;
-if (cursor) {
-  addEventListener("pointermove", (e) => {
-    if (!finePointer.matches) return;
-    cancelAnimationFrame(cursorRaf);
-    cursorRaf = requestAnimationFrame(() => {
-      cursor.style.transform = `translate(${e.clientX - cursor.offsetWidth / 2}px, ${e.clientY - cursor.offsetHeight / 2}px)`;
-    });
-  }, { passive: true });
+const island = $("#dynamicIsland");
+const navLinks = $$(".nav-links a");
+const trackedSections = navLinks.map((a) => $(a.getAttribute("href"))).filter(Boolean);
+
+const syncIsland = () => {
+  if (!island) return;
+  const scrolled = scrollY > 24;
+  island.classList.toggle("compact", scrolled);
+  if (!scrolled) island.classList.remove("expanded");
+
+  let currentId = "";
+  const probe = scrollY + innerHeight * 0.28;
+  for (const sec of trackedSections) {
+    if (sec.offsetTop <= probe) currentId = `#${sec.id}`;
+  }
+  for (const link of navLinks) {
+    link.classList.toggle("active", link.getAttribute("href") === currentId);
+  }
+};
+
+addEventListener("scroll", syncIsland, { passive: true });
+addEventListener("resize", syncIsland);
+syncIsland();
+
+if (island) {
+  island.addEventListener("pointerleave", () => {
+    island.classList.remove("expanded");
+  });
 }
-
-let lastY = 0;
-addEventListener("scroll", () => {
-  const head = $(".site-head");
-  if (!head) return;
-  const y = scrollY;
-  head.classList.toggle("hidden", y > 520 && y > lastY);
-  lastY = y;
-}, { passive: true });
 
 const revealEls = $$(".reveal");
 if ("IntersectionObserver" in window) {
@@ -57,7 +59,7 @@ if ("IntersectionObserver" in window) {
     for (const e of entries) {
       if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
     }
-  }, { threshold: 0.12 });
+  }, { threshold: 0.1 });
   revealEls.forEach((el) => io.observe(el));
 } else {
   revealEls.forEach((el) => el.classList.add("in"));
@@ -631,7 +633,7 @@ const treeWin = (sel) => {
     try {
       await navigator.clipboard.writeText(text);
       copy.textContent = t("prog.copied");
-    } catch { /* ignore */ }
+    } catch {}
   });
   close.addEventListener("click", win.close);
 };
@@ -1292,26 +1294,6 @@ const closeModal = () => {
 
 $("#year").textContent = new Date().getFullYear();
 
-if (anime && finePointer) {
-  const ring = document.querySelector(".brand-mark .mark-ring");
-  const a = document.querySelector(".brand-mark .mark-a");
-  if (a) {
-    const tl = anime.timeline({ autoplay: false });
-    if (ring) tl.add({ targets: ring, scale: [0, 1.25, 1], opacity: [0, 1, 0], duration: 1400, easing: "easeOutCubic" });
-    tl.add({ targets: a, rotate: [0, 360], duration: 900, easing: "easeInOutBack" });
-    tl.play();
-  }
-}
-
-let confetti = null;
-try {
-  const cm = await import("canvas-confetti");
-  confetti = cm.default || cm;
-} catch { confetti = null; }
-
-const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
-const introFresh = performance.now() < 3500;
-
 const progressEl = $("#progress");
 if (progressEl) {
   const setProgress = () => {
@@ -1323,193 +1305,6 @@ if (progressEl) {
   addEventListener("resize", setProgress);
   setProgress();
 }
-
-const particlesEl = $("#particles");
-if (particlesEl && !reducedMotion) {
-  const pctx = particlesEl.getContext("2d");
-  const hexRgb = (hex) => {
-    const v = hex.replace("#", "");
-    const n = v.length === 3 ? v.split("").map((c) => c + c).join("") : v;
-    return [parseInt(n.slice(0, 2), 16), parseInt(n.slice(2, 4), 16), parseInt(n.slice(4, 6), 16)];
-  };
-  let cA = [138, 180, 255];
-  let cB = [196, 181, 253];
-  const readColors = () => {
-    try {
-      const cs = getComputedStyle(document.documentElement);
-      cA = hexRgb(cs.getPropertyValue("--acc").trim());
-      cB = hexRgb(cs.getPropertyValue("--acc-2").trim());
-    } catch {}
-  };
-  readColors();
-  new MutationObserver(readColors).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-
-  let pw = 0;
-  let ph = 0;
-  let dots = [];
-  const mouse = { x: -1e4, y: -1e4 };
-  const resize = () => {
-    const dpr = Math.min(devicePixelRatio || 1, 2);
-    pw = innerWidth;
-    ph = innerHeight;
-    particlesEl.width = pw * dpr;
-    particlesEl.height = ph * dpr;
-    pctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const count = clamp(Math.round((pw * ph) / 16000), 34, 110);
-    dots = Array.from({ length: count }, () => ({
-      x: Math.random() * pw,
-      y: Math.random() * ph,
-      vx: (Math.random() - 0.5) * 0.34,
-      vy: (Math.random() - 0.5) * 0.34,
-      r: Math.random() * 1.5 + 0.7,
-      c: Math.random() > 0.55 ? 1 : 0,
-    }));
-  };
-  resize();
-  let rzT = 0;
-  addEventListener("resize", () => { clearTimeout(rzT); rzT = setTimeout(resize, 160); });
-
-  let running = true;
-  const frame = () => {
-    const light = document.documentElement.dataset.theme === "light";
-    const link = 120;
-    pctx.clearRect(0, 0, pw, ph);
-    for (const d of dots) {
-      d.x += d.vx;
-      d.y += d.vy;
-      const dx = d.x - mouse.x;
-      const dy = d.y - mouse.y;
-      const md = Math.hypot(dx, dy);
-      if (md < 130 && md > 0.01) { d.x += (dx / md) * 0.7; d.y += (dy / md) * 0.7; }
-      if (d.x < -24) d.x = pw + 24; else if (d.x > pw + 24) d.x = -24;
-      if (d.y < -24) d.y = ph + 24; else if (d.y > ph + 24) d.y = -24;
-    }
-    pctx.lineWidth = 1;
-    for (let i = 0; i < dots.length; i++) {
-      const a = dots[i];
-      for (let j = i + 1; j < dots.length; j++) {
-        const b = dots[j];
-        const ddx = a.x - b.x;
-        const ddy = a.y - b.y;
-        const d2 = ddx * ddx + ddy * ddy;
-        if (d2 < link * link) {
-          const al = (1 - Math.sqrt(d2) / link) * (light ? 0.22 : 0.13);
-          pctx.strokeStyle = `rgba(${cA[0]},${cA[1]},${cA[2]},${al.toFixed(3)})`;
-          pctx.beginPath();
-          pctx.moveTo(a.x, a.y);
-          pctx.lineTo(b.x, b.y);
-          pctx.stroke();
-        }
-      }
-      const mdx = a.x - mouse.x;
-      const mdy = a.y - mouse.y;
-      const mdist = Math.hypot(mdx, mdy);
-      if (mdist < 160) {
-        const al = (1 - mdist / 160) * (light ? 0.32 : 0.24);
-        pctx.strokeStyle = `rgba(${cB[0]},${cB[1]},${cB[2]},${al.toFixed(3)})`;
-        pctx.beginPath();
-        pctx.moveTo(a.x, a.y);
-        pctx.lineTo(mouse.x, mouse.y);
-        pctx.stroke();
-      }
-      const col = a.c ? cB : cA;
-      pctx.fillStyle = `rgba(${col[0]},${col[1]},${col[2]},${light ? 0.45 : 0.5})`;
-      pctx.beginPath();
-      pctx.arc(a.x, a.y, a.r, 0, Math.PI * 2);
-      pctx.fill();
-    }
-    if (running) requestAnimationFrame(frame);
-  };
-  requestAnimationFrame(frame);
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) running = false;
-    else if (!running) { running = true; requestAnimationFrame(frame); }
-  });
-  addEventListener("pointermove", (e) => { mouse.x = e.clientX; mouse.y = e.clientY; }, { passive: true });
-  document.addEventListener("mouseleave", () => { mouse.x = -1e4; mouse.y = -1e4; });
-}
-
-const glowEls = $$(".glow");
-if (glowEls.length && !reducedMotion) {
-  let tx = 0, ty = 0, cx = 0, cy = 0;
-  addEventListener("pointermove", (e) => {
-    tx = e.clientX / innerWidth - 0.5;
-    ty = e.clientY / innerHeight - 0.5;
-  }, { passive: true });
-  const loop = () => {
-    cx += (tx - cx) * 0.045;
-    cy += (ty - cy) * 0.045;
-    glowEls.forEach((g, i) => {
-      const dir = i === 0 ? 1 : -1;
-      g.style.transform = `translate(${(cx * 70 * dir).toFixed(1)}px, ${(cy * 46 * dir).toFixed(1)}px)`;
-    });
-    requestAnimationFrame(loop);
-  };
-  requestAnimationFrame(loop);
-}
-
-if (cursor) {
-  addEventListener("pointerover", (e) => {
-    const t = e.target;
-    cursor.classList.toggle("lit", !!(t && t.closest && t.closest("a, button, summary, input, .icon")));
-  }, { passive: true });
-}
-
-if (!reducedMotion && finePointer.matches) {
-  for (const card of $$(".pillar, .arch-card, .code-card, .steps li")) {
-    card.classList.add("tilt");
-    let raf = 0;
-    card.addEventListener("pointerenter", () => card.classList.add("tilting"));
-    card.addEventListener("pointermove", (e) => {
-      const r = card.getBoundingClientRect();
-      const px = (e.clientX - r.left) / r.width;
-      const py = (e.clientY - r.top) / r.height;
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        card.style.setProperty("--mx", `${(px * 100).toFixed(1)}%`);
-        card.style.setProperty("--my", `${(py * 100).toFixed(1)}%`);
-        card.style.setProperty("--rx", `${((0.5 - py) * 4.5).toFixed(2)}deg`);
-        card.style.setProperty("--ry", `${((px - 0.5) * 4.5).toFixed(2)}deg`);
-      });
-    });
-    card.addEventListener("pointerleave", () => {
-      card.classList.remove("tilting");
-      cancelAnimationFrame(raf);
-      card.style.setProperty("--rx", "0deg");
-      card.style.setProperty("--ry", "0deg");
-    });
-  }
-}
-
-if (anime && !reducedMotion && finePointer.matches) {
-  for (const btn of $$(".btn")) {
-    btn.style.transition = "box-shadow 0.2s, background 0.3s, border-color 0.3s";
-    btn.addEventListener("pointerenter", () => anime.remove(btn));
-    btn.addEventListener("pointermove", (e) => {
-      const r = btn.getBoundingClientRect();
-      anime.set(btn, { translateX: (e.clientX - (r.left + r.width / 2)) * 0.16, translateY: (e.clientY - (r.top + r.height / 2)) * 0.24 });
-    });
-    btn.addEventListener("pointerleave", () => {
-      anime({ targets: btn, translateX: 0, translateY: 0, duration: 520, easing: "spring(1, 78, 12, 0)" });
-    });
-  }
-}
-
-const boom = (x, y, big) => {
-  if (!confetti || reducedMotion) return;
-  confetti({
-    particleCount: big ? 80 : 26,
-    spread: big ? 72 : 55,
-    startVelocity: big ? 34 : 20,
-    gravity: 0.9,
-    scalar: big ? 0.9 : 0.7,
-    ticks: 130,
-    colors: ["#8ab4ff", "#c4b5fd", "#6ee7d8", "#ffffff"],
-    origin: { x: x / innerWidth, y: y / innerHeight },
-    zIndex: 3000,
-    disableForReducedMotion: true,
-  });
-};
 
 for (const btn of $$(".copy-btn")) {
   let timer = 0;
@@ -1538,122 +1333,334 @@ for (const btn of $$(".copy-btn")) {
   });
 }
 
-for (const btn of $$(".btn-primary")) {
-  btn.addEventListener("click", (e) => {
-    const r = btn.getBoundingClientRect();
-    boom(e.clientX || (r.left + r.width / 2), e.clientY || (r.top + r.height / 2), true);
-  });
-}
+const hvTabsWrap = $("#heroPreviewTabs");
+if (hvTabsWrap) {
+  const hvBadge = $("#hvBadge");
+  const hvFileName = $("#hvFileName");
+  const hvFileSize = $("#hvFileSize");
+  const hvSubMenu = $("#hvSubMenu");
+  const hvOutCode = $("#hvOutCode");
+  const hvButtons = $$("[data-hv]", hvTabsWrap);
+  const hvOrder = ["image", "video", "folder", "pdf"];
+  let hvCurrent = "image";
+  let hvTimer = 0;
 
-const heroH1 = $(".hero h1");
-if (heroH1 && !reducedMotion) {
-  const splitNode = (node) => {
-    if (node.nodeType === Node.TEXT_NODE) {
-      const frag = document.createDocumentFragment();
-      for (const ch of node.textContent) {
-        if (!ch.trim()) { frag.append(ch); continue; }
-        const s = document.createElement("span");
-        s.className = "ch";
-        s.textContent = ch;
-        frag.append(s);
-      }
-      node.replaceWith(frag);
-    } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== "BR" && !node.classList.contains("grad")) {
-      [...node.childNodes].forEach(splitNode);
+  const hvConfigs = {
+    image: () => ({
+      badge: "PNG",
+      name: "Key_Visual_4K.png",
+      size: "3840 × 2160 · 12.4 MB",
+      out: "Key_Visual_4K.webp · 1.1 MB (-91%)",
+      items: [
+        [t("menu.resize"), true, false],
+        [t("menu.compress"), true, false],
+        [t("menu.convert"), true, true],
+        [t("menu.ocr"), false, false],
+        [t("menu.strip"), false, false],
+        [t("menu.chromakey"), false, false],
+      ],
+    }),
+    video: () => ({
+      badge: "MP4",
+      name: "Showcase_Reel.mp4",
+      size: "60 fps · 420 MB",
+      out: "Showcase_Reel_24MB.mp4 · 23.8 MB (-94%)",
+      items: [
+        [t("menu.resize"), true, false],
+        [t("menu.compress"), true, true],
+        [t("menu.trim"), false, false],
+        [t("menu.convert"), true, false],
+        [t("menu.subtitles"), true, false],
+        [t("menu.extractAudio"), true, false],
+      ],
+    }),
+    folder: () => ({
+      badge: "DIR",
+      name: "Raw_Photos_2026",
+      size: "418 items · 3.2 GB",
+      out: "34 duplicates & 12 empty folders removed",
+      items: [
+        [t("menu.dup"), false, true],
+        [t("menu.empty"), false, false],
+        [t("menu.tree"), false, false],
+        [t("menu.rename"), false, false],
+        [t("menu.analyze"), false, false],
+        [t("menu.compress"), true, false],
+      ],
+    }),
+    pdf: () => ({
+      badge: "PDF",
+      name: "Architecture_Spec.pdf",
+      size: "48 pages · 18.6 MB",
+      out: "Architecture_Spec_p01-48.png · 48 pages exported",
+      items: [
+        [t("menu.convert"), true, true],
+        [t("menu.merge"), false, false],
+        [t("menu.compress"), true, false],
+        [t("menu.ocr"), false, false],
+      ],
+    }),
+  };
+
+  const renderHv = (kind) => {
+    hvCurrent = kind;
+    const cfg = (hvConfigs[kind] || hvConfigs.image)();
+    for (const b of hvButtons) b.classList.toggle("active", b.dataset.hv === kind);
+    if (hvBadge) hvBadge.textContent = cfg.badge;
+    if (hvFileName) hvFileName.textContent = cfg.name;
+    if (hvFileSize) hvFileSize.textContent = cfg.size;
+    if (hvOutCode) hvOutCode.textContent = cfg.out;
+    if (hvSubMenu) {
+      hvSubMenu.replaceChildren(...cfg.items.map(([label, hasSub, isAct]) => {
+        const row = document.createElement("div");
+        row.className = `hv-row${isAct ? " active-sub" : ""}`;
+        const span = document.createElement("span");
+        span.textContent = label;
+        row.append(span);
+        if (hasSub) {
+          const chev = document.createElement("i");
+          chev.className = "hv-chev";
+          chev.textContent = "›";
+          row.append(chev);
+        }
+        return row;
+      }));
     }
   };
-  [...heroH1.childNodes].forEach(splitNode);
-  if (anime && introFresh) {
-    const chs = $$(".ch", heroH1);
-    const grad = $(".grad", heroH1);
-    if (grad) chs.push(grad);
-    anime.set(".hero-kicker, .hero .lead, .hero-actions, .hero-stats", { opacity: 0, translateY: 14 });
-    anime.set(chs, { opacity: 0, translateY: "0.55em", rotate: "-7deg" });
-    const tl = anime.timeline({ easing: "easeOutExpo" });
-    tl.add({ targets: ".hero-kicker", opacity: [0, 1], translateY: [14, 0], duration: 620 })
-      .add({ targets: chs, opacity: [0, 1], translateY: ["0.55em", 0], rotate: ["-7deg", 0], duration: 720, delay: anime.stagger(26) }, "-=340")
-      .add({ targets: ".hero .lead", opacity: [0, 1], translateY: [14, 0], duration: 620 }, "-=380")
-      .add({ targets: ".hero-actions", opacity: [0, 1], translateY: [14, 0], duration: 620 }, "-=440")
-      .add({ targets: ".hero-stats", opacity: [0, 1], translateY: [14, 0], duration: 620 }, "-=440");
+
+  const startHvCycle = () => {
+    clearInterval(hvTimer);
+    hvTimer = setInterval(() => {
+      const nextIdx = (hvOrder.indexOf(hvCurrent) + 1) % hvOrder.length;
+      renderHv(hvOrder[nextIdx]);
+    }, 1500);
+  };
+
+  for (const btn of hvButtons) {
+    btn.addEventListener("click", () => {
+      renderHv(btn.dataset.hv);
+      startHvCycle();
+    });
+    btn.addEventListener("pointerenter", () => {
+      renderHv(btn.dataset.hv);
+      clearInterval(hvTimer);
+    });
+  }
+
+  const hvShell = hvTabsWrap.closest(".hv-shell");
+  if (hvShell) {
+    hvShell.addEventListener("pointerenter", () => clearInterval(hvTimer));
+    hvShell.addEventListener("pointerleave", startHvCycle);
+  }
+
+  addEventListener("langchange", () => renderHv(hvCurrent));
+  renderHv(hvCurrent);
+  startHvCycle();
+}
+
+(() => {
+  const heroTitle = $(".hero h1");
+  if (!heroTitle) return;
+  let slotTimer = 0;
+  let wordIndex = 0;
+  let paused = false;
+
+  const getWords = () => {
+    const list = t("grad.words");
+    return Array.isArray(list) && list.length ? list : ["Everything"];
+  };
+
+  const setupSlot = () => {
+    const grad = $(".grad", heroTitle);
+    if (!grad) return null;
+    const words = getWords();
+    wordIndex = 0;
+    grad.classList.add("slot-ready");
+    const item = document.createElement("span");
+    item.className = "grad-item";
+    item.textContent = words[0];
+    grad.replaceChildren(item);
+    return grad;
+  };
+
+  const stepWord = () => {
+    if (paused) return;
+    const grad = $(".grad", heroTitle);
+    if (!grad) return;
+    const words = getWords();
+    if (words.length < 2) return;
+    wordIndex = (wordIndex + 1) % words.length;
+    const current = $(".grad-item:not(.slide-out)", grad);
+    const incoming = document.createElement("span");
+    incoming.className = "grad-item slide-in";
+    incoming.textContent = words[wordIndex];
+    if (current) {
+      current.classList.remove("slide-in");
+      current.classList.add("slide-out");
+      setTimeout(() => current.remove(), 360);
+    }
+    grad.append(incoming);
+  };
+
+  const startSlot = () => {
+    clearInterval(slotTimer);
+    slotTimer = setInterval(stepWord, 1500);
+  };
+
+  heroTitle.addEventListener("pointerenter", () => {
+    paused = true;
+  });
+  heroTitle.addEventListener("pointerleave", () => {
+    paused = false;
+  });
+
+  addEventListener("langchange", () => {
+    setupSlot();
+    startSlot();
+  });
+
+  setupSlot();
+  startSlot();
+})();
+
+(() => {
+  const starsEl = $("#statStars");
+  const dlEl = $("#statDownloads");
+  if (!starsEl && !dlEl) return;
+
+  const fmtNum = (n) => new Intl.NumberFormat().format(n);
+  const applyStats = (stars, downloads) => {
+    if (starsEl && Number.isFinite(stars) && stars > 0) starsEl.textContent = fmtNum(stars);
+    if (dlEl && Number.isFinite(downloads) && downloads > 0) dlEl.textContent = fmtNum(downloads);
+  };
+
+  try {
+    const cached = JSON.parse(sessionStorage.getItem("flect-gh-stats") || "null");
+    if (cached && cached.ts && Date.now() - cached.ts < 600000) {
+      applyStats(cached.stars, cached.downloads);
+      return;
+    }
+  } catch {}
+
+  Promise.all([
+    fetch("https://api.github.com/repos/Konayukiw/Flect").then((r) => (r.ok ? r.json() : null)),
+    fetch("https://api.github.com/repos/Konayukiw/Flect/releases?per_page=100").then((r) => (r.ok ? r.json() : null)),
+  ]).then(([repo, releases]) => {
+    const stars = repo && typeof repo.stargazers_count === "number" ? repo.stargazers_count : 0;
+    const downloads = Array.isArray(releases)
+      ? releases.reduce((sum, rel) => sum + (rel.assets || []).reduce((a, b) => a + (b.download_count || 0), 0), 0)
+      : 0;
+    if (stars > 0 || downloads > 0) {
+      applyStats(stars, downloads);
+      try {
+        sessionStorage.setItem("flect-gh-stats", JSON.stringify({ stars, downloads, ts: Date.now() }));
+      } catch {}
+    }
+  }).catch(() => {});
+})();
+
+const installTabsWrap = $("#installTabs");
+if (installTabsWrap) {
+  const tabBtns = $$("[data-install-tab]", installTabsWrap);
+  const panels = $$("[data-install-panel]");
+  for (const btn of tabBtns) {
+    btn.addEventListener("click", () => {
+      const target = btn.dataset.installTab;
+      for (const b of tabBtns) {
+        const active = b === btn;
+        b.classList.toggle("active", active);
+        b.setAttribute("aria-selected", String(active));
+      }
+      for (const panel of panels) {
+        panel.classList.toggle("hidden-panel", panel.dataset.installPanel !== target);
+      }
+    });
   }
 }
 
-if (!reducedMotion) {
-  const glyphs = () => t("grad.glyphs");
-  const hold = async (el, ms) => {
-    const end = performance.now() + ms;
-    do {
-      await wait(90);
-    } while (el.matches(":hover") || performance.now() < end);
-  };
-  const scrambleTo = (el, word) => new Promise((resolve) => {
-    let settled = 0;
-    const tick = () => {
-      if (el.matches(":hover")) settled = word.length;
-      else if (Math.random() < 0.75) settled += 1;
-      let out = "";
-      const g = glyphs();
-      for (let i = 0; i < word.length; i++) {
-        out += i < settled ? word[i] : g[(Math.random() * g.length) | 0];
+const featTabsWrap = $("#featTabs");
+const featBento = $("#featBento");
+if (featTabsWrap && featBento) {
+  const tabBtns = $$("[data-feat-tab]", featTabsWrap);
+  const cards = $$("[data-feat-cat]", featBento);
+  for (const btn of tabBtns) {
+    btn.addEventListener("click", () => {
+      const cat = btn.dataset.featTab;
+      for (const b of tabBtns) b.classList.toggle("active", b === btn);
+      featBento.classList.toggle("single-col", cat !== "all");
+      for (const card of cards) {
+        const show = cat === "all" || card.dataset.featCat === cat;
+        card.classList.toggle("hidden-cat", !show);
       }
-      el.textContent = out;
-      if (settled >= word.length) { el.textContent = word; resolve(); return; }
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  });
-  let gradCycle = 0;
-  const startGradCycle = async () => {
-    const id = ++gradCycle;
-    const el = $(".hero .grad");
-    if (!el) return;
-    const words = t("grad.words");
-    el.style.minWidth = "0px";
-    let maxW = 0;
-    for (const w of words) {
-      el.textContent = w;
-      maxW = Math.max(maxW, el.offsetWidth);
-    }
-    el.textContent = words[0];
-    el.style.minWidth = maxW + "px";
-    let i = 0;
-    while (id === gradCycle) {
-      await hold(el, 700);
-      if (id !== gradCycle) break;
-      i = (i + 1) % words.length;
-      await scrambleTo(el, words[i]);
-    }
-  };
-  window.restartGrad = startGradCycle;
-  setTimeout(startGradCycle, 3600);
+    });
+  }
 }
 
-const statEls = $$(".hero-stats strong");
-if (statEls.length && !reducedMotion) {
-  const rollStat = (el) => {
-    const raw = el.textContent.trim();
-    const num = parseInt(raw, 10);
-    if (!Number.isFinite(num)) return;
-    const suffix = raw.replace(/^-?\d+/, "");
-    if (num === 0) {
-      let n = 0;
-      const id = setInterval(() => {
-        n += 1;
-        el.textContent = n > 9 ? "0" : String((Math.random() * 90 + 9) | 0);
-        if (n > 9) clearInterval(id);
-      }, 55);
-      return;
-    }
-    if (!anime) return;
-    const counter = { v: 0 };
-    anime({ targets: counter, v: num, round: 1, duration: 1600, easing: "easeOutExpo", update: () => { el.textContent = Math.round(counter.v) + suffix; } });
+const ambientCanvas = $("#ambientCanvas");
+if (ambientCanvas) {
+  const ctx = ambientCanvas.getContext("2d");
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  let width = 0;
+  let height = 0;
+  let pointerX = 0.5;
+  let pointerY = 0.25;
+  let smoothX = 0.5;
+  let smoothY = 0.25;
+
+  const resizeCanvas = () => {
+    const dpr = Math.min(devicePixelRatio || 1, 1.5);
+    width = innerWidth;
+    height = innerHeight;
+    ambientCanvas.width = Math.round(width * dpr);
+    ambientCanvas.height = Math.round(height * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   };
-  const statsBox = $(".hero-stats");
-  const run = () => setTimeout(() => statEls.forEach(rollStat), anime && introFresh ? 2100 : 0);
-  if ("IntersectionObserver" in window && statsBox) {
-    const io = new IntersectionObserver((entries) => {
-      if (entries.some((en) => en.isIntersecting)) { run(); io.disconnect(); }
-    }, { threshold: 0.3 });
-    io.observe(statsBox);
-  } else run();
+
+  addEventListener("resize", resizeCanvas);
+  addEventListener("pointermove", (e) => {
+    pointerX = e.clientX / Math.max(1, width);
+    pointerY = e.clientY / Math.max(1, height);
+  }, { passive: true });
+  resizeCanvas();
+
+  const drawAmbient = (time) => {
+    const isLight = document.documentElement.dataset.theme === "light";
+    smoothX += (pointerX - smoothX) * 0.05;
+    smoothY += (pointerY - smoothY) * 0.05;
+    ctx.clearRect(0, 0, width, height);
+
+    const tSec = time * 0.00035;
+    const orbs = [
+      {
+        x: width * (0.22 + Math.cos(tSec) * 0.08),
+        y: height * (0.18 + Math.sin(tSec * 1.2) * 0.06),
+        r: Math.max(width, height) * 0.42,
+        c: isLight ? "rgba(0, 148, 212, 0.10)" : "rgba(0, 200, 255, 0.11)",
+      },
+      {
+        x: width * (0.78 + Math.sin(tSec * 0.9) * 0.07),
+        y: height * (0.32 + Math.cos(tSec * 1.1) * 0.07),
+        r: Math.max(width, height) * 0.38,
+        c: isLight ? "rgba(0, 168, 120, 0.08)" : "rgba(0, 229, 163, 0.08)",
+      },
+      {
+        x: width * smoothX,
+        y: height * smoothY,
+        r: Math.max(width, height) * 0.28,
+        c: isLight ? "rgba(0, 160, 220, 0.07)" : "rgba(46, 216, 255, 0.075)",
+      },
+    ];
+
+    for (const orb of orbs) {
+      const grad = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.r);
+      grad.addColorStop(0, orb.c);
+      grad.addColorStop(1, "rgba(0, 0, 0, 0)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    if (!reducedMotion.matches) requestAnimationFrame(drawAmbient);
+  };
+
+  requestAnimationFrame(drawAmbient);
 }
