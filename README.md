@@ -72,7 +72,7 @@ Select as many files as you like - these run over the whole selection at once, n
 | | |
 | --- | --- |
 | **Resize** | Scale down by percentage or to custom pixels |
-| **Trim** | Scrub to the part you want and keep just that - instantly, no re-encoding |
+| **Trim** | Scrub to the part you want of one video or audio file and keep just that - instantly, no re-encoding |
 | **Thumbnail** | Export any single frame as a PNG or JPG image |
 | **Subtitles** | Transcribe the spoken words into an SRT, VTT or TXT file |
 | **Compress** | Hit a target size - including a one-click Discord preset |
@@ -239,7 +239,7 @@ That is the price of not re-encoding. Video is stored in chunks that begin with 
 
 If you need the cut exactly where you put it, open Flect's settings → **Video → Trim** and choose to land on the exact frame. That re-encodes the clip, so it takes as long as any other encode and loses a little quality.
 
-Trim only appears when you have selected a single video - one start and end cannot mean the same thing across clips of different lengths.
+Trim only appears when you have selected a single video or a single audio file - one start and end cannot mean the same thing across clips of different lengths. Audio uses the same accuracy setting as video.
 </details>
 　
 <details>

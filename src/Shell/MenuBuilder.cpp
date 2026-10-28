@@ -242,6 +242,9 @@ std::vector<MenuNode> BuildVideo(const SelectionInfo& selection, const ShellConf
 
 std::vector<MenuNode> BuildAudio(const SelectionInfo& selection, const LabelTable& text) {
   std::vector<MenuNode> items;
+  if (selection.paths.size() == 1) {
+    items.push_back(Leaf(L"audio.trim", text.trim, L"audio.trim"));
+  }
   std::vector<MenuNode> convert =
       ConversionItems(Sel::AudioFormats(), selection.formats, L"audio");
   if (!convert.empty()) {

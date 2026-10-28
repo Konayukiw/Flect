@@ -37,7 +37,7 @@ https://github.com/user-attachments/assets/52703db0-1c86-40a6-8b76-5c1300fe9277
 | | |
 | --- | --- |
 | **Resize** | Scale down by percentage or to custom pixels |
-| **Trim** | Scrub to the part you want and keep just that - instantly, no re-encoding |
+| **Trim** | Scrub to the part you want of one video or audio file and keep just that - instantly, no re-encoding |
 | **Thumbnail** | Export any single frame as a PNG or JPG image |
 | **Subtitles** | Transcribe the spoken words into an SRT, VTT or TXT file |
 | **Compress** | Hit a target size - including a one-click Discord preset |

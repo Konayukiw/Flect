@@ -110,6 +110,7 @@ internal static class MenuCatalog
                 MenuEntry.Leaf("video.extractAudio.WMA", "to WMA", "menu.to"))),
 
         MenuEntry.Group("audio", "Audio",
+            MenuEntry.Leaf("audio.trim", "Trim"),
             MenuEntry.Group("audio.convert", "Convert",
                 MenuEntry.Leaf("audio.convert.MP3", "to MP3", "menu.to"),
                 MenuEntry.Leaf("audio.convert.M4A", "to M4A", "menu.to"),
