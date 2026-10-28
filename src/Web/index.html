@@ -123,42 +123,8 @@
               </div>
             </div>
             <div class="hv-body">
-              <div class="hv-file-row" id="hvFileRow">
-                <span class="hv-file-badge" id="hvBadge">PNG</span>
-                <div class="hv-file-meta">
-                  <strong id="hvFileName">Key_Visual_4K.png</strong>
-                  <span id="hvFileSize">3840 × 2160 · 12.4 MB</span>
-                </div>
-                <span class="hv-rc-tag">Right-Click</span>
-              </div>
-
-              <div class="hv-cascade">
-                <div class="hv-ctx-main">
-                  <div class="hv-row muted"><span data-i18n="std.open">Open</span></div>
-                  <div class="hv-sep"></div>
-                  <div class="hv-row active-row">
-                    <img src="assets/Flect.png" alt="">
-                    <span>Flect</span>
-                    <i class="hv-chev">›</i>
-                  </div>
-                  <div class="hv-sep"></div>
-                  <div class="hv-row muted"><span data-i18n="std.copy">Copy</span></div>
-                  <div class="hv-row muted"><span data-i18n="std.properties">Properties</span></div>
-                </div>
-
-                <div class="hv-ctx-sub" id="hvSubMenu">
-                  <div class="hv-row"><span>Resize</span><i class="hv-chev">›</i></div>
-                  <div class="hv-row"><span>Compress</span><i class="hv-chev">›</i></div>
-                  <div class="hv-row active-sub"><span>Convert</span><i class="hv-chev">›</i></div>
-                  <div class="hv-row"><span>OCR</span></div>
-                  <div class="hv-row"><span>Remove Metadata</span></div>
-                  <div class="hv-row"><span>Remove Background</span></div>
-                </div>
-              </div>
-
-              <div class="hv-result" id="hvResult">
-                <span class="hv-res-dot"></span>
-                <code id="hvOutCode">Key_Visual_4K.webp · 1.1 MB (-91%)</code>
+              <div class="hv-shot-wrap">
+                <img id="hvShotImg" src="assets/shots/img-en.webp" width="920" height="580" alt="">
               </div>
             </div>
           </div>
@@ -280,24 +246,8 @@
             <h3 data-i18n="feat.img.title">Images: From Resizing to Background Removal</h3>
           </div>
           <figure class="fc-visual">
-            <div class="fcv-stage" aria-hidden="true">
-              <div class="fcv-flow">
-                <div class="fcv-node">
-                  <span class="fcv-ext ext-img">PNG / HEIC / RAW</span>
-                  <strong>3840 × 2160</strong>
-                </div>
-                <div class="fcv-ops">
-                  <span>50% / 1080p</span>
-                  <span>Target MB</span>
-                  <span>OCR Text</span>
-                  <span>Strip EXIF</span>
-                  <span>Chroma Key</span>
-                </div>
-                <div class="fcv-node fcv-out">
-                  <span class="fcv-ext ext-out">WEBP / JPG / ICO / SVG</span>
-                  <strong>Clean Output</strong>
-                </div>
-              </div>
+            <div class="fcv-shot" aria-hidden="true">
+              <img data-shot-kind="img" src="assets/shots/img-en.webp" width="920" height="580" loading="lazy" alt="">
             </div>
             <figcaption data-i18n="feat.img.cap">Right-click an image → Flect menu</figcaption>
           </figure>
@@ -318,22 +268,8 @@
             <h3 data-i18n="feat.video.title">Video: Cuts Without Re-encoding</h3>
           </div>
           <figure class="fc-visual">
-            <div class="fcv-stage" aria-hidden="true">
-              <div class="fcv-video-bar">
-                <div class="fcv-trim-track">
-                  <span class="fcv-trim-selection">
-                    <i>00:14.2</i>
-                    <b>Stream Copy Trim</b>
-                    <i>00:52.8</i>
-                  </span>
-                </div>
-                <div class="fcv-chip-strip">
-                  <span class="hi">Discord 20MB</span>
-                  <span>NVENC / QSV / AMF</span>
-                  <span>H.264 / H.265 / AV1</span>
-                  <span>GIF / MP3 / WAV</span>
-                </div>
-              </div>
+            <div class="fcv-shot" aria-hidden="true">
+              <img data-shot-kind="video" src="assets/shots/video-en.webp" width="920" height="580" loading="lazy" alt="">
             </div>
             <figcaption data-i18n="feat.video.cap">Process a single clip or thousands of audio files in one go</figcaption>
           </figure>
@@ -354,20 +290,8 @@
             <h3 data-i18n="feat.folder.title">Folders: All the Dirty Work of Tidying Up</h3>
           </div>
           <figure class="fc-visual">
-            <div class="fcv-stage" aria-hidden="true">
-              <div class="fcv-folder-grid">
-                <div class="fcv-bars">
-                  <div><span>MP4</span><i><b style="width:78%"></b></i><code>1.9 GB</code></div>
-                  <div><span>JPG</span><i><b style="width:46%"></b></i><code>510 MB</code></div>
-                  <div><span>ZIP</span><i><b style="width:24%"></b></i><code>180 MB</code></div>
-                </div>
-                <div class="fcv-tree-preview">
-                  <code>Workspace/</code>
-                  <code>├─ assets/</code>
-                  <code>├─ src/</code>
-                  <code>└─ README.md</code>
-                </div>
-              </div>
+            <div class="fcv-shot" aria-hidden="true">
+              <img data-shot-kind="folder" src="assets/shots/folder-en.webp" width="920" height="580" loading="lazy" alt="">
             </div>
             <figcaption data-i18n="feat.folder.cap">Right-click a folder → Flect menu</figcaption>
           </figure>
@@ -388,13 +312,8 @@
             <h3 data-i18n="feat.text.title">Text: CSV, JSON, PDF</h3>
           </div>
           <figure class="fc-visual">
-            <div class="fcv-stage" aria-hidden="true">
-              <div class="fcv-doc-pills">
-                <div><strong>PDFium</strong><span>Preview · Merge · PNG / JPG / TXT</span></div>
-                <div><strong>Data &amp; Config</strong><span>CSV ⇄ JSON ⇄ XML · INI / CONF</span></div>
-                <div><strong>Encoding &amp; EOL</strong><span>UTF-8 / UTF-16 / Shift_JIS · CRLF / LF</span></div>
-                <div><strong>Decompiler</strong><span>.jar → .java source folder</span></div>
-              </div>
+            <div class="fcv-shot" aria-hidden="true">
+              <img data-shot-kind="text" src="assets/shots/text-en.webp" width="920" height="580" loading="lazy" alt="">
             </div>
             <figcaption data-i18n="feat.text.cap">Preview, merge, and export PDFs with ease - no Adobe Acrobat Reader required.</figcaption>
           </figure>
@@ -410,7 +329,7 @@
 
       <div class="table-wrap reveal">
         <table class="conv-table">
-          <caption data-i18n="table.caption">Supported conversions (examples)</caption>
+          <caption data-i18n="table.caption">Supported conversions</caption>
           <thead>
             <tr><th data-i18n="table.in">Input</th><th data-i18n="table.out">Output</th></tr>
           </thead>
@@ -442,11 +361,11 @@
         <div class="install-tabs" id="installTabs" role="tablist" aria-label="Installation method">
           <button type="button" class="install-tab active" data-install-tab="installer" role="tab" aria-selected="true">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4M4 19h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span data-i18n="install.tab.installer">Installer (.exe)</span>
+            <span data-i18n="install.tab.installer">Installer</span>
           </button>
           <button type="button" class="install-tab" data-install-tab="powershell" role="tab" aria-selected="false">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6l6 6-6 6M12 18h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span data-i18n="install.tab.ps">PowerShell (CLI)</span>
+            <span data-i18n="install.tab.ps">PowerShell</span>
           </button>
         </div>
       </div>
@@ -670,6 +589,7 @@
           <a href="#features" data-i18n="nav.features">Features</a>
           <a href="#install" data-i18n="nav.install">Install</a>
           <a href="#faq" data-i18n="nav.faq">FAQ</a>
+          <a href="https://konayuki.xyz" target="_blank" rel="noopener" data-i18n="nav.homepage">My Homepage</a>
         </div>
         <div class="foot-col">
           <span class="foot-h" data-i18n="foot.links">Links</span>
@@ -681,11 +601,11 @@
     </div>
     <div class="foot-bottom">
       <p>© <span id="year">2025</span> Konayukiw · Licensed under <a class="link" href="https://github.com/Konayukiw/Flect/blob/main/LICENSE" target="_blank" rel="noopener">Apache License 2.0</a></p>
-      <p class="foot-vibe" data-i18n="foot.vibe">This page was generated by Qwen 3.8 Max.</p>
+      <p class="foot-vibe" data-i18n="foot.vibe">This page was generated by Qwen 3.8 Max, modified by Claude Opus 5.5, enhanced by Gemini 4 Argon.</p>
     </div>
   </footer>
 
   <script src="js/i18n.js"></script>
-  <script type="module" src="js/main.js"></script>
+  <script src="js/main.js"></script>
 </body>
 </html>

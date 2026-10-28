@@ -8,7 +8,7 @@ try {
   const saved = localStorage.getItem("flect-theme");
   applyTheme(saved === "light" || saved === "dark" ? saved : "light");
   $("#themeToggle").addEventListener("click", () => {
-    const next = document.documentElement.dataset.theme === "dark" ? "light" : "light";
+    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
     applyTheme(next);
     try { localStorage.setItem("flect-theme", next); } catch {}
   });
@@ -1333,12 +1333,27 @@ for (const btn of $$(".copy-btn")) {
   });
 }
 
+const getShotLang = () => {
+  const raw = (document.documentElement.lang || "en").toLowerCase();
+  if (raw.startsWith("ja")) return "ja";
+  if (raw.startsWith("zh")) return "zh";
+  return "en";
+};
+
+const syncFeatureShots = () => {
+  const lang = getShotLang();
+  for (const img of $$("[data-shot-kind]")) {
+    const kind = img.dataset.shotKind;
+    if (kind) img.src = `assets/shots/${kind}-${lang}.webp`;
+  }
+};
+
+addEventListener("langchange", syncFeatureShots);
+syncFeatureShots();
+
 const hvTabsWrap = $("#heroPreviewTabs");
 if (hvTabsWrap) {
-  const hvBadge = $("#hvBadge");
-  const hvFileName = $("#hvFileName");
-  const hvFileSize = $("#hvFileSize");
-  const hvSubMenu = $("#hvSubMenu");
+  const hvShotImg = $("#hvShotImg");
   const hvOutCode = $("#hvOutCode");
   const hvButtons = $$("[data-hv]", hvTabsWrap);
   const hvOrder = ["image", "video", "folder", "pdf"];
@@ -1347,85 +1362,30 @@ if (hvTabsWrap) {
 
   const hvConfigs = {
     image: () => ({
-      badge: "PNG",
-      name: "Key_Visual_4K.png",
-      size: "3840 × 2160 · 12.4 MB",
-      out: "Key_Visual_4K.webp · 1.1 MB (-91%)",
-      items: [
-        [t("menu.resize"), true, false],
-        [t("menu.compress"), true, false],
-        [t("menu.convert"), true, true],
-        [t("menu.ocr"), false, false],
-        [t("menu.strip"), false, false],
-        [t("menu.chromakey"), false, false],
-      ],
+      shot: "img",
+      out: "IMG_0418.webp ... IMG_0421.webp · 4 files converted (-84%)",
     }),
     video: () => ({
-      badge: "MP4",
-      name: "Showcase_Reel.mp4",
-      size: "60 fps · 420 MB",
-      out: "Showcase_Reel_24MB.mp4 · 23.8 MB (-94%)",
-      items: [
-        [t("menu.resize"), true, false],
-        [t("menu.compress"), true, true],
-        [t("menu.trim"), false, false],
-        [t("menu.convert"), true, false],
-        [t("menu.subtitles"), true, false],
-        [t("menu.extractAudio"), true, false],
-      ],
+      shot: "video",
+      out: `${t("file.dance").replace(/\.mp4$/i, "")}-20MB.mp4 · 19.6 MB (-98%)`,
     }),
     folder: () => ({
-      badge: "DIR",
-      name: "Raw_Photos_2026",
-      size: "418 items · 3.2 GB",
-      out: "34 duplicates & 12 empty folders removed",
-      items: [
-        [t("menu.dup"), false, true],
-        [t("menu.empty"), false, false],
-        [t("menu.tree"), false, false],
-        [t("menu.rename"), false, false],
-        [t("menu.analyze"), false, false],
-        [t("menu.compress"), true, false],
-      ],
+      shot: "folder",
+      out: `${t("file.club")}.zip · 418 items archived`,
     }),
     pdf: () => ({
-      badge: "PDF",
-      name: "Architecture_Spec.pdf",
-      size: "48 pages · 18.6 MB",
-      out: "Architecture_Spec_p01-48.png · 48 pages exported",
-      items: [
-        [t("menu.convert"), true, true],
-        [t("menu.merge"), false, false],
-        [t("menu.compress"), true, false],
-        [t("menu.ocr"), false, false],
-      ],
+      shot: "text",
+      out: "Q1_Report-merged.pdf · 3 PDFs merged",
     }),
   };
 
   const renderHv = (kind) => {
     hvCurrent = kind;
     const cfg = (hvConfigs[kind] || hvConfigs.image)();
+    const lang = getShotLang();
     for (const b of hvButtons) b.classList.toggle("active", b.dataset.hv === kind);
-    if (hvBadge) hvBadge.textContent = cfg.badge;
-    if (hvFileName) hvFileName.textContent = cfg.name;
-    if (hvFileSize) hvFileSize.textContent = cfg.size;
+    if (hvShotImg) hvShotImg.src = `assets/shots/${cfg.shot}-${lang}.webp`;
     if (hvOutCode) hvOutCode.textContent = cfg.out;
-    if (hvSubMenu) {
-      hvSubMenu.replaceChildren(...cfg.items.map(([label, hasSub, isAct]) => {
-        const row = document.createElement("div");
-        row.className = `hv-row${isAct ? " active-sub" : ""}`;
-        const span = document.createElement("span");
-        span.textContent = label;
-        row.append(span);
-        if (hasSub) {
-          const chev = document.createElement("i");
-          chev.className = "hv-chev";
-          chev.textContent = "›";
-          row.append(chev);
-        }
-        return row;
-      }));
-    }
   };
 
   const startHvCycle = () => {
