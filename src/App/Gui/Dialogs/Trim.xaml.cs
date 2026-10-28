@@ -1,5 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace Optimizer.Gui.Dialogs;
@@ -13,6 +15,8 @@ public partial class Trim : Window
 {
     private readonly double _duration;
     private readonly DispatcherTimer _ticker;
+
+    private readonly ScrubDrag _scrub = new();
 
     private bool _ready;
     private bool _playing;
@@ -53,6 +57,7 @@ public partial class Trim : Window
         _ready = true;
         ShowPosition(0);
         ShowSelection();
+        HookScrubber();
     }
 
     internal static TrimRange? Ask(string path, double durationSeconds)
@@ -115,6 +120,76 @@ public partial class Trim : Window
             Player.Position = TimeSpan.FromSeconds(e.NewValue);
         }
         ShowPosition(e.NewValue);
+    }
+
+    // A track click jumps the pointer and then marks the click handled, so the
+    // thumb never receives the drag. Follow the pointer until it is released.
+    private void HookScrubber()
+    {
+        Scrubber.AddHandler(UIElement.PreviewMouseLeftButtonDownEvent,
+            new MouseButtonEventHandler(OnScrubberPress), handledEventsToo: true);
+        Scrubber.AddHandler(UIElement.PreviewMouseMoveEvent,
+            new MouseEventHandler(OnScrubberMove), handledEventsToo: true);
+        Scrubber.AddHandler(UIElement.PreviewMouseLeftButtonUpEvent,
+            new MouseButtonEventHandler(OnScrubberRelease), handledEventsToo: true);
+        Scrubber.LostMouseCapture += OnScrubberLostCapture;
+    }
+
+    private void OnScrubberPress(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton != MouseButton.Left || !TrySeconds(e, out var seconds)) return;
+
+        var target = PointerHit() ? ScrubTarget.Thumb : ScrubTarget.Track;
+        if (_scrub.Begin(target, seconds) is not double placed) return;
+
+        e.Handled = true;
+        if (_playing) Pause();
+        Place(placed);
+        Scrubber.CaptureMouse();
+    }
+
+    private void OnScrubberMove(object sender, MouseEventArgs e)
+    {
+        if (e.LeftButton != MouseButtonState.Pressed || !_scrub.Active) return;
+        if (!TrySeconds(e, out var seconds)) return;
+        if (_scrub.Drag(seconds) is double placed) Place(placed);
+    }
+
+    private void OnScrubberRelease(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton != MouseButton.Left) return;
+        FinishTrackDrag(e);
+    }
+
+    private void OnScrubberLostCapture(object sender, MouseEventArgs e) => FinishTrackDrag(e);
+
+    private void FinishTrackDrag(MouseEventArgs e)
+    {
+        if (!_scrub.Active) return;
+
+        if (!TrySeconds(e, out var seconds)) _scrub.Cancel();
+        else if (_scrub.End(seconds) is double placed) Place(placed);
+
+        if (Scrubber.IsMouseCaptured) Scrubber.ReleaseMouseCapture();
+    }
+
+    private void Place(double seconds) => Scrubber.Value = seconds;
+
+    private bool PointerHit() => TrackOf()?.Thumb?.IsMouseOver == true;
+
+    private Track? TrackOf() => Scrubber.Template?.FindName("PART_Track", Scrubber) as Track;
+
+    private bool TrySeconds(MouseEventArgs e, out double seconds)
+    {
+        seconds = 0;
+        var track = TrackOf();
+        if (track is null) return false;
+
+        var value = track.ValueFromPoint(e.GetPosition(track));
+        if (!double.IsFinite(value)) return false;
+
+        seconds = Math.Clamp(value, Scrubber.Minimum, Scrubber.Maximum);
+        return true;
     }
 
     private void OnPlayPause(object sender, RoutedEventArgs e)
