@@ -59,7 +59,7 @@ internal static partial class Strings
         ["menu.video.rotate"] = "回転",
         ["menu.video.convert"] = "変換",
         ["menu.video.extractAudio"] = "音声を抽出",
-        ["menu.audio.trim"] = "切り出し",
+        ["menu.audio.trim"] = "切り抜き",
         ["menu.audio.convert"] = "変換",
         ["menu.audio.subtitles"] = "字幕",
         ["menu.text.convert"] = "変換",

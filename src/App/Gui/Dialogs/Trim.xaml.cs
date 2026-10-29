@@ -134,8 +134,6 @@ public partial class Trim : Window
         ShowPosition(e.NewValue);
     }
 
-    // A track click jumps the pointer and then marks the click handled, so the
-    // thumb never receives the drag. Follow the pointer until it is released.
     private void HookScrubber()
     {
         Scrubber.AddHandler(UIElement.PreviewMouseLeftButtonDownEvent,
