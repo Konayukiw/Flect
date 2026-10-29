@@ -24,6 +24,7 @@ internal static class OutputCatalog
         new("image.strip", "settings.nav.image", "menu.image.strip", ["image.strip"]),
         new("image.chromakey", "settings.nav.image", "menu.image.chromakey", ["image.chromakey"]),
 
+        new("audio.trim", "settings.output.audio", "menu.audio.trim", ["audio.trim"]),
         new("audio.convert", "settings.output.audio", "menu.audio.convert", ["audio.convert"]),
 
         new("text.convert", "settings.nav.text", "menu.text.convert", ["text.convert"]),

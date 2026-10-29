@@ -30,6 +30,7 @@ internal static class Factory
         "video.convert" => new VideoConvert(request),
         "video.extractAudio" => new VideoExtractAudio(request),
 
+        "audio.trim" => new AudioTrim(request),
         "audio.convert" => new AudioConvert(request),
         "audio.subtitles" => new MediaSubtitles(request),
 

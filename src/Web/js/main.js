@@ -799,7 +799,14 @@ const flectMenu = (sel) => {
     return list;
   }
 
-  if (cat === "audio") return [convert(AUDIO_FORMATS.filter((fmt) => !formats.has(fmt)).map(scale(AUDIO_WEIGHT))), subtitles()].filter(Boolean);
+  if (cat === "audio") {
+    const trim = t("menu.trim");
+    return [
+      one ? leaf(trim, go(trim, { work: "scan.trimming", out: sized("_trimmed", null, (b) => b * 0.3) })) : null,
+      convert(AUDIO_FORMATS.filter((fmt) => !formats.has(fmt)).map(scale(AUDIO_WEIGHT))),
+      subtitles(),
+    ].filter(Boolean);
+  }
 
   if (cat === "pdf") {
     const merge = t("menu.merge");

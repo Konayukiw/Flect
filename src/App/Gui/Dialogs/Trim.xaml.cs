@@ -1,5 +1,8 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace Optimizer.Gui.Dialogs;
@@ -14,15 +17,18 @@ public partial class Trim : Window
     private readonly double _duration;
     private readonly DispatcherTimer _ticker;
 
+    private readonly ScrubDrag _scrub = new();
+
     private bool _ready;
     private bool _playing;
     private bool _seeking;
 
-    private Trim(string path, double durationSeconds)
+    private Trim(string path, double durationSeconds, bool picture)
     {
         InitializeComponent();
 
         _duration = durationSeconds;
+        if (!picture) HidePicture();
         Title = $"{Branding.Name} - {Loc.T("dialog.trim.title")}";
         HintText.Text = Loc.T("dialog.trim.hint");
 
@@ -53,13 +59,14 @@ public partial class Trim : Window
         _ready = true;
         ShowPosition(0);
         ShowSelection();
+        HookScrubber();
     }
 
-    internal static TrimRange? Ask(string path, double durationSeconds)
+    internal static TrimRange? Ask(string path, double durationSeconds, bool picture = true)
     {
         if (durationSeconds <= 0) return null;
 
-        var dialog = new Trim(path, durationSeconds);
+        var dialog = new Trim(path, durationSeconds, picture);
         if (dialog.ShowDialog() != true) return null;
 
         return dialog.Range();
@@ -70,6 +77,16 @@ public partial class Trim : Window
         if (!Formatting.TryParseTimecode(StartBox.Text, out var start)) return null;
         if (!Formatting.TryParseTimecode(EndBox.Text, out var end)) return null;
         return new TrimRange(start, end);
+    }
+
+    private void HidePicture()
+    {
+        Player.Height = 0;
+        Player.IsHitTestVisible = false;
+        PreviewPanel.BorderThickness = new Thickness(0);
+        PreviewPanel.Padding = new Thickness(0);
+        PreviewPanel.Margin = new Thickness(0);
+        PreviewPanel.Background = Brushes.Transparent;
     }
 
     private void HidePreview()
@@ -115,6 +132,84 @@ public partial class Trim : Window
             Player.Position = TimeSpan.FromSeconds(e.NewValue);
         }
         ShowPosition(e.NewValue);
+    }
+
+    private void HookScrubber()
+    {
+        Scrubber.AddHandler(UIElement.PreviewMouseLeftButtonDownEvent,
+            new MouseButtonEventHandler(OnScrubberPress), handledEventsToo: true);
+        Scrubber.AddHandler(UIElement.PreviewMouseMoveEvent,
+            new MouseEventHandler(OnScrubberMove), handledEventsToo: true);
+        Scrubber.AddHandler(UIElement.PreviewMouseLeftButtonUpEvent,
+            new MouseButtonEventHandler(OnScrubberRelease), handledEventsToo: true);
+        Scrubber.LostMouseCapture += OnScrubberLostCapture;
+    }
+
+    private void OnScrubberPress(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton != MouseButton.Left || !TrySeconds(e, out var seconds)) return;
+
+        var target = PointerHit(e) ? ScrubTarget.Thumb : ScrubTarget.Track;
+        if (_scrub.Begin(target, seconds) is not double placed) return;
+
+        e.Handled = true;
+        if (_playing) Pause();
+        Place(placed);
+        Scrubber.CaptureMouse();
+    }
+
+    private void OnScrubberMove(object sender, MouseEventArgs e)
+    {
+        if (e.LeftButton != MouseButtonState.Pressed || !_scrub.Active) return;
+        if (!TrySeconds(e, out var seconds)) return;
+        if (_scrub.Drag(seconds) is double placed) Place(placed);
+    }
+
+    private void OnScrubberRelease(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton != MouseButton.Left) return;
+        FinishTrackDrag(e);
+    }
+
+    private void OnScrubberLostCapture(object sender, MouseEventArgs e) => FinishTrackDrag(e);
+
+    private void FinishTrackDrag(MouseEventArgs e)
+    {
+        if (!_scrub.Active) return;
+
+        if (!TrySeconds(e, out var seconds)) _scrub.Cancel();
+        else if (_scrub.End(seconds) is double placed) Place(placed);
+
+        if (Scrubber.IsMouseCaptured) Scrubber.ReleaseMouseCapture();
+    }
+
+    private void Place(double seconds) => Scrubber.Value = seconds;
+
+    private static bool PointerHit(MouseButtonEventArgs e)
+    {
+        DependencyObject? source = e.OriginalSource as DependencyObject;
+        while (source is not null)
+        {
+            if (source is Thumb) return true;
+            if (source is not Visual) return false;
+            source = VisualTreeHelper.GetParent(source);
+        }
+        return false;
+    }
+
+    private Track? TrackOf() => Scrubber.Template?.FindName("PART_Track", Scrubber) as Track;
+
+    private bool TrySeconds(MouseEventArgs e, out double seconds)
+    {
+        seconds = 0;
+        var track = TrackOf();
+        if (track is null) return false;
+
+        var value = track.ValueFromPoint(e.GetPosition(track));
+        if (!double.IsFinite(value)) return false;
+
+        seconds = Math.Clamp(value, Scrubber.Minimum, Scrubber.Maximum);
+        return true;
     }
 
     private void OnPlayPause(object sender, RoutedEventArgs e)
