@@ -134,11 +134,11 @@ std::vector<MenuNode> ConversionItems(const std::vector<std::wstring>& allFormat
 
 std::vector<MenuNode> BuildFolder(const LabelTable& text) {
   return {
+      Leaf(L"folder.analyze", text.analyze, L"folder.analyze"),
       Leaf(L"folder.removeDuplicate", text.removeDuplicate, L"folder.removeDuplicate"),
       Leaf(L"folder.removeEmpty", text.removeEmpty, L"folder.removeEmpty"),
       Leaf(L"folder.tree", text.tree, L"folder.tree"),
       Leaf(L"folder.rename", text.rename, L"folder.rename"),
-      Leaf(L"folder.analyze", text.analyze, L"folder.analyze"),
       Leaf(L"folder.compress", text.compress, L"folder.compress"),
   };
 }
@@ -358,9 +358,14 @@ std::vector<MenuNode> MenuBuilder::Build(const SelectionInfo& selection,
       nodes = BuildArchive(text);
       break;
     case Category::None:
+      break;
     default:
       return {};
   }
 
-  return Prune(std::move(nodes), config.hidden);
+  if (selection.category != Category::Folder && selection.paths.size() == 1) {
+    nodes.insert(nodes.begin(), Leaf(L"file.analyze", text.analyze, L"file.analyze"));
+  }
+
+  return nodes.empty() ? nodes : Prune(std::move(nodes), config.hidden);
 }

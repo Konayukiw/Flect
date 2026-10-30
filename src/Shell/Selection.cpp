@@ -195,7 +195,7 @@ SelectionInfo Sel::FromDataObject(IDataObject* dataObject) {
         (attributes.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 
     const Classification classification = Classify(path, isDirectory);
-    if (classification.category == Category::None) {
+    if (classification.category == Category::None && (count != 1 || isDirectory)) {
       consistent = false;
       break;
     }

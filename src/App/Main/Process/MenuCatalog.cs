@@ -27,12 +27,14 @@ internal static class MenuCatalog
 
     private static IReadOnlyList<MenuEntry> Build() =>
     [
+        MenuEntry.Leaf("file.analyze", "Analyze"),
+
         MenuEntry.Group("folder", "Folder",
+            MenuEntry.Leaf("folder.analyze", "Analyze"),
             MenuEntry.Leaf("folder.removeDuplicate", "Remove Duplicate"),
             MenuEntry.Leaf("folder.removeEmpty", "Remove Empty"),
             MenuEntry.Leaf("folder.tree", "Tree"),
             MenuEntry.Leaf("folder.rename", "Rename"),
-            MenuEntry.Leaf("folder.analyze", "Analyze"),
             MenuEntry.Leaf("folder.compress", "Compress")),
 
         MenuEntry.Group("archive", "Archive",

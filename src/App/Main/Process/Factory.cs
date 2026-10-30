@@ -9,6 +9,7 @@ internal static class Factory
         "folder.tree" => new FolderTree(request),
         "folder.rename" => new FolderRename(request),
         "folder.analyze" => new FolderAnalyze(request),
+        "file.analyze" => new FileAnalyze(request),
         "folder.compress" => new FolderCompress(request),
 
         "archive.extract" => new ArchiveExtract(request),
