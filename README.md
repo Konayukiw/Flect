@@ -53,6 +53,12 @@ Deletions go to the Recycle Bin by default and they can be undone. A task that f
 
 Select as many files as you like - these run over the whole selection at once, not one file at a time.
 
+### Any file
+
+| | |
+| --- | --- |
+| **Analyze** | Inspect one file. The report follows the contents, so a renamed or spoofed name still shows what the file really is, in more detail than Explorer's properties |
+
 ### Images
 
 | | |
