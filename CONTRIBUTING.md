@@ -97,13 +97,13 @@ Flect/
 Before opening a pull request, run the relevant checks:
 
 ```powershell
-# Translation parity check (EN, JA, ZH)
+# Translation parity check (English, 日本語, 简体中文)
 node evals/i18n/check.mjs
 
 # Core test suite
 dotnet test evals/Evals/Evals.csproj -c Release --filter-not-trait "Category=AI"
 
-# Modern context menu test (if modifying src/Shell/Modern)
+# Modern context menu test (If modifying src/Shell/Modern)
 .\scripts\modern\test.ps1
 ```
 
