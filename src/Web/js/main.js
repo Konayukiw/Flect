@@ -674,6 +674,155 @@ const analyzeWin = (sel) => {
   close.addEventListener("click", win.close);
 };
 
+const PIXELS = { JPG: [4032, 3024], PNG: [1920, 1080], WEBP: [1280, 720], GIF: [480, 270], HEIC: [4032, 3024], ICO: [256, 256], SVG: [512, 512] };
+
+const clock = (seconds) => {
+  const whole = Math.max(0, Math.round(seconds));
+  const h = Math.floor(whole / 3600);
+  const m = Math.floor((whole % 3600) / 60);
+  const s = whole % 60;
+  const pad = (n) => String(n).padStart(2, "0");
+  return h ? `${h}:${pad(m)}:${pad(s)}` : `${m}:${pad(s)}`;
+};
+
+const rate = (bytes, seconds) => {
+  const kbps = Math.max(1, Math.round((bytes * 8) / Math.max(1, seconds) / 1000));
+  return kbps >= 10000 ? `${(kbps / 1000).toFixed(1)} Mbps` : `${kbps} kbps`;
+};
+
+const fileProfile = (icon) => {
+  const info = classify(icon);
+  const bytes = bytesOf(icon);
+  const claimed = info.fmt;
+  const detected = String(icon.dataset.contents || claimed || "").toUpperCase();
+  const show = detected || t("an.file.unknown");
+  const ext = claimed || t("an.none");
+  const alert = claimed && detected && claimed !== detected ? t("an.file.mismatch", { ext: claimed, kind: detected }) : "";
+  const size = [fmtBytes(bytes), t("an.file.size")];
+  const kind = [show, t("an.file.kind")];
+  const alpha = detected !== "JPG" && detected !== "JPEG";
+
+  if (info.cat === "image" || PIXELS[detected]) {
+    const [w, h] = PIXELS[detected] || PIXELS[claimed] || [1600, 1200];
+    const vector = detected === "SVG";
+    return {
+      alert,
+      tiles: [size, kind, [`${w} x ${h}`, t("an.file.dimensions")], [vector ? t("an.file.vector") : "8-bit", vector ? t("an.file.color") : t("an.file.depth")]],
+      rows: [
+        [t("an.file.extension"), ext],
+        [t("an.file.color"), t(vector ? "an.file.vector" : alpha ? "an.file.rgba" : "an.file.rgb")],
+        [t("an.file.alpha"), t(alpha ? "an.file.yes" : "an.file.no")],
+      ],
+    };
+  }
+
+  if (info.cat === "video" && info.fmt !== "M4A") {
+    const seconds = Math.max(1, Math.round((bytes * 8) / 8000000));
+    return {
+      alert,
+      tiles: [size, kind, [clock(seconds), t("an.file.duration")], ["1920 x 1080", t("an.file.resolution")]],
+      rows: [
+        [t("an.file.extension"), ext],
+        [t("an.file.codec"), "H.264"],
+        [t("an.file.fps"), "29.97 fps"],
+        [t("an.file.audio"), t("an.file.stereo")],
+        [t("an.file.bitrate"), rate(bytes, seconds)],
+      ],
+    };
+  }
+
+  if (info.cat === "audio" || info.fmt === "M4A") {
+    const seconds = Math.max(1, Math.round((bytes * 8) / 192000));
+    return {
+      alert,
+      tiles: [size, kind, [clock(seconds), t("an.file.duration")], ["48 kHz", t("an.file.sampleRate")]],
+      rows: [
+        [t("an.file.extension"), ext],
+        [t("an.file.codec"), info.fmt === "WAV" || info.fmt === "AIFF" || info.fmt === "AIF" ? info.fmt : "AAC"],
+        [t("an.file.channels"), t("an.file.stereoShort")],
+        [t("an.file.bitrate"), rate(bytes, seconds)],
+      ],
+    };
+  }
+
+  if (info.cat === "pdf") {
+    const pages = Number(icon.dataset.pages) || 1;
+    return {
+      alert,
+      tiles: [size, kind, [String(pages), t("an.file.pages")], ["A4", t("an.file.pageSize")]],
+      rows: [
+        [t("an.file.extension"), ext],
+        [t("an.file.version"), "1.7"],
+        [t("an.file.encrypted"), t("an.file.no")],
+        [t("an.file.bookmarks"), String(pages > 1 ? 2 : 0)],
+      ],
+    };
+  }
+
+  if (info.cat === "archive" || info.cat === "jar") {
+    const files = contentOf(icon).filter(([path]) => !path.endsWith("/"));
+    const unpacked = files.reduce((sum, entry) => sum + entry[1] * MiB, 0);
+    const ratio = unpacked > 0 ? `${Math.round((bytes / unpacked) * 1000) / 10}%` : t("an.none");
+    const largest = [...files].sort((a, b) => b[1] - a[1]).slice(0, 3)
+      .map(([path, mb]) => `${path.split("/").pop()} (${fmtBytes(mb * MiB)})`).join(", ");
+    return {
+      alert,
+      tiles: [size, kind, [String(files.length), t("an.files")], [ratio, t("an.file.ratio")]],
+      rows: [
+        [t("an.file.extension"), ext],
+        [t("an.file.uncompressed"), unpacked > 0 ? fmtBytes(unpacked) : t("an.none")],
+        [t("an.file.encrypted"), t("an.file.no")],
+        [t("an.file.largest"), largest || t("an.none")],
+      ],
+    };
+  }
+
+  const lines = Math.max(1, Math.round(bytes / 40));
+  const rows = [
+    [t("an.file.extension"), ext],
+    [t("an.file.encoding"), "UTF-8"],
+    [t("an.file.newlines"), "CRLF"],
+    [t("an.file.bom"), t("an.none")],
+  ];
+  if (info.fmt === "JSON") rows.push([t("an.file.top"), t("an.file.object")]);
+  return {
+    alert,
+    tiles: [size, kind, [lines.toLocaleString(), t("an.file.lines")], ["UTF-8", t("an.file.encoding")]],
+    rows,
+  };
+};
+
+const fileAnalyzeWin = (icon) => {
+  const label = t("menu.analyze");
+  const profile = fileProfile(icon);
+  const win = openWin(`Flect - ${label}`, true);
+  win.body.append(node("div", "win-head", label));
+  if (profile.alert) win.body.append(node("div", "an-note", profile.alert));
+  const tiles = node("div", "an-tiles");
+  for (const [value, caption] of profile.tiles) {
+    const tile = node("div", "an-tile");
+    tile.append(node("b", "", value), node("span", "", caption));
+    tiles.append(tile);
+  }
+  win.body.append(tiles, node("div", "an-h", t("an.file.detail")));
+  for (const [name, value] of profile.rows) {
+    const row = node("div", "an-fact");
+    row.append(node("span", "", name), node("span", "", value));
+    win.body.append(row);
+  }
+  const hashRow = node("div", "an-fact");
+  const hash = node("span", "an-hash", t("an.file.hashPending"));
+  hashRow.append(node("span", "", t("an.file.hash")), hash);
+  win.body.append(hashRow);
+  crypto.subtle.digest("SHA-256", new TextEncoder().encode(`${icon.dataset.name}\n${bytesOf(icon)}`)).then((buf) => {
+    hash.textContent = [...new Uint8Array(buf)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  }).catch(() => {
+    hash.textContent = t("an.none");
+  });
+  const [close] = footer(win, [[t("prog.close"), true]]);
+  close.addEventListener("click", win.close);
+};
+
 const previewWin = (icon) => {
   const label = t("menu.preview");
   const pages = Number(icon.dataset.pages) || 1;
@@ -724,11 +873,20 @@ const scale = (weights) => (fmt) => [fmt, (bytes, from) => (bytes / (weights[fro
 const flectMenu = (sel) => {
   const info = sel.map(classify);
   const cat = info[0].cat;
-  if (cat === "none" || info.some((entry) => entry.cat !== cat)) return [];
+  if (!info.length || info.some((entry) => entry.cat !== cat)) return [];
   const formats = new Set(info.map((entry) => entry.fmt));
   const max = Math.max(...sel.map(bytesOf));
   const one = sel.length === 1;
   const go = (label, plan) => () => runTask(bare(label), sel, plan);
+  const analyzeFile = leaf(t("menu.analyze"), go(t("menu.analyze"), {
+    work: "scan.analyzing",
+    present: () => fileAnalyzeWin(sel[0]),
+  }));
+  const finish = (list) => {
+    if (one && cat !== "folder") list.unshift(analyzeFile);
+    return list;
+  };
+  if (cat === "none") return one ? [analyzeFile] : [];
   const total = (field) => sel.reduce((sum, icon) => sum + statsOf(contentOf(icon))[field], 0);
 
   const resize = (pre) => {
@@ -767,7 +925,7 @@ const flectMenu = (sel) => {
     const ocr = t("menu.ocr");
     const strip = t("menu.strip");
     const keyed = t("menu.chromakey");
-    return [
+    return finish([
       resize("scan.analyzingImage"),
       compress("scan.analyzingImage", [10, 5, 3, 1], false),
       rotate(),
@@ -775,7 +933,7 @@ const flectMenu = (sel) => {
       leaf(ocr, go(ocr, { work: "scan.ocr", out: sized("_ocr", "txt", () => 1843) })),
       leaf(strip, go(strip, { work: "scan.strip", out: sized("_clean", null, (b) => b * 0.99) })),
       leaf(keyed, go(keyed, { work: "scan.keying", out: sized("_keyed", "png", (b) => b * 2.2), dur: 1300 })),
-    ].filter(Boolean);
+    ].filter(Boolean));
   }
 
   if (cat === "video") {
@@ -796,16 +954,16 @@ const flectMenu = (sel) => {
       convert([...VIDEO_FORMATS.filter((fmt) => !formats.has(fmt)).map(scale(VIDEO_WEIGHT)), ["GIF", (b) => Math.min(b * 0.04, 48 * MiB)]]),
       group(audio, AUDIO_FORMATS.map((fmt) => leaf(t("menu.to", { fmt }), go(audio, { work: "scan.extractAudio", out: sized("", fmt.toLowerCase(), (b) => b * 0.0046 * AUDIO_WEIGHT[fmt]) })))),
     );
-    return list;
+    return finish(list);
   }
 
   if (cat === "audio") {
     const trim = t("menu.trim");
-    return [
+    return finish([
       one ? leaf(trim, go(trim, { work: "scan.trimming", out: sized("_trimmed", null, (b) => b * 0.3) })) : null,
       convert(AUDIO_FORMATS.filter((fmt) => !formats.has(fmt)).map(scale(AUDIO_WEIGHT))),
       subtitles(),
-    ].filter(Boolean);
+    ].filter(Boolean));
   }
 
   if (cat === "pdf") {
@@ -831,7 +989,7 @@ const flectMenu = (sel) => {
       leaf(t("menu.to", { fmt: "JPG" }), go(label, { work: "scan.converting", out: perPage("jpg", 310 * 1024) })),
       leaf(t("menu.to", { fmt: "TXT" }), go(label, { work: "scan.converting", out: (icon) => [{ name: derive(icon.dataset.name, "", "txt"), bytes: pagesOf(icon) * 3100 }] })),
     );
-    return list;
+    return finish(list);
   }
 
   if (cat === "folder") {
@@ -867,12 +1025,12 @@ const flectMenu = (sel) => {
 
   if (cat === "archive") {
     const label = t("menu.extract");
-    return [leaf(label, go(label, { work: "scan.extracting", out: (icon) => [{ name: archiveStem(icon.dataset.name), folder: true, content: contentOf(icon) }], dur: 1200 }))];
+    return finish([leaf(label, go(label, { work: "scan.extracting", out: (icon) => [{ name: archiveStem(icon.dataset.name), folder: true, content: contentOf(icon) }], dur: 1200 }))]);
   }
 
   if (cat === "jar") {
     const label = t("menu.decompile");
-    return [leaf(label, go(label, { work: "scan.decompiling", out: (icon) => [{ name: splitName(icon.dataset.name)[0], folder: true }], dur: 1400 }))];
+    return finish([leaf(label, go(label, { work: "scan.decompiling", out: (icon) => [{ name: splitName(icon.dataset.name)[0], folder: true }], dur: 1400 }))]);
   }
 
   const list = [];
@@ -899,7 +1057,7 @@ const flectMenu = (sel) => {
       leaf(keys, go(keys, { work: "scan.writing", out: sized("_sorted", null, (b) => b) })),
     );
   }
-  return list;
+  return finish(list);
 };
 
 let renaming = null;
