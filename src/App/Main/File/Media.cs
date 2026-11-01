@@ -124,14 +124,14 @@ internal static class Magic
         {
             return new("WMA", "audio");
         }
-        if (LooksLikeLink(header)) return new("LNK", "lnk");
-        if (LooksLikePe(header)) return new("PE", "pe");
-        if (LooksLikeSvg(header)) return new("SVG", "image");
-        if (LooksLikeText(header)) return new("TEXT", "text");
+        if (IsLink(header)) return new("LNK", "lnk");
+        if (IsPe(header)) return new("PE", "pe");
+        if (IsSvg(header)) return new("SVG", "image");
+        if (IsText(header)) return new("TEXT", "text");
         return new(string.Empty, "binary");
     }
 
-    private static bool LooksLikePe(ReadOnlySpan<byte> header)
+    private static bool IsPe(ReadOnlySpan<byte> header)
     {
         if (header.Length < 0x40 || header[0] != (byte)'M' || header[1] != (byte)'Z') return false;
         var offset = BitConverter.ToInt32(header.Slice(0x3C, 4));
@@ -140,7 +140,7 @@ internal static class Magic
                header[offset + 2] == 0 && header[offset + 3] == 0;
     }
 
-    private static bool LooksLikeLink(ReadOnlySpan<byte> header)
+    private static bool IsLink(ReadOnlySpan<byte> header)
     {
         if (header.Length < 20) return false;
         var size = BitConverter.ToInt32(header[..4]);
@@ -153,7 +153,7 @@ internal static class Magic
         return header.Slice(4, 16).SequenceEqual(clsid);
     }
 
-    private static bool LooksLikeSvg(ReadOnlySpan<byte> header)
+    private static bool IsSvg(ReadOnlySpan<byte> header)
     {
         var text = HeaderText(header);
         var trimmed = text.TrimStart('\uFEFF', ' ', '\t', '\r', '\n');
@@ -162,7 +162,7 @@ internal static class Magic
                 trimmed.Contains("<svg", StringComparison.OrdinalIgnoreCase));
     }
 
-    private static bool LooksLikeText(ReadOnlySpan<byte> header)
+    private static bool IsText(ReadOnlySpan<byte> header)
     {
         if (header.Length == 0) return false;
         if (header.Length >= 2 && header[0] == 0xFF && header[1] == 0xFE) return true;

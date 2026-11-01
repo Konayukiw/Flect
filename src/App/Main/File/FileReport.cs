@@ -1,6 +1,6 @@
 namespace Optimizer.Main.Inspect;
 
-internal sealed record FileFact(string Label, string Value);
+internal sealed record FileFact(string Label, string Value, string? Key = null);
 
 internal sealed class FileSection
 {
@@ -23,7 +23,7 @@ internal sealed class FactBag
     public void Add(string key, string? value)
     {
         if (string.IsNullOrWhiteSpace(value)) return;
-        _rows.Add(new FileFact(Loc.T(key), value.Trim()));
+        _rows.Add(new FileFact(Loc.T(key), value.Trim(), key));
     }
 
     public void AddRaw(string label, string? value)

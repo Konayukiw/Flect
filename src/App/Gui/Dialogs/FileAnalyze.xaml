@@ -10,6 +10,149 @@
       <Setter Property="FontSize" Value="13" />
       <Setter Property="Margin" Value="0,18,0,6" />
     </Style>
+
+    <Style x:Key="FactValue" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+      <Setter Property="VerticalAlignment" Value="Top" />
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding CanCopy}" Value="True">
+          <Setter Property="Cursor" Value="Hand" />
+          <Setter Property="Focusable" Value="True" />
+          <Setter Property="ToolTip" Value="{Binding CopyHint}" />
+        </DataTrigger>
+        <MultiDataTrigger>
+          <MultiDataTrigger.Conditions>
+            <Condition Binding="{Binding CanCopy}" Value="True" />
+            <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True" />
+          </MultiDataTrigger.Conditions>
+          <Setter Property="TextDecorations" Value="Underline" />
+        </MultiDataTrigger>
+      </Style.Triggers>
+    </Style>
+
+    <Style x:Key="FactLink" TargetType="Button">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Foreground" Value="{DynamicResource Brush.Accent}" />
+      <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}" />
+      <Setter Property="FontSize" Value="12" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="MinWidth" Value="0" />
+      <Setter Property="MinHeight" Value="0" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="Margin" Value="12,0,8,0" />
+      <Setter Property="HorizontalAlignment" Value="Right" />
+      <Setter Property="VerticalAlignment" Value="Top" />
+      <Setter Property="HorizontalContentAlignment" Value="Right" />
+      <Setter Property="Visibility" Value="Collapsed" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <TextBlock x:Name="Label" Text="{TemplateBinding Content}"
+                       Foreground="{TemplateBinding Foreground}"
+                       FontFamily="{TemplateBinding FontFamily}"
+                       FontSize="{TemplateBinding FontSize}"
+                       HorizontalAlignment="Right" />
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Label" Property="TextDecorations" Value="Underline" />
+              </Trigger>
+              <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter TargetName="Label" Property="TextDecorations" Value="Underline" />
+              </Trigger>
+              <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Opacity" Value="0.45" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+      <Style.Triggers>
+        <DataTrigger Binding="{Binding HasAction}" Value="True">
+          <Setter Property="Visibility" Value="Visible" />
+        </DataTrigger>
+      </Style.Triggers>
+    </Style>
+
+    <Style x:Key="FactMenu" TargetType="Border">
+      <Setter Property="Background" Value="{DynamicResource Brush.Surface}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource Brush.Border}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="{DynamicResource Radius.Medium}" />
+      <Setter Property="Padding" Value="0,3" />
+      <Setter Property="Margin" Value="0,0,8,8" />
+      <Setter Property="MinWidth" Value="148" />
+      <Setter Property="SnapsToDevicePixels" Value="True" />
+      <Setter Property="Effect">
+        <Setter.Value>
+          <DropShadowEffect BlurRadius="14" ShadowDepth="2" Opacity="0.18" Color="Black" />
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <Style x:Key="FactMenuItem" TargetType="Button">
+      <Setter Property="Foreground" Value="{DynamicResource Brush.Text}" />
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="Padding" Value="10,7" />
+      <Setter Property="Margin" Value="3,1" />
+      <Setter Property="HorizontalContentAlignment" Value="Left" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="Cursor" Value="Hand" />
+      <Setter Property="MinWidth" Value="0" />
+      <Setter Property="MinHeight" Value="0" />
+      <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border x:Name="Row" Background="{TemplateBinding Background}"
+                    CornerRadius="{DynamicResource Radius.Small}"
+                    Padding="{TemplateBinding Padding}">
+              <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center">
+                <ContentPresenter.Resources>
+                  <Style TargetType="TextBlock">
+                    <Setter Property="Foreground"
+                            Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=Button}}" />
+                    <Setter Property="FontFamily" Value="{DynamicResource Font.Ui}" />
+                    <Setter Property="FontSize" Value="13" />
+                  </Style>
+                </ContentPresenter.Resources>
+              </ContentPresenter>
+            </Border>
+            <ControlTemplate.Triggers>
+              <Trigger Property="IsMouseOver" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Brush.Hover}" />
+              </Trigger>
+              <Trigger Property="IsKeyboardFocused" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Brush.Hover}" />
+              </Trigger>
+              <Trigger Property="IsPressed" Value="True">
+                <Setter TargetName="Row" Property="Background" Value="{DynamicResource Brush.Pressed}" />
+              </Trigger>
+            </ControlTemplate.Triggers>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+    <DataTemplate x:Key="FactRow">
+      <Grid Margin="0,2">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="168" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <TextBlock Text="{Binding Label}" Style="{StaticResource Text.Muted}"
+                   TextWrapping="Wrap" VerticalAlignment="Top" />
+        <TextBlock Grid.Column="1" Text="{Binding Value}" Style="{StaticResource FactValue}"
+                   MouseLeftButtonUp="OnValueClick" KeyDown="OnValueKey" />
+        <Button Grid.Column="2" Content="{Binding ActionLabel}" Style="{StaticResource FactLink}"
+                Click="OnAction" />
+      </Grid>
+    </DataTemplate>
   </Window.Resources>
 
   <Grid Margin="18">
@@ -22,7 +165,8 @@
     <StackPanel Grid.Row="0">
       <TextBlock Style="{StaticResource Text.Heading}" Text="{loc:T dialog.fileAnalyze.title}" />
       <TextBlock x:Name="PathText" Style="{StaticResource Text.Muted}"
-                 TextTrimming="CharacterEllipsis" Margin="0,0,0,8" />
+                 TextTrimming="CharacterEllipsis" Margin="0,0,0,8"
+                 MouseLeftButtonUp="OnPathClick" KeyDown="OnPathKey" />
       <ItemsControl x:Name="AlertList" Margin="0,0,0,8">
         <ItemsControl.ItemTemplate>
           <DataTemplate>
@@ -35,21 +179,12 @@
 
     <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
       <StackPanel>
-        <ItemsControl x:Name="OverviewList">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <Grid Margin="0,2">
-                <Grid.ColumnDefinitions>
-                  <ColumnDefinition Width="168" />
-                  <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <TextBlock Text="{Binding Label}" Style="{StaticResource Text.Muted}"
-                           TextWrapping="Wrap" />
-                <TextBlock Grid.Column="1" Text="{Binding Value}" FontSize="12"
-                           TextWrapping="Wrap" />
-              </Grid>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
+        <ItemsControl x:Name="OverviewList" ItemTemplate="{StaticResource FactRow}">
+          <ItemsControl.ItemContainerStyle>
+            <Style TargetType="ContentPresenter">
+              <Setter Property="HorizontalAlignment" Value="Stretch" />
+            </Style>
+          </ItemsControl.ItemContainerStyle>
         </ItemsControl>
 
         <Grid Margin="0,2">
@@ -57,9 +192,11 @@
             <ColumnDefinition Width="168" />
             <ColumnDefinition Width="*" />
           </Grid.ColumnDefinitions>
-          <TextBlock Text="{loc:T dialog.fileAnalyze.hash}" Style="{StaticResource Text.Muted}" />
+          <TextBlock Text="{loc:T dialog.fileAnalyze.hash}" Style="{StaticResource Text.Muted}"
+                     VerticalAlignment="Top" />
           <TextBlock x:Name="HashText" Grid.Column="1" FontSize="12"
-                     FontFamily="{DynamicResource Font.Mono}" TextWrapping="Wrap" />
+                     FontFamily="{DynamicResource Font.Mono}" TextWrapping="Wrap"
+                     MouseLeftButtonUp="OnHashClick" KeyDown="OnHashKey" />
         </Grid>
 
         <ItemsControl x:Name="SectionList" Margin="0,8,0,0">
@@ -67,21 +204,12 @@
             <DataTemplate>
               <StackPanel>
                 <TextBlock Text="{Binding Title}" Style="{StaticResource Section}" />
-                <ItemsControl ItemsSource="{Binding Rows}">
-                  <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                      <Grid Margin="0,2">
-                        <Grid.ColumnDefinitions>
-                          <ColumnDefinition Width="168" />
-                          <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="{Binding Label}" Style="{StaticResource Text.Muted}"
-                                   TextWrapping="Wrap" />
-                        <TextBlock Grid.Column="1" Text="{Binding Value}" FontSize="12"
-                                   TextWrapping="Wrap" />
-                      </Grid>
-                    </DataTemplate>
-                  </ItemsControl.ItemTemplate>
+                <ItemsControl ItemsSource="{Binding Rows}" ItemTemplate="{StaticResource FactRow}">
+                  <ItemsControl.ItemContainerStyle>
+                    <Style TargetType="ContentPresenter">
+                      <Setter Property="HorizontalAlignment" Value="Stretch" />
+                    </Style>
+                  </ItemsControl.ItemContainerStyle>
                 </ItemsControl>
               </StackPanel>
             </DataTemplate>
