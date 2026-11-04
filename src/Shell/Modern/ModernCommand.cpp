@@ -85,7 +85,7 @@ class Command final : public RuntimeClass<Classic, IExplorerCommand, IObjectWith
     try {
       auto context = std::make_shared<MenuContext>();
       context->selection = Bridge::Selection(items);
-      context->nodes = MenuBuilder::Build(context->selection, Config::Get());
+      context->nodes = MenuLayout::Build(context->selection, Config::Get());
       *state = context->nodes.empty() ? ECS_HIDDEN : ECS_ENABLED;
       context_ = std::move(context);
       return S_OK;

@@ -24,7 +24,7 @@
     <ClCompile Include="Bridge.cpp" />
     <ClCompile Include="..\Config.cpp" />
     <ClCompile Include="..\GifProbe.cpp" />
-    <ClCompile Include="..\MenuBuilder.cpp" />
+    <ClCompile Include="..\MenuLayout.cpp" />
     <ClCompile Include="..\Selection.cpp" />
   </ItemGroup>
 </Project>

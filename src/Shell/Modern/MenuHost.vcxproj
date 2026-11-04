@@ -19,6 +19,6 @@
     <TargetName>FlectMenu</TargetName>
   </PropertyGroup>
   <Import Project="NativeCommon.props" />
-  <ItemGroup><ClCompile Include="MenuHost.cpp" /><ClCompile Include="..\Launcher.cpp" /></ItemGroup>
+  <ItemGroup><ClCompile Include="MenuHost.cpp" /><ClCompile Include="..\AppLaunch.cpp" /></ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 </Project>

@@ -1,10 +1,7 @@
 using System.Text;
 using System.Windows;
 
-using Optimizer.Main.Process;
-using Optimizer.Main.Update;
-
-namespace Optimizer;
+namespace Flect;
 
 public partial class App : Application
 {
@@ -16,15 +13,15 @@ public partial class App : Application
 
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
 
-        var settings = Optimizer.Main.Config.Settings.Current;
+        var settings = Preferences.Current;
         Loc.Use(settings.General.Language);
         Theme.Apply(this, settings.General.Theme);
-        AppIcon.Register();
-        Updater.SyncStartup(settings.General.AutoUpdate);
+        Flect.Settings.Icon.Register();
+        Flect.Update.Release.SyncStartup(settings.General.AutoUpdate);
 
         Dispatcher.UnhandledException += (_, args) =>
         {
-            Report.Error(args.Exception.Message);
+            Flect.Display.Notice.Error(args.Exception.Message);
             args.Handled = true;
             Shutdown(1);
         };
@@ -38,30 +35,30 @@ public partial class App : Application
         {
             if (args.Length == 0)
             {
-                Gui.Pages.SettingsGui.Open();
+                SettingsWindow.Open();
                 return;
             }
 
             if (args.Any(a => string.Equals(a, "--check-update", StringComparison.OrdinalIgnoreCase) ||
                               string.Equals(a, "--update", StringComparison.OrdinalIgnoreCase)))
             {
-                await Updater.RunBackgroundUpdateAsync();
+                await Flect.Update.Release.RunBackgroundUpdateAsync();
                 return;
             }
 
             var request = Request.Parse(args);
             if (request is null)
             {
-                Report.Error(Loc.F("msg.unknownCommand", string.Join(' ', args)));
+                Flect.Display.Notice.Error(Loc.F("msg.unknownCommand", string.Join(' ', args)));
                 Shutdown();
                 return;
             }
 
-            await Runner.RunAsync(request);
+            await Flect.Dispatch.Session.RunAsync(request);
         }
         catch (Exception ex)
         {
-            Report.Error(ex.Message);
+            Flect.Display.Notice.Error(ex.Message);
         }
         finally
         {

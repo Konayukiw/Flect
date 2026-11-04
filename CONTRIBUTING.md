@@ -41,26 +41,44 @@ Please read this document before contributing. It helps smooth reviews and keeps
 ```
 Flect/
 ├── src/
-│   ├── Shell/         # Native C++ Explorer context menu handler (IContextMenu)
-│   │   └── Modern/    # Windows 11 sparse package modern menu (IExplorerCommand)
+│   ├── Shell/              # Classic Explorer menu (IContextMenu), ContextMenu.vcxproj
+│   │   └── Modern/         # Windows 11 menu (IExplorerCommand)
 │   ├── App/
-│   │   ├── Assets/    # Application icons and branding graphics
-│   │   ├── Gui/       # WPF windows, dialogs, pages, and custom controls
-│   │   ├── Main/      # Core logics
-│   │   └── Tasks/     # Concrete task implementations
-│   └── Web/           # Project homepage and installation script web assets
-├── dependencies/      # Third-party native binaries downloaded by scripts/fetch.ps1
-├── deps/              # Python scripts for AI features
+│   │   ├── Assets/         # Application icon and fonts
+│   │   ├── I18n/           # English, 日本語, 简体中文 strings
+│   │   ├── Display/        # Window chrome, number formatting, message boxes
+│   │   ├── Files/          # Output names, temporary files, Recycle Bin
+│   │   ├── External/       # Bundled tools, child processes, Python
+│   │   ├── Dispatch/       # Menu catalog and task execution
+│   │   ├── Settings/       # Settings window; General/, Output/, Theme/
+│   │   ├── Inspect/        # Explain one file; Detail/, Report/, Suggest/, Window/
+│   │   ├── Folder/         # Shared scan types, plus Analysis/, Duplicate/, Rename/, Empty/, Tree/, Compress/
+│   │   ├── Archive/        # Archive extraction
+│   │   ├── Image/
+│   │   ├── Video/          # Shared encode types, plus Compress/, Trim/, Thumbnail/
+│   │   ├── Audio/
+│   │   ├── Subtitles/
+│   │   ├── Ocr/
+│   │   ├── Pdf/
+│   │   ├── Text/           # Text actions, plus Json/
+│   │   ├── Decompile/      # JAR decompile
+│   │   └── Update/         # Release check
+│   └── Web/                # Project homepage
+│       ├── assets/         # Logo, plus screenshots in En/, Ja/, and Zh/
+│       ├── css/
+│       └── js/
+├── dependencies/           # Third-party binaries downloaded by scripts/fetch.ps1
+├── deps/                   # Python scripts for AI features
 ├── evals/
-│   ├── Evals/         # .NET evaluation and integration test suite
-│   ├── i18n/          # Translation key coverage checker
-│   └── installer/     # Automated setup and installer verification scripts
-├── scripts/           # PowerShell build, packaging, and setup automation
-│   ├── build.ps1      # Compiles Shell extension and App worker
-│   ├── fetch.ps1      # Fetches third-party binaries (FFmpeg, 7-Zip, CFR)
-│   ├── package.ps1    # Packages the Inno Setup installer
-│   └── modern/        # Build and test helpers for Windows 11 modern context menu
-└── setup/             # Inno Setup script for installer and manifests
+│   ├── Evals/              # .NET evaluation suite, grouped by the same jobs as src/App
+│   ├── i18n/               # Translation key coverage checker
+│   └── installer/          # Automated setup and installer verification scripts
+├── scripts/                # PowerShell build, packaging, and setup automation
+│   ├── build.ps1           # Compiles the Shell extension and the App
+│   ├── fetch.ps1           # Fetches third-party binaries (FFmpeg, 7-Zip, CFR)
+│   ├── package.ps1         # Packages the Inno Setup installer
+│   └── modern/             # Build and test helpers for the Windows 11 menu
+└── setup/                  # Inno Setup script for the installer and manifests
 ```
 
 ### Naming
@@ -114,7 +132,7 @@ dotnet test evals/Evals/Evals.csproj -c Release --filter-not-trait "Category=AI"
 - **Non-Destructive**: Never overwrite user files. Append collision suffixes like `(2)` and move deletions to the Recycle Bin. Clean up temporary files on failure or cancellation.
 - **Shell Responsiveness**: `src/Shell` runs directly inside `explorer.exe`. Never block the Explorer UI thread. Delegate all heavy work to `src/App`.
 - **Localization**: When adding or updating strings, update `Strings.En.cs`, `Strings.Ja.cs`, `Strings.Zh.cs`, and `src/Shell/Labels.h`. Run `check.mjs` to ensure key parity.
-- **Catalog Synchronization**: Keep menu definitions synchronized across `src/Shell`, `src/Shell/Modern`, `MenuCatalog.cs`, and `General.xaml`.
+- **Catalog Synchronization**: Keep menu definitions synchronized across `src/Shell`, `src/Shell/Modern`, `src/App/Dispatch/Catalog.cs`, and `src/App/Settings/General.xaml`.
 - **Dependencies**: Open an issue before adding any external library or NuGet package. Keep installer footprint minimal and document licenses in `NOTICES.md`.
 - **Code Style**: Write clean, self-explanatory code without redundant docstrings or comments.
 - **Commit Format**: Use the format `<Verb> <description>` (Ex: `Add feature`, `Fix #123`, `Improve #123`, `Remove feature`).

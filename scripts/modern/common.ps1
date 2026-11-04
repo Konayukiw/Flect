@@ -89,7 +89,7 @@ function Build-ModernMenu([switch]$WithTests) {
     $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
     $msbuild = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -find 'MSBuild\**\Bin\MSBuild.exe' | Select-Object -First 1
     if (!$msbuild) { throw 'Visual Studio C++ build tools were not found.' }
-    $projects = @('ModernShell', 'MenuHost')
+    $projects = @('ExplorerCommand', 'MenuHost')
     if ($WithTests) { $projects += 'SmokeTest' }
     foreach ($project in $projects) {
         & $msbuild (Join-Path $ModernMenuRepo "src\Shell\Modern\$project.vcxproj") /p:Configuration=Release /p:Platform=x64 /m /nologo /verbosity:minimal

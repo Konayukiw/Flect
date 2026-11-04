@@ -15,7 +15,7 @@
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
 
-    <RootNamespace>Optimizer</RootNamespace>
+    <RootNamespace>Flect</RootNamespace>
     <AssemblyName>$(BrandAppExeName)</AssemblyName>
     <Product>$(BrandName)</Product>
     <AssemblyTitle>$(BrandName)</AssemblyTitle>
@@ -27,33 +27,43 @@
 
   <ItemGroup>
     <Using Include="System.IO" />
-    <Using Include="Optimizer.Main.Common" />
-    <Using Include="Optimizer.Main.Process" />
-    <Using Include="Optimizer.Main.Config" />
-    <Using Include="Optimizer.Main.Localization" />
-    <Using Include="Optimizer.Main.Folder" />
-    <Using Include="Optimizer.Main.Inspect" />
-    <Using Include="Optimizer.Main.Media" />
-    <Using Include="Optimizer.Main.Media.Compression" />
-    <Using Include="Optimizer.Main.Image" />
-    <Using Include="Optimizer.Main.Subtitles" />
-    <Using Include="Optimizer.Main.Pdf" />
-    <Using Include="Optimizer.Main.Text" />
-    <Using Include="Optimizer.Main.Ocr" />
-    <Using Include="Optimizer.Tasks.Folder" />
-    <Using Include="Optimizer.Tasks.Inspect" />
-    <Using Include="Optimizer.Tasks.Image" />
-    <Using Include="Optimizer.Tasks.Video" />
-    <Using Include="Optimizer.Tasks.Archive" />
-    <Using Include="Optimizer.Tasks.Audio" />
-    <Using Include="Optimizer.Tasks.Pdf" />
-    <Using Include="Optimizer.Tasks.Text" />
-    <Using Include="Optimizer.Tasks.Ocr" />
-    <Using Include="Optimizer.Tasks.Jar" />
-    <Using Include="Optimizer.Tasks.Subtitles" />
-    <Using Include="Optimizer.Gui.Controls" />
-    <Using Include="Optimizer.Gui.Dialogs" />
-    <Using Include="Optimizer.Gui.Pages" />
+    <Using Include="Flect" />
+    <Using Include="Flect.Display" />
+    <Using Include="Flect.Files" />
+    <Using Include="Flect.External" />
+    <Using Include="Flect.Dispatch" />
+    <Using Include="Flect.Settings" />
+    <Using Include="Flect.Settings.Settings" Alias="Preferences" />
+    <Using Include="Flect.Inspect" />
+    <Using Include="Flect.Folder" />
+    <Using Include="Flect.Folder.Analysis" />
+    <Using Include="Flect.Folder.Duplicate" />
+    <Using Include="Flect.Folder.Rename" />
+    <Using Include="Flect.Folder.Empty" />
+    <Using Include="Flect.Folder.Tree" />
+    <Using Include="Flect.Folder.Compress" />
+    <Using Include="Flect.Video.Compress" />
+    <Using Include="Flect.Video.Trim" />
+    <Using Include="Flect.Video.Thumbnail" />
+    <Using Include="Flect.Inspect.Detail" />
+    <Using Include="Flect.Inspect.Report" />
+    <Using Include="Flect.Inspect.Suggest" />
+    <Using Include="Flect.Inspect.Window" />
+    <Using Include="Flect.Settings.General" />
+    <Using Include="Flect.Settings.Output" />
+    <Using Include="Flect.Settings.Theme" />
+    <Using Include="Flect.Text.Json" />
+    <Using Include="Flect.Archive" />
+    <Using Include="Flect.Image" />
+    <Using Include="Flect.Video" />
+    <Using Include="Flect.Audio" />
+    <Using Include="Flect.Subtitles" />
+    <Using Include="Flect.Ocr" />
+    <Using Include="Flect.Pdf" />
+    <Using Include="Flect.Text" />
+    <Using Include="Flect.Decompile" />
+    <Using Include="Flect.Update" />
+    <Using Include="Flect.I18n" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,7 +1,7 @@
 #include "ContextMenu.h"
 
 #include "Config.h"
-#include "Launcher.h"
+#include "AppLaunch.h"
 #include "Module.h"
 #include "Resource.h"
 
@@ -117,7 +117,7 @@ IFACEMETHODIMP ContextMenu::QueryContextMenu(HMENU menu, UINT indexMenu, UINT id
                                              UINT idCmdLast, UINT flags) {
   if (flags & CMF_DEFAULTONLY) return MAKE_HRESULT(SEVERITY_SUCCESS, 0, 0);
 
-  tree_ = MenuBuilder::Build(selection_, Config::Get());
+  tree_ = MenuLayout::Build(selection_, Config::Get());
   commands_.clear();
   if (tree_.empty()) return MAKE_HRESULT(SEVERITY_SUCCESS, 0, 0);
 
@@ -165,7 +165,7 @@ IFACEMETHODIMP ContextMenu::InvokeCommand(CMINVOKECOMMANDINFO* info) {
   const MenuNode* node = commands_[offset];
   if (!node || node->verb.empty()) return E_INVALIDARG;
 
-  return Launcher::Run(node->verb, selection_.paths, info->hwnd);
+  return AppLaunch::Run(node->verb, selection_.paths, info->hwnd);
 }
 
 IFACEMETHODIMP ContextMenu::GetCommandString(UINT_PTR id, UINT flags, UINT*, CHAR* name, UINT cchMax) {

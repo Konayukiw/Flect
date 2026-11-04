@@ -3,6 +3,7 @@
 /dependencies/
 /tests/
 /.vs/
+/.vscode/
 **/bin/
 **/obj/
 *.vcxproj.user

@@ -26,7 +26,7 @@ const fileExtensions = new Set(["json", "txt", "xml", "csv", "html", "md", "png"
 const webFileExtensions = new Set([...fileExtensions, "js", "mjs", "css", "svg", "gif", "webp", "mp4", "webm", "ico", "pdf", "zip"]);
 
 function checkApp() {
-  const folder = join(root, "src", "App", "Main", "I18n");
+  const folder = join(root, "src", "App", "I18n");
   const files = { en: "Strings.En.cs", ja: "Strings.Ja.cs", zh: "Strings.Zh.cs" };
   const tables = {};
 

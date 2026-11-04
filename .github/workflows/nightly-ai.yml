@@ -82,7 +82,7 @@ jobs:
           path: |
             .flect-home/env
             .flect-home/models
-          key: ai-${{ steps.keys.outputs.image }}-${{ hashFiles('deps/*.py', 'src/App/Main/Subtitles/SubtitleSupport.cs', 'src/App/Main/Image/BackgroundRemover.cs') }}
+          key: ai-${{ steps.keys.outputs.image }}-${{ hashFiles('deps/*.py', 'src/App/Subtitles/Whisper.cs', 'src/App/Image/Matte.cs') }}
 
       - name: Fetch third-party tools
         shell: pwsh

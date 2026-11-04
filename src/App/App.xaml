@@ -1,4 +1,4 @@
-<Application x:Class="Optimizer.App"
+<Application x:Class="Flect.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <Application.Resources>

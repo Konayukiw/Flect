@@ -39,7 +39,7 @@ if (-not $vsPath) { throw 'No Visual Studio installation with the C++ toolset wa
 
 $msbuild = Join-Path $vsPath 'MSBuild\Current\Bin\MSBuild.exe'
 Write-Host 'shell extension...'
-& $msbuild (Join-Path $repoRoot 'src\Shell\ShellExt.vcxproj') `
+& $msbuild (Join-Path $repoRoot 'src\Shell\ContextMenu.vcxproj') `
     /p:Configuration=$Configuration /p:Platform=x64 /v:minimal /nologo
 if ($LASTEXITCODE -ne 0) { throw 'The shell extension failed to build.' }
 

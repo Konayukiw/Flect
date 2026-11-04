@@ -1,5 +1,5 @@
 #include "Bridge.h"
-#include "Launcher.h"
+#include "AppLaunch.h"
 
 namespace {
 bool InsertNodes(HMENU menu, const std::vector<MenuNode>& nodes,
@@ -50,11 +50,11 @@ HRESULT Run() {
   hr = Bridge::ShellItems(paths, &items);
   if (FAILED(hr)) return hr;
   const auto selection = Bridge::Selection(items.Get());
-  const auto tree = MenuBuilder::Build(selection, Config::Get());
+  const auto tree = MenuLayout::Build(selection, Config::Get());
   const MenuNode* selected = nullptr;
   for (const auto& node : tree) if (node.id == menuId) { selected = &node; break; }
   if (!selected) return E_INVALIDARG;
-  if (selected->children.empty()) return Launcher::Run(selected->verb, selection.paths, nullptr);
+  if (selected->children.empty()) return AppLaunch::Run(selected->verb, selection.paths, nullptr);
 
   HMENU menu = CreatePopupMenu();
   if (!menu) return HRESULT_FROM_WIN32(GetLastError());
@@ -73,7 +73,7 @@ HRESULT Run() {
   DestroyWindow(owner);
   DestroyMenu(menu);
   if (choice && choice <= commands.size())
-    return Launcher::Run(commands[choice - 1]->verb, selection.paths, nullptr);
+    return AppLaunch::Run(commands[choice - 1]->verb, selection.paths, nullptr);
   return S_OK;
 }
 }

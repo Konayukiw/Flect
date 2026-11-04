@@ -1,0 +1,136 @@
+using System.Windows;
+using System.Windows.Controls;
+
+namespace Flect.Settings.General;
+
+public partial class General : UserControl, ISettings
+{
+    private List<MenuOption> _menu = [];
+    private bool _checkingUpdate;
+
+    public General()
+    {
+        InitializeComponent();
+
+        Binding.Fill(ThemeBox,
+            (AppTheme.System, "settings.general.theme.system"),
+            (AppTheme.Light, "settings.general.theme.light"),
+            (AppTheme.Dark, "settings.general.theme.dark"));
+
+        Binding.Fill(LanguageBox,
+            (AppLanguage.System, "settings.general.language.system"),
+            (AppLanguage.English, "settings.general.language.en"),
+            (AppLanguage.Japanese, "settings.general.language.ja"),
+            (AppLanguage.ChineseSimplified, "settings.general.language.zh"));
+    }
+
+    void ISettings.Load(Settings settings)
+    {
+        var general = settings.General;
+
+        Binding.Select(ThemeBox, general.Theme);
+        Binding.Select(LanguageBox, general.Language);
+
+        CloseOnSuccessBox.IsChecked = general.CloseOnSuccess;
+        CloseOnFailureBox.IsChecked = general.CloseOnFailure;
+        CloseOnCancelBox.IsChecked = general.CloseOnCancel;
+
+        AutoUpdateBox.IsChecked = general.AutoUpdate;
+
+        var hidden = new HashSet<string>(general.HiddenMenuItems, StringComparer.OrdinalIgnoreCase);
+        _menu = MenuOption.Build(Flect.Dispatch.Catalog.Categories, hidden);
+
+        foreach (var option in _menu) option.IsExpanded = ShowsHidden(option);
+
+        MenuTree.ItemsSource = _menu;
+    }
+
+    void ISettings.Store(Settings settings)
+    {
+        var general = settings.General;
+
+        general.Theme = Binding.Selected(ThemeBox, general.Theme);
+        general.Language = Binding.Selected(LanguageBox, general.Language);
+
+        general.CloseOnSuccess = CloseOnSuccessBox.IsChecked == true;
+        general.CloseOnFailure = CloseOnFailureBox.IsChecked == true;
+        general.CloseOnCancel = CloseOnCancelBox.IsChecked == true;
+
+        general.AutoUpdate = AutoUpdateBox.IsChecked == true;
+        Flect.Update.Release.SetStartup(general.AutoUpdate);
+
+        var hidden = new List<string>();
+        MenuOption.CollectHidden(_menu, hidden);
+        general.HiddenMenuItems = hidden;
+    }
+
+    private static bool ShowsHidden(MenuOption option) =>
+        option.IsChecked != true || option.Children.Any(ShowsHidden);
+
+    private void OnCheckAll(object sender, RoutedEventArgs e) => MenuOption.SetAll(_menu, true);
+
+    private void OnCheckNone(object sender, RoutedEventArgs e) => MenuOption.SetAll(_menu, false);
+
+    private async void OnCheckUpdate(object sender, RoutedEventArgs e)
+    {
+        if (_checkingUpdate) return;
+
+        _checkingUpdate = true;
+        CheckUpdateButton.IsEnabled = false;
+        UpdateStatusText.Text = Loc.T("settings.general.update.checking");
+
+        try
+        {
+            var check = await Flect.Update.Release.CheckAsync();
+            var version = check.Version;
+            var setup = check.Setup;
+
+            if (check.Status == UpdateStatus.UpToDate)
+            {
+                UpdateStatusText.Text = Loc.T("settings.general.update.latest");
+                return;
+            }
+
+            if (check.Status != UpdateStatus.Available || version is null || setup is null)
+            {
+                UpdateStatusText.Text = Loc.T("settings.general.update.failed");
+                return;
+            }
+
+            var display = Flect.Update.Release.FormatVersion(version);
+            var answer = MessageBox.Show(
+                Window.GetWindow(this),
+                Loc.F("settings.general.update.confirm", display),
+                Branding.Name,
+                MessageBoxButton.OKCancel,
+                MessageBoxImage.Question,
+                MessageBoxResult.Cancel);
+
+            if (answer != MessageBoxResult.OK)
+            {
+                UpdateStatusText.Text = string.Empty;
+                return;
+            }
+
+            UpdateStatusText.Text = Loc.F("settings.general.update.downloading", display);
+
+            if (!await Flect.Update.Release.DownloadAndInstallAsync(setup, showProgress: true))
+            {
+                UpdateStatusText.Text = Loc.T("settings.general.update.downloadFailed");
+                return;
+            }
+
+            UpdateStatusText.Text = Loc.F("settings.general.update.installing", display);
+            Application.Current.Shutdown();
+        }
+        catch
+        {
+            UpdateStatusText.Text = Loc.T("settings.general.update.failed");
+        }
+        finally
+        {
+            _checkingUpdate = false;
+            CheckUpdateButton.IsEnabled = true;
+        }
+    }
+}

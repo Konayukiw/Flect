@@ -20,10 +20,45 @@
   <ItemGroup>
     <Using Include="System.IO" />
     <Using Include="Xunit" />
-    <Using Include="Optimizer" />
-    <Using Include="Optimizer.Main.Common" />
-    <Using Include="Optimizer.Main.Config" />
-    <Using Include="Optimizer.Main.Process" />
+    <Using Include="Flect" />
+    <Using Include="Flect.Display" />
+    <Using Include="Flect.Files" />
+    <Using Include="Flect.External" />
+    <Using Include="Flect.Dispatch" />
+    <Using Include="Flect.Settings" />
+    <Using Include="Flect.Settings.Settings" Alias="Preferences" />
+    <Using Include="Flect.Inspect" />
+    <Using Include="Flect.Folder" />
+    <Using Include="Flect.Folder.Analysis" />
+    <Using Include="Flect.Folder.Duplicate" />
+    <Using Include="Flect.Folder.Rename" />
+    <Using Include="Flect.Folder.Empty" />
+    <Using Include="Flect.Folder.Tree" />
+    <Using Include="Flect.Folder.Compress" />
+    <Using Include="Flect.Video.Compress" />
+    <Using Include="Flect.Video.Trim" />
+    <Using Include="Flect.Video.Thumbnail" />
+    <Using Include="Flect.Inspect.Detail" />
+    <Using Include="Flect.Inspect.Report" />
+    <Using Include="Flect.Inspect.Suggest" />
+    <Using Include="Flect.Inspect.Window" />
+    <Using Include="Flect.Settings.General" />
+    <Using Include="Flect.Settings.Output" />
+    <Using Include="Flect.Settings.Theme" />
+    <Using Include="Flect.Text.Json" />
+    <Using Include="Flect.Archive" />
+    <Using Include="Flect.Image" />
+    <Using Include="Flect.Video" />
+    <Using Include="Flect.Audio" />
+    <Using Include="Flect.Subtitles" />
+    <Using Include="Flect.Ocr" />
+    <Using Include="Flect.Pdf" />
+    <Using Include="Flect.Text" />
+    <Using Include="Flect.Decompile" />
+    <Using Include="Flect.Update" />
+    <Using Include="Flect.I18n" />
+    <Using Include="Evals.Harness" />
+    <Using Include="Evals.Harness.Harness" Alias="Rig" />
   </ItemGroup>
 
   <ItemGroup>

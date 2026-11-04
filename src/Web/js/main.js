@@ -1498,6 +1498,9 @@ for (const btn of $$(".copy-btn")) {
   });
 }
 
+const shotFolder = { en: "En", ja: "Ja", zh: "Zh" };
+const shotFile = { img: "Img", video: "Video", folder: "Folder", text: "Text" };
+
 const getShotLang = () => {
   const raw = (document.documentElement.lang || "en").toLowerCase();
   if (raw.startsWith("ja")) return "ja";
@@ -1505,11 +1508,16 @@ const getShotLang = () => {
   return "en";
 };
 
+const shotSrc = (kind) => {
+  const folder = shotFolder[getShotLang()] || "En";
+  const file = shotFile[kind] || kind;
+  return `assets/${folder}/${file}.png`;
+};
+
 const syncFeatureShots = () => {
-  const lang = getShotLang();
   for (const img of $$("[data-shot-kind]")) {
     const kind = img.dataset.shotKind;
-    if (kind) img.src = `assets/shots/${kind}-${lang}.webp`;
+    if (kind) img.src = shotSrc(kind);
   }
 };
 
@@ -1547,9 +1555,8 @@ if (hvTabsWrap) {
   const renderHv = (kind) => {
     hvCurrent = kind;
     const cfg = (hvConfigs[kind] || hvConfigs.image)();
-    const lang = getShotLang();
     for (const b of hvButtons) b.classList.toggle("active", b.dataset.hv === kind);
-    if (hvShotImg) hvShotImg.src = `assets/shots/${cfg.shot}-${lang}.webp`;
+    if (hvShotImg) hvShotImg.src = shotSrc(cfg.shot);
     if (hvOutCode) hvOutCode.textContent = cfg.out;
   };
 
