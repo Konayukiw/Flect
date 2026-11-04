@@ -5,7 +5,7 @@
     <ResourceDictionary>
 
       <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="Gui/Controls/Controls.xaml" />
+        <ResourceDictionary Source="Display/Controls.xaml" />
       </ResourceDictionary.MergedDictionaries>
 
       <SolidColorBrush x:Key="Brush.Window"         Color="#FFF6F7F9" />
