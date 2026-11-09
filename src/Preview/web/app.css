@@ -1,0 +1,249 @@
+@font-face {
+  font-family: "HackGen Console";
+  src: url("/lib/fonts/HackGenConsole-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "HackGen Console";
+  src: url("/lib/fonts/HackGenConsole-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-display: block;
+}
+
+:root {
+  color-scheme: light;
+  --background: #ffffff;
+  --surface: #f3f3f3;
+  --border: #dedede;
+  --text: #1f1f1f;
+  --muted: #5f5f5f;
+  --accent: #0f6cbd;
+  --accent-text: #ffffff;
+  --warning-background: #fff4ce;
+  --warning-text: #5c4400;
+  --danger-background: #fde7e9;
+  --danger-text: #8a1a1f;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: #1e1e1e;
+  --surface: #2b2b2b;
+  --border: #3d3d3d;
+  --text: #e6e6e6;
+  --muted: #a6a6a6;
+  --accent: #60cdff;
+  --accent-text: #00263a;
+  --warning-background: #433519;
+  --warning-text: #fce100;
+  --danger-background: #442726;
+  --danger-text: #ffb9b9;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--background);
+  color: var(--text);
+  font: 12px/1.45 "Segoe UI Variable Text", "Segoe UI", "Yu Gothic UI", "Microsoft YaHei UI", sans-serif;
+}
+
+#banners {
+  flex: none;
+}
+
+.banner {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--border);
+  background: var(--warning-background);
+  color: var(--warning-text);
+  overflow-wrap: anywhere;
+}
+
+.banner.danger {
+  background: var(--danger-background);
+  color: var(--danger-text);
+}
+
+#toolbar {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+#toolbar[hidden] {
+  display: none;
+}
+
+.spacer {
+  flex: 1;
+}
+
+button,
+select {
+  height: 24px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--background);
+  color: inherit;
+  font: inherit;
+}
+
+button:hover {
+  border-color: var(--accent);
+}
+
+button[aria-pressed="true"],
+button.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-text);
+}
+
+button:disabled {
+  opacity: 0.6;
+}
+
+#view {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.fill {
+  position: absolute;
+  inset: 0;
+}
+
+iframe.document {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  background: #ffffff;
+}
+
+.center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px;
+  text-align: center;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.picture {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  background-color: #ffffff;
+  background-image: linear-gradient(45deg, #d9d9d9 25%, transparent 25%, transparent 75%, #d9d9d9 75%), linear-gradient(45deg, #d9d9d9 25%, transparent 25%, transparent 75%, #d9d9d9 75%);
+  background-position: 0 0, 8px 8px;
+  background-size: 16px 16px;
+}
+
+.picture img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+
+.specimen {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  padding: 14px 16px;
+}
+
+.specimen .title {
+  margin-bottom: 12px;
+  color: var(--muted);
+}
+
+.specimen .row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.specimen .size {
+  flex: none;
+  width: 26px;
+  color: var(--muted);
+  text-align: right;
+}
+
+.specimen .sample {
+  min-width: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.player {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px;
+  background: #000000;
+  color: #e6e6e6;
+}
+
+.player.audio {
+  background: var(--background);
+  color: var(--text);
+}
+
+.player video {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+}
+
+.player audio {
+  width: min(520px, 100%);
+}
+
+.player .message {
+  max-width: 520px;
+  text-align: center;
+}
+
+.player button:not(.primary) {
+  color: var(--text);
+}

@@ -9,5 +9,8 @@
     <pe-file path="FlectShell.dll">
       <authenticode-sign/>
     </pe-file>
+    <pe-file path="FlectPreview.dll">
+      <authenticode-sign/>
+    </pe-file>
   </zip-file>
 </artifact-configuration>

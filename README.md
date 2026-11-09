@@ -135,6 +135,36 @@ RAR is read-only: Flect can extract `.rar` files but cannot create them. This is
 | Text encodings | UTF-8, UTF-8 (BOM), UTF-16, Shift_JIS |
 | Line endings | CRLF (Windows), LF (Unix) |
 
+## Preview
+
+Turn on the preview pane in File Explorer and select a file to see it without opening it.
+
+| | |
+| --- | --- |
+| **Source code and text** | Syntax highlighting in a read-only editor |
+| **HTML** | Switch between the source and the rendered page |
+| **Markdown** | Rendered output or the source |
+| **SVG** | Shown as an image, so its scripts never run |
+| **PDF** | Every page, with selectable text |
+| **Fonts** | TTF, OTF, TTC, OTC, WOFF and WOFF2, shown with your own sample text |
+| **Video and audio** | Played in the pane. Formats the browser cannot play can be converted with one click |
+
+Flect replaces original Windows preview. You choose what it controles under **Preview** in the settings.
+
+If the contents do not match the extension, the pane will warn. A `.txt` that is really an executable is flagged and not displayed.
+
+### Files from the Internet
+
+**Flect never runs scripts in HTML files that came from the Internet.** 
+
+Selecting a file should not be enough to run a stranger's code, and an HTML page can also leak your Windows sign-in hash just by referencing a remote file. Those files open in a restricted mode: no scripts, no external content, no other files from the same folder. You can read the source and view the page as static HTML, and that is all.
+
+Explorer decides whether a file from the Internet can be previewed at all. When Windows blocks it, you see the Windows message and Flect does not try to get around it.
+
+For files on your own PC, HTML shows its source first. Rendering, running scripts and allowing network access each take a click.
+
+Everything is parsed inside the Chromium sandbox of the WebView2 Runtime in a low-integrity process, with network access disabled. FFmpeg is the one exception: it runs only when you ask for a conversion, with reduced rights, and only for files whose contents match a known format.
+
 ## Settings
 
 Open **Flect** from the Start menu.
@@ -146,6 +176,7 @@ Open **Flect** from the Start menu.
 - **Text** - What to do with characters Shift_JIS cannot represent, and JSON key-sorting rules.
 - **OCR** - Recognition language, where the text goes, and the output encoding.
 - **Output** - Define where the processed files should go. For each features with new file generation, you can determine the path that output files directory. Both relative and absolute path are supported.
+- **Preview** - Which file types Flect previews, previewers from other apps to replace, the code font, the sample text for font files, and trusted folders.
 
 The menu presets (like `50%`, `10 MB`, `45°` entries) are editable here too.
 
@@ -155,6 +186,7 @@ The menu presets (like `50%`, `10 MB`, `45°` entries) are editable here too.
 | --- | --- |
 | **Windows** | 64-bit Windows 11 or Windows 10 |
 | **.NET 10 Desktop Runtime** | Required. Setup checks for it and offers the download if it is missing. |
+| **Microsoft Edge WebView2 Runtime** | Only for the Preview. Included with Windows 11, and the pane tells you if it is missing. |
 | **HEVC Video Extensions** | Only to *write* `.heic` files. Reading HEIC works without it. From the Microsoft Store. |
 | **Java (JDK or JRE)** | Only to decompile `.jar` files. |
 | **Windows language pack** | Only for OCR, and only for the language you want to read. Flect's settings can open the installer for you. |

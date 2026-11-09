@@ -17,6 +17,7 @@ internal sealed class Settings
     public OcrSettings Ocr { get; set; } = new();
     public CodeSettings Code { get; set; } = new();
     public OutputSettings Output { get; set; } = new();
+    public ExplorerPreview.PreviewSettings Preview { get; set; } = new();
 
     public static Settings Current => _current ??= Load();
 

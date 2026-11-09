@@ -24,6 +24,11 @@ repository.
 | FFmpeg / FFprobe | Fetched by `scripts/fetch.ps1` | GPL-3.0 |
 | 7-Zip | 26.02 | LGPL-2.1-or-later with unRAR restriction |
 | CFR | 0.152 | MIT |
+| WebView2 SDK (static loader) | 1.0.4314.35 | BSD-3-Clause |
+| Monaco Editor | 0.57.0 | MIT |
+| pdf.js (pdfjs-dist) | 6.5.438 | Apache-2.0 |
+| markdown-it | 15.0.3 | MIT |
+| HackGen Console | 2.10.0 | SIL OFL 1.1 |
 | faster-whisper | pip-installed, first use | MIT |
 | CTranslate2 | pip-installed, first use | MIT |
 | PyAV | pip-installed, first use | BSD-3-Clause |
@@ -163,6 +168,55 @@ from the CFR releases and bundled under `deps\` by `scripts\fetch.ps1`.
 - Copyright (c) 2011- Lee Benfield
 - License: MIT License
 
+### WebView2 SDK - BSD 3-Clause License
+
+The static loader library from the Microsoft.Web.WebView2 NuGet package,
+linked into `FlectPreview.dll`.
+
+- Project: <https://learn.microsoft.com/microsoft-edge/webview2/>
+- Copyright (C) Microsoft Corporation. All rights reserved.
+- License: BSD 3-Clause License
+
+### Monaco Editor - MIT License
+
+The read-only code view in the Explorer preview, downloaded by
+`scripts\fetch.ps1`. Its license and third-party notices ship in
+`preview\web\lib\monaco\`.
+
+- Project: <https://github.com/microsoft/monaco-editor>
+- Copyright (c) 2016 - present Microsoft Corporation
+- License: MIT License
+
+### pdf.js - Apache License 2.0
+
+The PDF renderer in the Explorer preview, from the `pdfjs-dist` package. The
+WebAssembly decoders it uses (OpenJPEG, JBig2, QCMS, QuickJS) ship with their
+own license files in `preview\web\lib\pdfjs\wasm\`.
+
+- Project: <https://github.com/mozilla/pdf.js>
+- Copyright Mozilla Foundation and contributors
+- License: Apache License, Version 2.0
+
+### markdown-it - MIT License
+
+The Markdown renderer in the Explorer preview. Its browser bundle includes
+entities (BSD-2-Clause), linkify-it (MIT), mdurl (MIT), punycode.js (MIT) and
+uc.micro (MIT).
+
+- Project: <https://github.com/markdown-it/markdown-it>
+- Copyright (c) 2014 Vitaly Puzrin, Alex Kocharin
+- License: MIT License
+
+### HackGen Console - SIL Open Font License 1.1
+
+The default code font of the Explorer preview. The TTF files are bundled
+unmodified, with the license in `preview\web\lib\fonts\LICENSE-HackGen.txt`.
+"HackGen" and its Japanese name are Reserved Font Names of the project.
+
+- Project: <https://github.com/yuru7/HackGen>
+- Copyright (c) 2019, Yuko OTAWARA
+- License: SIL Open Font License, Version 1.1
+
 ## Runtime Prerequisites (Non-bundled)
 
 These components are required to run or fully use Flect but are **not**
@@ -171,6 +225,9 @@ separately, under their own licenses.
 
 - **.NET 10 Desktop Runtime** - required to run Flect; the setup program
   checks for it. Distributed by Microsoft under the MIT License.
+- **Microsoft Edge WebView2 Runtime** - required only for the Explorer
+  preview. Distributed by Microsoft under its own terms and included with
+  Windows 11.
 - **Java runtime (JDK/JRE)** - required only for `.jar` decompilation.
   Installed by the user; licensing varies by vendor (for example, Oracle
   OpenJDK is under GPL-2.0 with the Classpath Exception).
@@ -214,7 +271,8 @@ with the `LICENSE` file and is therefore not duplicated here.
 
 ### Apache License 2.0
 
-Applies to: Magick.NET, PdfPig, tokenizers, huggingface-hub, and Flect itself.
+Applies to: Magick.NET, PdfPig, tokenizers, huggingface-hub, pdf.js, and
+Flect itself.
 
 The full text is provided in the `LICENSE` file at the root of this
 repository. A copy can also be obtained at
@@ -223,7 +281,8 @@ repository. A copy can also be obtained at
 ### MIT License
 
 Applies to: PDFtoImage, SkiaSharp, System.IO.Hashing, CFR, faster-whisper,
-CTranslate2, onnxruntime, OpenAI Whisper model weights.
+CTranslate2, onnxruntime, OpenAI Whisper model weights, Monaco Editor,
+markdown-it.
 
 ```
 MIT License
@@ -254,7 +313,7 @@ the Component Details section above.
 
 ### BSD 3-Clause License
 
-Applies to: PDFium, PyAV.
+Applies to: PDFium, PyAV, the WebView2 SDK static loader.
 
 ```
 Copyright (c) <year> <owner>. All rights reserved.

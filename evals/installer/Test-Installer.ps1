@@ -20,6 +20,11 @@ $version = Format-BrandDisplayVersion $group.BrandVersion
 $app = Join-Path $env:LOCALAPPDATA $brand
 $classes = 'HKCU:\Software\Classes'
 $clsidKey = "$classes\CLSID\$clsid"
+$previewClsid = $group.BrandPreviewClsid
+$previewClsidKey = "$classes\CLSID\$previewClsid"
+$previewAppIdKey = "$classes\AppID\$($group.BrandPreviewAppId)"
+$previewMarker = '{8895b1c6-b41f-4c1c-a562-0d564250836f}'
+$previewSampleKey = "$classes\SystemFileAssociations\.py\shellex\$previewMarker"
 $handlerKeys = @("$classes\*\shellex\ContextMenuHandlers\$brand", "$classes\Directory\shellex\ContextMenuHandlers\$brand")
 $presetKey = "HKCU:\Software\$brand\Presets"
 $uninstallKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{$appId}_is1"
@@ -59,6 +64,16 @@ function Assert-Registered([string]$Stage) {
     foreach ($key in $handlerKeys) {
         Assert-That ((Get-DefaultValue $key) -eq $clsid) "$Stage - $key is registered"
     }
+
+    $previewServer = Get-DefaultValue "$previewClsidKey\InprocServer32"
+    Assert-That ($previewServer -and ($previewServer -ieq (Join-Path $app "${brand}Preview.dll"))) "$Stage - the preview CLSID points at the installed handler ($previewServer)"
+    $surrogate = if (Test-Path -LiteralPath $previewAppIdKey) { (Get-Item -LiteralPath $previewAppIdKey).GetValue('DllSurrogate', $null, 'DoNotExpandEnvironmentNames') }
+    Assert-That ($surrogate -eq '%SystemRoot%\system32\prevhost.exe') "$Stage - the preview runs in its own prevhost ($surrogate)"
+    $previewClass = if (Test-Path -LiteralPath $previewClsidKey) { Get-Item -LiteralPath $previewClsidKey }
+    $untrusted = if ($previewClass) { $previewClass.GetValue('AutomaticallyPreviewUntrustedFiles') }
+    $untrustedKind = if ($previewClass -and ($previewClass.GetValueNames() -contains 'AutomaticallyPreviewUntrustedFiles')) { $previewClass.GetValueKind('AutomaticallyPreviewUntrustedFiles') }
+    Assert-That (($untrusted -eq 1) -and ($untrustedKind -eq 'DWord')) "$Stage - the handler opts in to previewing untrusted files ($untrustedKind $untrusted)"
+    Assert-That ((Get-DefaultValue $previewSampleKey) -eq $previewClsid) "$Stage - .py is associated with the preview handler"
 }
 
 $runtime = Join-Path ${env:ProgramW6432} 'dotnet\shared\Microsoft.WindowsDesktop.App'
@@ -71,8 +86,11 @@ New-ItemProperty -Path $presetKey -Name 'Video.CompressDiscord' -Value '10485760
 
 Invoke-Setup 'install'
 
-foreach ($file in @("$brand.exe", "${brand}Shell.dll", 'unins000.exe', 'deps\ffmpeg.exe', 'deps\ffprobe.exe',
-                    'deps\7za.exe', 'deps\7z.exe', 'deps\cfr.jar', 'deps\subtitles.py', 'deps\rembg.py')) {
+foreach ($file in @("$brand.exe", "${brand}Shell.dll", "${brand}Preview.dll", 'unins000.exe', 'deps\ffmpeg.exe', 'deps\ffprobe.exe',
+                    'deps\7za.exe', 'deps\7z.exe', 'deps\cfr.jar', 'deps\subtitles.py', 'deps\rembg.py',
+                    'NOTICES.md', 'preview\web\index.html', 'preview\web\lib\monaco\vs\loader.js',
+                    'preview\web\lib\pdfjs\pdf.min.mjs', 'preview\web\lib\fonts\HackGenConsole-Regular.ttf',
+                    'preview\web\lib\fonts\LICENSE-HackGen.txt')) {
     Assert-That (Test-Path (Join-Path $app $file)) "install - $file is installed"
 }
 Assert-Registered 'install'
@@ -119,6 +137,10 @@ foreach ($key in $handlerKeys) {
 }
 Assert-That (-not (Test-Path (Join-Path $app "$brand.exe"))) 'uninstall - the worker is removed'
 Assert-That (-not (Test-Path (Join-Path $app "${brand}Shell.dll"))) 'uninstall - the shell extension is removed'
+Assert-That (-not (Test-Path (Join-Path $app "${brand}Preview.dll"))) 'uninstall - the preview handler is removed'
+Assert-That (-not (Test-Path -LiteralPath $previewClsidKey)) 'uninstall - the preview CLSID is removed'
+Assert-That (-not (Test-Path -LiteralPath $previewAppIdKey)) 'uninstall - the preview AppID is removed'
+Assert-That ((Get-DefaultValue $previewSampleKey) -ne $previewClsid) 'uninstall - the .py association is restored'
 
 $leftovers = Get-ChildItem -Path $app -Recurse -File -ErrorAction SilentlyContinue | ForEach-Object { $_.FullName.Substring($app.Length + 1) }
 Write-Host "INFO  left in $app after uninstall: $(if ($leftovers) { $leftovers -join ', ' } else { 'nothing' })"

@@ -8,6 +8,7 @@ internal static class ShellRegistry
     private const string Root = @"Software\Flect";
     private const string MenuKey = Root + @"\Menu";
     private const string PresetKey = Root + @"\Presets";
+    private const string PreviewKey = Root + @"\Preview";
 
     public static void Publish(Settings settings)
     {
@@ -22,6 +23,14 @@ internal static class ShellRegistry
             {
                 menu.SetValue("Hidden", string.Join(';', settings.General.HiddenMenuItems),
                               RegistryValueKind.String);
+            }
+
+            using (var preview = Registry.CurrentUser.CreateSubKey(PreviewKey))
+            {
+                preview.SetValue("FontFamily", settings.Preview.FontFamily, RegistryValueKind.String);
+                preview.SetValue("FontSize", settings.Preview.FontSize, RegistryValueKind.DWord);
+                preview.SetValue("SampleText", settings.Preview.SampleText, RegistryValueKind.String);
+                preview.SetValue("TrustedFolders", settings.Preview.TrustedFolders.ToArray(), RegistryValueKind.MultiString);
             }
 
             using var presets = Registry.CurrentUser.CreateSubKey(PresetKey);
@@ -57,6 +66,7 @@ internal static class ShellRegistry
         {
             Registry.CurrentUser.DeleteSubKeyTree(MenuKey, throwOnMissingSubKey: false);
             Registry.CurrentUser.DeleteSubKeyTree(PresetKey, throwOnMissingSubKey: false);
+            Registry.CurrentUser.DeleteSubKeyTree(PreviewKey, throwOnMissingSubKey: false);
 
             using var root = Registry.CurrentUser.OpenSubKey(Root, writable: true);
             root?.DeleteValue("Language", throwOnMissingValue: false);

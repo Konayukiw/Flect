@@ -46,6 +46,18 @@ public partial class App : Application
                 return;
             }
 
+            if (args.Any(a => string.Equals(a, "--preview-register", StringComparison.OrdinalIgnoreCase)))
+            {
+                Flect.ExplorerPreview.PreviewAssociations.Apply(Preferences.Current.Preview);
+                return;
+            }
+
+            if (args.Any(a => string.Equals(a, "--preview-unregister", StringComparison.OrdinalIgnoreCase)))
+            {
+                Flect.ExplorerPreview.PreviewAssociations.Revert();
+                return;
+            }
+
             var request = Request.Parse(args);
             if (request is null)
             {

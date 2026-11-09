@@ -43,6 +43,11 @@ Write-Host 'shell extension...'
     /p:Configuration=$Configuration /p:Platform=x64 /v:minimal /nologo
 if ($LASTEXITCODE -ne 0) { throw 'The shell extension failed to build.' }
 
+Write-Host 'preview handler...'
+& $msbuild (Join-Path $repoRoot 'src\Preview\FlectPreview.vcxproj') `
+    /p:Configuration=$Configuration /p:Platform=x64 /v:minimal /nologo
+if ($LASTEXITCODE -ne 0) { throw 'The preview handler failed to build. Run scripts\fetch.ps1 if the WebView2 SDK is missing.' }
+
 Write-Host 'worker...'
 Remove-Item -Recurse -Force $dist -ErrorAction SilentlyContinue
 
@@ -60,6 +65,22 @@ else { $publishArgs += @('--self-contained', 'false') }
 if ($LASTEXITCODE -ne 0) { throw 'The worker failed to build.' }
 
 Copy-Item (Join-Path $repoRoot "build\shell\$Configuration\$shellDll") -Destination $dist -Force
+Copy-Item (Join-Path $repoRoot "build\preview\$Configuration\${brand}Preview.dll") -Destination $dist -Force
+
+$previewWeb = Join-Path $dist 'preview\web'
+New-Item -ItemType Directory -Force -Path $previewWeb | Out-Null
+Copy-Item (Join-Path $repoRoot 'src\Preview\web\*') -Destination $previewWeb -Recurse -Force
+
+$previewLibrary = Join-Path $repoRoot 'dependencies\preview\lib'
+if (Test-Path $previewLibrary) {
+    Copy-Item $previewLibrary -Destination $previewWeb -Recurse -Force
+    Get-ChildItem (Join-Path $previewWeb 'lib') -Recurse -File -Filter '.version' | Remove-Item -Force
+}
+else {
+    Write-Host 'Note: the preview libraries are not bundled - run scripts\fetch.ps1.' -ForegroundColor Yellow
+}
+
+Copy-Item (Join-Path $repoRoot 'NOTICES.md') -Destination $dist -Force
 
 $thirdParty = Join-Path $repoRoot 'dependencies'
 $depsOut = Join-Path $dist 'deps'

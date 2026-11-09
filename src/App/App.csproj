@@ -91,6 +91,10 @@
   </Target>
 
   <ItemGroup>
+    <EmbeddedResource Include="..\Preview\Extensions.inc" LogicalName="Flect.Preview.Extensions" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Magick.NET-Q8-x64" Version="14.16.0" />
     <PackageReference Include="PDFtoImage" Version="5.3.0" />
     <PackageReference Include="PdfPig" Version="0.1.15" />
@@ -115,6 +119,7 @@
       <_BrandLine Include="{" />
       <_BrandLine Include="    public const string Name = &quot;$(BrandName)&quot;%3B" />
       <_BrandLine Include="    public const string Version = &quot;$(BrandDisplayVersion)&quot;%3B" />
+      <_BrandLine Include="    public const string PreviewClsid = &quot;$(BrandPreviewClsid)&quot;%3B" />
       <_BrandLine Include="}" />
     </ItemGroup>
     <WriteLinesToFile File="$(IntermediateOutputPath)Branding.g.cs"

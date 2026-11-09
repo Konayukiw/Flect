@@ -1,0 +1,90 @@
+<UserControl x:Class="Flect.ExplorerPreview.PreviewPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:loc="clr-namespace:Flect.I18n">
+
+  <StackPanel>
+
+    <Border Style="{StaticResource Settings.Section}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource Settings.SectionTitle}"
+                   Text="{loc:T settings.preview.general}" />
+        <TextBlock Style="{StaticResource Settings.Hint}"
+                   Text="{loc:T settings.preview.general.hint}" />
+        <CheckBox x:Name="EnabledBox" Content="{loc:T settings.preview.enabled}" />
+      </StackPanel>
+    </Border>
+
+    <Border Style="{StaticResource Settings.Section}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource Settings.SectionTitle}"
+                   Text="{loc:T settings.preview.kinds}" />
+        <TextBlock Style="{StaticResource Settings.Hint}"
+                   Text="{loc:T settings.preview.kinds.hint}" />
+        <ItemsControl x:Name="KindList" />
+      </StackPanel>
+    </Border>
+
+    <Border x:Name="ThirdPartySection" Style="{StaticResource Settings.Section}" Visibility="Collapsed">
+      <StackPanel>
+        <TextBlock Style="{StaticResource Settings.SectionTitle}"
+                   Text="{loc:T settings.preview.thirdParty}" />
+        <TextBlock Style="{StaticResource Settings.Hint}"
+                   Text="{loc:T settings.preview.thirdParty.hint}" />
+        <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto">
+          <ItemsControl x:Name="ThirdPartyList" />
+        </ScrollViewer>
+      </StackPanel>
+    </Border>
+
+    <Border Style="{StaticResource Settings.Section}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource Settings.SectionTitle}"
+                   Text="{loc:T settings.preview.font}" />
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="140" />
+            <ColumnDefinition Width="260" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource Settings.Label}"
+                     Text="{loc:T settings.preview.font.family}" />
+          <ComboBox Grid.Row="0" Grid.Column="1" x:Name="FontBox" Margin="0,0,0,8" />
+          <TextBlock Grid.Row="1" Grid.Column="0" Style="{StaticResource Settings.Label}"
+                     Text="{loc:T settings.preview.font.size}" />
+          <TextBox Grid.Row="1" Grid.Column="1" x:Name="FontSizeBox" Width="80" HorizontalAlignment="Left"
+                   Style="{StaticResource Settings.Field}" />
+        </Grid>
+      </StackPanel>
+    </Border>
+
+    <Border Style="{StaticResource Settings.Section}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource Settings.SectionTitle}"
+                   Text="{loc:T settings.preview.sample}" />
+        <TextBlock Style="{StaticResource Settings.Hint}"
+                   Text="{loc:T settings.preview.sample.hint}" />
+        <TextBox x:Name="SampleBox" Style="{StaticResource Settings.Field}" AcceptsReturn="True"
+                 TextWrapping="Wrap" Height="78" VerticalScrollBarVisibility="Auto" />
+      </StackPanel>
+    </Border>
+
+    <Border Style="{StaticResource Settings.Section}">
+      <StackPanel>
+        <Grid>
+          <TextBlock Style="{StaticResource Settings.SectionTitle}" VerticalAlignment="Center"
+                     Text="{loc:T settings.preview.trusted}" />
+          <Button HorizontalAlignment="Right" VerticalAlignment="Top" MinWidth="0" Padding="10,4" FontSize="12"
+                  Content="{loc:T common.browse}" Click="OnBrowseTrusted" />
+        </Grid>
+        <TextBlock Style="{StaticResource Settings.Hint}"
+                   Text="{loc:T settings.preview.trusted.hint}" />
+        <TextBox x:Name="TrustedBox" Style="{StaticResource Settings.Patterns}" />
+      </StackPanel>
+    </Border>
+
+  </StackPanel>
+</UserControl>

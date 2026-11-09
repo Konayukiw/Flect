@@ -1,0 +1,97 @@
+html,
+body {
+  height: 100%;
+  margin: 0;
+}
+
+:root {
+  --background: #e8e8e8;
+  --text: #1f1f1f;
+}
+
+:root[data-theme="dark"] {
+  --background: #1e1e1e;
+  --text: #e6e6e6;
+}
+
+body {
+  overflow: auto;
+  background: var(--background);
+  color: var(--text);
+  font: 13px/1.5 "Segoe UI Variable Text", "Segoe UI", "Yu Gothic UI", "Microsoft YaHei UI", sans-serif;
+}
+
+#pages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+}
+
+.page {
+  position: relative;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.3);
+  overflow: hidden;
+}
+
+.page canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.notice {
+  padding: 24px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.textLayer {
+  color-scheme: only light;
+  position: absolute;
+  text-align: initial;
+  inset: 0;
+  overflow: clip;
+  opacity: 1;
+  line-height: 1;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-size-adjust: none;
+  forced-color-adjust: none;
+  transform-origin: 0 0;
+  caret-color: CanvasText;
+  z-index: 0;
+  --min-font-size: 1;
+  --text-scale-factor: calc(var(--total-scale-factor) * var(--min-font-size));
+  --min-font-size-inv: calc(1 / var(--min-font-size));
+}
+
+.textLayer :is(span, br) {
+  color: transparent;
+  position: absolute;
+  white-space: pre;
+  cursor: text;
+  transform-origin: 0% 0%;
+  user-select: text;
+}
+
+.textLayer > :not(.markedContent),
+.textLayer .markedContent span:not(.markedContent) {
+  z-index: 1;
+  --font-height: 0;
+  font-size: calc(var(--text-scale-factor) * var(--font-height));
+  --scale-x: 1;
+  --rotate: 0deg;
+  transform: rotate(var(--rotate)) scaleX(var(--scale-x)) scale(var(--min-font-size-inv));
+}
+
+.textLayer .markedContent {
+  display: contents;
+}
+
+.textLayer ::selection {
+  background: rgb(0 90 200 / 0.3);
+}

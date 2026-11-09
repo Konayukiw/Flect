@@ -11,6 +11,7 @@
         xmlns:text="clr-namespace:Flect.Text"
         xmlns:ocr="clr-namespace:Flect.Ocr"
         xmlns:decompile="clr-namespace:Flect.Decompile"
+        xmlns:preview="clr-namespace:Flect.ExplorerPreview"
         xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
         Width="980" Height="720" MinWidth="840" MinHeight="580"
         WindowStartupLocation="CenterScreen" ShowInTaskbar="True"
@@ -42,6 +43,8 @@
     <Geometry x:Key="Icon.Code">M 6 4.4 L 2.8 8 L 6 11.6 M 10 4.4 L 13.2 8 L 10 11.6 M 9.2 2.8 L 6.8 13.2</Geometry>
 
     <Geometry x:Key="Icon.Output">M 3 12.5 H 13 M 8 2.8 V 9.6 M 4.9 6.5 L 8 9.6 L 11.1 6.5</Geometry>
+
+    <Geometry x:Key="Icon.Preview">M 2.5 3.8 C 2.5 3.08 3.08 2.5 3.8 2.5 H 12.2 C 12.92 2.5 13.5 3.08 13.5 3.8 V 12.2 C 13.5 12.92 12.92 13.5 12.2 13.5 H 3.8 C 3.08 13.5 2.5 12.92 2.5 12.2 Z M 9.2 2.5 V 13.5</Geometry>
 
     <Style x:Key="NavIcon" TargetType="Path">
       <Setter Property="Stretch" Value="Uniform" />
@@ -298,6 +301,16 @@
                            VerticalAlignment="Center" />
               </StackPanel>
             </RadioButton>
+            <RadioButton x:Name="NavPreview" Style="{StaticResource NavItem}"
+                         Checked="OnNavChanged" Tag="8">
+              <StackPanel Orientation="Horizontal">
+                <Grid Width="16" Height="16" VerticalAlignment="Center">
+                  <Path Data="{StaticResource Icon.Preview}" Style="{StaticResource NavIcon}" Fill="Transparent" />
+                </Grid>
+                <TextBlock Text="{loc:T settings.nav.preview}" Margin="11,0,0,0"
+                           VerticalAlignment="Center" />
+              </StackPanel>
+            </RadioButton>
           </StackPanel>
 
           <Button Grid.Row="2" Margin="16,0,16,18" HorizontalAlignment="Stretch"
@@ -328,6 +341,7 @@
             <ocr:OcrPage x:Name="PageOcr" Visibility="Collapsed" />
             <decompile:DecompilePage x:Name="PageCode" Visibility="Collapsed" />
             <output:Output x:Name="PageOutput" Visibility="Collapsed" />
+            <preview:PreviewPage x:Name="PagePreview" Visibility="Collapsed" />
           </Grid>
         </ScrollViewer>
 

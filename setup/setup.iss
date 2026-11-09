@@ -15,6 +15,7 @@
 #endif
 
 #define ShellDll   BrandName + "Shell.dll"
+#define PreviewDll BrandName + "Preview.dll"
 #define WorkerExe  BrandName + ".exe"
 
 #define RuntimeMajor "10"
@@ -68,6 +69,11 @@ var
 function ShellDllPath(): String;
 begin
   Result := ExpandConstant('{app}\{#ShellDll}');
+end;
+
+function PreviewDllPath(): String;
+begin
+  Result := ExpandConstant('{app}\{#PreviewDll}');
 end;
 
 function HasDesktopRuntime(): Boolean;
@@ -174,6 +180,38 @@ begin
   Result := DeleteFile(ShellDllPath());
 end;
 
+procedure StopPreviewHosts();
+var
+  ResultCode: Integer;
+begin
+  Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /FI "MODULES eq {#PreviewDll}" /IM prevhost.exe', '',
+       SW_HIDE, ewWaitUntilTerminated, ResultCode);
+end;
+
+function ReleasePreviewDll(): Boolean;
+begin
+  Result := True;
+  if not FileExists(PreviewDllPath()) then
+    exit;
+
+  RunRegsvr32('/u /s "' + PreviewDllPath() + '"');
+  StopPreviewHosts();
+  if DeleteFile(PreviewDllPath()) then
+    exit;
+
+  Sleep(1000);
+  StopPreviewHosts();
+  Result := DeleteFile(PreviewDllPath());
+end;
+
+procedure RunWorker(const Arguments: String);
+var
+  ResultCode: Integer;
+begin
+  if FileExists(ExpandConstant('{app}\{#WorkerExe}')) then
+    Exec(ExpandConstant('{app}\{#WorkerExe}'), Arguments, '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+end;
+
 function InitializeSetup(): Boolean;
 var
   ErrorCode: Integer;
@@ -250,6 +288,13 @@ begin
     exit;
   end;
 
+  if not ReleasePreviewDll() then
+  begin
+    Result := 'The Explorer preview handler is still in use and could not be replaced.' +
+              CRLF + 'Close the Explorer preview pane, then run Setup again.';
+    exit;
+  end;
+
   if Existing then
     ClearPreviousInstall();
 end;
@@ -274,6 +319,15 @@ begin
       SuppressibleMsgBox('The files were installed, but registering the Explorer menu failed.' +
                          CRLF + 'Running Setup again usually fixes it.', mbError, MB_OK, IDOK);
     end;
+
+    if RunRegsvr32('/s "' + PreviewDllPath() + '"') then
+      RunWorker('--preview-register')
+    else
+    begin
+      RegistrationFailed := True;
+      SuppressibleMsgBox('The files were installed, but registering the Explorer preview failed.' +
+                         CRLF + 'Running Setup again usually fixes it.', mbError, MB_OK, IDOK);
+    end;
   end;
 end;
 
@@ -290,6 +344,9 @@ begin
   if CurUninstallStep = usUninstall then
   begin
     StopWorker();
+    RunWorker('--preview-unregister');
+    ReleasePreviewDll();
+    DelTree(ExpandConstant('{localappdata}\..\LocalLow\{#BrandName}\Preview'), True, True, True);
     ReleaseShellDll();
     RegDeleteValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', '{#BrandName}AutoUpdate');
   end;
