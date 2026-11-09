@@ -1,6 +1,7 @@
 #include "Session.h"
 
 #include "Module.h"
+#include "PreviewStrings.g.h"
 #include "Text.h"
 #include "WebView2EnvironmentOptions.h"
 
@@ -30,9 +31,9 @@ void Remember(int slot, ICoreWebView2Environment* environment) {
 }
 
 const wchar_t* RuntimeNotice(const std::wstring& locale) {
-  if (locale == L"ja") return L"プレビューの表示には Microsoft Edge WebView2 ランタイムが必要です。";
-  if (locale == L"zh") return L"预览需要 Microsoft Edge WebView2 运行时。";
-  return L"Preview requires the Microsoft Edge WebView2 Runtime.";
+  if (locale == L"ja") return PreviewStrings::kRuntimeNoticeJa;
+  if (locale == L"zh") return PreviewStrings::kRuntimeNoticeZh;
+  return PreviewStrings::kRuntimeNoticeEn;
 }
 
 }

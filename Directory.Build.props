@@ -19,6 +19,8 @@
     <BrandBuildDir>$(RepoRoot)build\</BrandBuildDir>
     <BrandDistDir>$(RepoRoot)dist\</BrandDistDir>
     <BrandThirdPartyDir>$(RepoRoot)dependencies\</BrandThirdPartyDir>
+    <StringsGenerator>$(RepoRoot)src\I18n\generate.mjs</StringsGenerator>
+    <StringsInputs>$(StringsGenerator);$(RepoRoot)src\I18n\en.json;$(RepoRoot)src\I18n\ja.json;$(RepoRoot)src\I18n\zh.json</StringsInputs>
   </PropertyGroup>
 
 </Project>

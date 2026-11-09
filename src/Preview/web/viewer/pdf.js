@@ -1,10 +1,5 @@
 import * as pdfjs from "../lib/pdfjs/pdf.min.mjs";
-
-const STRINGS = {
-  en: { password: "This PDF is password protected and unable to be previewed.", failed: "This PDF could not be displayed." },
-  ja: { password: "このPDFはパスワードで保護されているため、プレビューできません。", failed: "PDFの表示に失敗しました。" },
-  zh: { password: "此 PDF 受密码保护，无法预览。", failed: "无法显示此 PDF。" },
-};
+import { STRINGS } from "../strings.js";
 
 const parameters = new URLSearchParams(location.hash.slice(1));
 const file = parameters.get("file");
@@ -136,5 +131,5 @@ async function start() {
 }
 
 start().catch((error) => {
-  showNotice(error?.name === "PasswordException" ? strings.password : `${strings.failed} ${error?.message ?? ""}`);
+  showNotice(error?.name === "PasswordException" ? strings["pdf.password"] : `${strings["pdf.failed"]} ${error?.message ?? ""}`);
 });

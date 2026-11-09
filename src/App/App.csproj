@@ -110,6 +110,16 @@
     <Delete Files="@(_ForeignSymbols)" />
   </Target>
 
+  <ItemGroup>
+    <Compile Include="$(BrandBuildDir)i18n\Strings.g.cs" Link="I18n\Strings.g.cs" />
+  </ItemGroup>
+
+  <Target Name="GenerateStringsSource" BeforeTargets="BeforeBuild;CoreCompile"
+          Inputs="$(StringsInputs)"
+          Outputs="$(BrandBuildDir)i18n\Strings.g.cs">
+    <Exec Command="node &quot;$(StringsGenerator)&quot; app &quot;$(BrandBuildDir)i18n\Strings.g.cs&quot;" />
+  </Target>
+
   <Target Name="GenerateBrandingSource" BeforeTargets="BeforeCompile">
     <MakeDir Directories="$(IntermediateOutputPath)" />
     <ItemGroup>

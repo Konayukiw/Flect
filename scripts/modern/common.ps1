@@ -86,6 +86,8 @@ function Build-ModernMenu([switch]$WithTests) {
 #define BRAND_APP_EXE L"$($brand.BrandName).exe"
 #define BRAND_UNINSTALL_KEY L"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\$($brand.BrandAppId)_is1"
 "@ | Set-Content -LiteralPath (Join-Path $generated 'Branding.g.h') -Encoding utf8
+    & node (Join-Path $ModernMenuRepo 'src\I18n\generate.mjs') shell (Join-Path $generated 'Labels.g.h')
+    if ($LASTEXITCODE -ne 0) { throw 'The menu labels failed to generate.' }
     $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
     $msbuild = & $vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -find 'MSBuild\**\Bin\MSBuild.exe' | Select-Object -First 1
     if (!$msbuild) { throw 'Visual Studio C++ build tools were not found.' }

@@ -41,11 +41,12 @@ Please read this document before contributing. It helps smooth reviews and keeps
 ```
 Flect/
 ├── src/
+│   ├── I18n/               # English, 日本語, 简体中文 strings for every component, and their generator
 │   ├── Shell/              # Classic Explorer menu (IContextMenu), ContextMenu.vcxproj
 │   │   └── Modern/         # Windows 11 menu (IExplorerCommand)
 │   ├── App/
 │   │   ├── Assets/         # Application icon and fonts
-│   │   ├── I18n/           # English, 日本語, 简体中文 strings
+│   │   ├── I18n/           # String lookup and the XAML markup extension
 │   │   ├── Display/        # Window chrome, number formatting, message boxes
 │   │   ├── Files/          # Output names, temporary files, Recycle Bin
 │   │   ├── External/       # Bundled tools, child processes, Python
@@ -97,7 +98,7 @@ Flect/
 - **OS**: Windows 10 or 11 (x64)
 - **.NET SDK**: .NET 10.0 SDK
 - **C++ Build Tools**: Visual Studio Build Tools (2022 or 2026) with "Desktop development with C++" and Windows SDK (10.0.19041.0 or newer)
-- **Node.js**: Node.js 20 or newer (for translation key checks)
+- **Node.js**: Node.js 20 or newer (for string generation and translation key checks)
 - **Optional**: JDK 21 (for decompilation evaluation tests), Inno Setup 6.7+ (for installer packaging)
 
 ### Quick Start
@@ -131,7 +132,7 @@ dotnet test evals/Evals/Evals.csproj -c Release --filter-not-trait "Category=AI"
 
 - **Non-Destructive**: Never overwrite user files. Append collision suffixes like `(2)` and move deletions to the Recycle Bin. Clean up temporary files on failure or cancellation.
 - **Shell Responsiveness**: `src/Shell` runs directly inside `explorer.exe`. Never block the Explorer UI thread. Delegate all heavy work to `src/App`.
-- **Localization**: When adding or updating strings, update `Strings.En.cs`, `Strings.Ja.cs`, `Strings.Zh.cs`, and `src/Shell/Labels.h`. Run `check.mjs` to ensure key parity.
+- **Localization**: When adding or updating strings, update `src/I18n/en.json`, `ja.json`, and `zh.json`. Each file has `app`, `web`, `preview`, and `shell` sections. The C#, C++, and JavaScript tables are generated from these files during the build. Run `check.mjs` to ensure key parity.
 - **Catalog Synchronization**: Keep menu definitions synchronized across `src/Shell`, `src/Shell/Modern`, `src/App/Dispatch/Catalog.cs`, and `src/App/Settings/General.xaml`.
 - **Dependencies**: Open an issue before adding any external library or NuGet package. Keep installer footprint minimal and document licenses in `NOTICES.md`.
 - **Code Style**: Write clean, self-explanatory code without redundant docstrings or comments.

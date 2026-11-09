@@ -8,4 +8,6 @@
 **/obj/
 *.vcxproj.user
 
+/src/Web/js/strings.js
+
 AGENTS.md

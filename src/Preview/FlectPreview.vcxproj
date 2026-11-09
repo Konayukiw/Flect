@@ -124,6 +124,13 @@
                       Encoding="utf-8" />
   </Target>
 
+  <Target Name="GeneratePreviewStringsHeader"
+          BeforeTargets="ClCompile"
+          Inputs="$(StringsInputs)"
+          Outputs="$(IntDir)PreviewStrings.g.h">
+    <Exec Command="node &quot;$(StringsGenerator)&quot; native &quot;$(IntDir)PreviewStrings.g.h&quot;" />
+  </Target>
+
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
 
 </Project>

@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: 24
 
-      - name: Check App and Web translations
+      - name: Check translations
         run: node evals/i18n/check.mjs
 
   build:
@@ -36,6 +36,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
 
       - uses: actions/setup-dotnet@v6
         with:
@@ -78,6 +82,10 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
 
       - name: Build optional modern menu and test COM contracts
         shell: pwsh
@@ -132,6 +140,10 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
 
       - uses: actions/setup-dotnet@v6
         with:

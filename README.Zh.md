@@ -395,7 +395,7 @@ Flect 采用 [Apache License 2.0](LICENSE) 授权。
 如果您复用、重新分发 Flect 的源代码，或将其集成到其他项目中，则必须：
 
 - 保留所有现有的版权、许可及署名声明（符合 Apache License 2.0 的要求）。
-- 在您项目的 `README.md`、`NOTICE`、`NOTICES`、`THIRD-PARTY-NOTICE`、`THIRD-PARTY-NOTICES` 或 `LICENSE` 文件中，注明原作者 [**Konayukiw**](@Konayukiw)。
+- 在您项目的 `README.md`、`NOTICE`、`NOTICES`、`THIRD-PARTY-NOTICE`、`THIRD-PARTY-NOTICES` 或 `LICENSE` 文件中，注明原作者 [**Konayukiw**](https://github.com/Konayukiw)。
 - 包含一份 Apache License 2.0 协议副本，并遵守其相关条款。
 
 建议的署名方式：

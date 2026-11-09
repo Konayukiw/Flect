@@ -390,7 +390,7 @@ Flect is licensed under the [Apache License 2.0](LICENSE).
 If you reuse, redistribute, or incorporate source code from Flect into another project, you must:
 
 - Preserve all existing copyright, license, and attribution notices, as required by the Apache License 2.0.
-- Include appropriate attribution to the original author, [**Konayukiw**](@Konayukiw), in your project's `README.md`, `NOTICE`, `NOTICES`, `THIRD-PARTY-NOTICE`, `THIRD-PARTY-NOTICES` or `LICENSE` file.
+- Include appropriate attribution to the original author, [**Konayukiw**](https://github.com/Konayukiw), in your project's `README.md`, `NOTICE`, `NOTICES`, `THIRD-PARTY-NOTICE`, `THIRD-PARTY-NOTICES` or `LICENSE` file.
 - Include a copy of the Apache License 2.0 and comply with its applicable terms.
 
 Suggested attribution:

@@ -1,7 +1,6 @@
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join, relative, extname, sep } from "node:path";
 import { fileURLToPath } from "node:url";
-import vm from "node:vm";
 
 const root = fileURLToPath(new URL("../..", import.meta.url));
 const annotate = process.env.GITHUB_ACTIONS === "true";
@@ -11,6 +10,7 @@ const notes = [];
 const report = (list, message, file, line) => list.push({ message, file, line });
 const lineOf = (text, index) => text.slice(0, index).split("\n").length;
 const shown = (file) => relative(root, file).split(sep).join("/");
+const lowerFirst = (word) => word[0].toLowerCase() + word.slice(1);
 
 const walk = (directory, extensions) =>
   readdirSync(directory).flatMap((name) => {
@@ -24,39 +24,74 @@ const walk = (directory, extensions) =>
 const keyPattern = /^[a-z][A-Za-z0-9]*(\.[A-Za-z0-9]+)+$/;
 const fileExtensions = new Set(["json", "txt", "xml", "csv", "html", "md", "png", "jpg", "exe", "dll", "py", "ini", "log"]);
 const webFileExtensions = new Set([...fileExtensions, "js", "mjs", "css", "svg", "gif", "webp", "mp4", "webm", "ico", "pdf", "zip"]);
+const languages = ["en", "ja", "zh"];
+const fixedPrefix = "fixed.";
 
-function checkApp() {
-  const folder = join(root, "src", "App", "I18n");
-  const files = { en: "Strings.En.cs", ja: "Strings.Ja.cs", zh: "Strings.Zh.cs" };
-  const tables = {};
+function loadCatalogs() {
+  const folder = join(root, "src", "I18n");
+  return Object.fromEntries(
+    languages.map((language) => {
+      const path = join(folder, `${language}.json`);
+      const text = readFileSync(path, "utf8");
+      const sections = {};
+      let current = null;
+      text.split("\n").forEach((line, index) => {
+        const section = line.match(/^ {2}"([^"]+)"\s*:/);
+        const entry = line.match(/^ {4}"((?:[^"\\]|\\.)*)"\s*:/);
+        if (section) {
+          current = sections[section[1]] = new Map();
+        } else if (entry && current) {
+          if (current.has(entry[1])) report(errors, `"${entry[1]}" is defined twice in ${language}`, path, index + 1);
+          current.set(entry[1], index + 1);
+        }
+      });
+      JSON.parse(text);
+      return [language, { path, sections }];
+    }),
+  );
+}
 
-  for (const [language, name] of Object.entries(files)) {
-    const path = join(folder, name);
-    const text = readFileSync(path, "utf8");
-    const keys = new Map();
-    for (const match of text.matchAll(/^\s*\["([^"]+)"\]\s*=/gm)) {
-      const line = lineOf(text, match.index);
-      if (keys.has(match[1])) report(errors, `App: "${match[1]}" is defined twice in ${language}`, path, line);
-      keys.set(match[1], line);
-    }
-    tables[language] = { path, keys };
-  }
+const catalogs = loadCatalogs();
 
-  const english = tables.en.keys;
-  const everyKey = new Set(Object.values(tables).flatMap((table) => [...table.keys.keys()]));
-  for (const key of everyKey) {
-    if (key.endsWith(".one")) {
-      const base = key.slice(0, -".one".length);
-      if (!english.has(base)) {
-        report(errors, `App: Plural form "${key}" has no base key "${base}"`, tables.en.path, english.get(key));
-      }
-      continue;
-    }
+const tablesOf = (section) =>
+  Object.fromEntries(
+    languages.map((language) => [language, { path: catalogs[language].path, keys: catalogs[language].sections[section] ?? new Map() }]),
+  );
+
+const keysOf = (tables) => new Set(Object.values(tables).flatMap((table) => [...table.keys.keys()]));
+
+function checkParity(label, tables, exempt = () => false) {
+  for (const key of keysOf(tables)) {
+    if (exempt(key)) continue;
     for (const [language, table] of Object.entries(tables)) {
       if (!table.keys.has(key)) {
         const owner = Object.values(tables).find((other) => other.keys.has(key));
-        report(errors, `App: "${key}" is missing in ${language}`, owner.path, owner.keys.get(key));
+        report(errors, `${label}: "${key}" is missing in ${language}`, owner.path, owner.keys.get(key));
       }
+    }
+  }
+}
+
+function reportUsage(label, table, used) {
+  for (const [key, where] of used) {
+    if (!table.keys.has(key)) report(errors, `${label}: "${key}" is used but not defined`, where.file, where.line);
+  }
+  for (const [key, line] of table.keys) {
+    if (!used.has(key)) report(notes, `${label}: "${key}" looks unused`, table.path, line);
+  }
+}
+
+function checkApp() {
+  const folder = join(root, "src", "App", "I18n");
+  const tables = tablesOf("app");
+  const english = tables.en.keys;
+
+  checkParity("App", tables, (key) => key.endsWith(".one"));
+  for (const key of keysOf(tables)) {
+    if (!key.endsWith(".one")) continue;
+    const base = key.slice(0, -".one".length);
+    if (!english.has(base)) {
+      report(errors, `App: Plural form "${key}" has no base key "${base}"`, tables.en.path, english.get(key));
     }
   }
 
@@ -146,47 +181,17 @@ function firstArgumentLiterals(text, start) {
 
 function checkWeb() {
   const web = join(root, "src", "Web");
-  const path = join(web, "js", "i18n.js");
-  const source = readFileSync(path, "utf8");
-  const marker = "const I18N = ";
-  const start = source.indexOf(marker) + marker.length;
-  const end = source.indexOf("\nlet currentLang");
-  if (start < marker.length || end < 0) {
-    report(errors, "Web: Could not locate the I18n table", path, 1);
-    return;
-  }
+  const runtime = join(web, "js", "i18n.js");
+  const generated = join(web, "js", "strings.js");
+  const tables = tablesOf("web");
+  const english = tables.en.keys;
 
-  const table = vm.runInNewContext(`(${source.slice(start, end).trim().replace(/;$/, "")})`);
-  const languages = Object.keys(table);
+  checkParity("Web", tables);
 
-  const blocks = [...source.slice(0, end).matchAll(/^ {2}([a-z]{2}(?:-[A-Za-z]+)?): \{/gm)];
-  blocks.forEach((block, position) => {
-    const from = block.index;
-    const to = position + 1 < blocks.length ? blocks[position + 1].index : end;
-    const seen = new Set();
-    for (const match of source.slice(from, to).matchAll(/^ {4}"([^"]+)"\s*:/gm)) {
-      const line = lineOf(source, from + match.index);
-      if (seen.has(match[1])) report(errors, `Web: "${match[1]}" is defined twice in ${block[1]}`, path, line);
-      seen.add(match[1]);
-    }
-  });
-
-  const lineOfKey = (key) => {
-    const index = source.indexOf(`"${key}"`);
-    return index < 0 ? 1 : lineOf(source, index);
-  };
-
-  const everyKey = new Set(languages.flatMap((language) => Object.keys(table[language])));
-  for (const key of everyKey) {
-    for (const language of languages) {
-      if (!(key in table[language])) report(errors, `Web: "${key}" is missing in ${language}`, path, lineOfKey(key));
-    }
-  }
-
-  const namespaces = new Set(Object.keys(table.en).map((key) => key.split(".")[0]));
+  const namespaces = new Set([...english.keys()].map((key) => key.split(".")[0]));
   const used = new Map();
   for (const file of walk(web, [".html", ".js"])) {
-    if (file === path) continue;
+    if (file === runtime || file === generated) continue;
     const text = readFileSync(file, "utf8");
     const record = (key, index) => {
       if (!used.has(key)) used.set(key, { file, line: lineOf(text, index) });
@@ -205,20 +210,74 @@ function checkWeb() {
       }
     }
   }
+
+  const source = readFileSync(runtime, "utf8");
   for (const match of source.matchAll(/\bt\(\s*["'`]([^"'`$]+)["'`]/g)) {
-    if (!used.has(match[1])) used.set(match[1], { file: path, line: lineOf(source, match.index) });
+    if (!used.has(match[1])) used.set(match[1], { file: runtime, line: lineOf(source, match.index) });
   }
 
-  for (const [key, where] of used) {
-    if (!(key in table.en)) report(errors, `Web: "${key}" is used but not defined`, where.file, where.line);
+  reportUsage("Web", tables.en, used);
+}
+
+function checkPreview() {
+  const folder = join(root, "src", "Preview");
+  const tables = tablesOf("preview");
+  const used = new Map();
+  const use = (key, file, line) => {
+    if (!used.has(key)) used.set(key, { file, line });
+  };
+
+  checkParity("Preview", tables);
+
+  for (const file of walk(join(folder, "web"), [".js"])) {
+    const text = readFileSync(file, "utf8");
+    for (const pattern of [/\bt\(\s*"([^"]+)"/g, /\bstrings\["([^"]+)"\]/g]) {
+      for (const match of text.matchAll(pattern)) use(match[1], file, lineOf(text, match.index));
+    }
+    for (const match of text.matchAll(/`([a-z][A-Za-z0-9]*\.)\$\{/g)) {
+      for (const key of tables.en.keys.keys()) {
+        if (key.startsWith(match[1])) use(key, file, lineOf(text, match.index));
+      }
+    }
   }
-  for (const key of Object.keys(table.en)) {
-    if (!used.has(key)) report(notes, `Web: "${key}" looks unused`, path, lineOfKey(key));
+
+  const session = join(folder, "Session.cpp");
+  const native = readFileSync(session, "utf8");
+  for (const match of native.matchAll(/PreviewStrings::k([A-Z][A-Za-z0-9]*?)(?:En|Ja|Zh)\b/g)) {
+    use(`native.${lowerFirst(match[1])}`, session, lineOf(native, match.index));
   }
+
+  reportUsage("Preview", tables.en, used);
+}
+
+function checkShell() {
+  const file = join(root, "src", "Shell", "MenuLayout.cpp");
+  const tables = tablesOf("shell");
+  const text = readFileSync(file, "utf8");
+  const used = new Map();
+  const use = (key, index) => {
+    if (!used.has(key)) used.set(key, { file, line: lineOf(text, index) });
+  };
+
+  checkParity("Shell", tables, (key) => key.startsWith(fixedPrefix));
+  for (const language of languages.filter((language) => language !== "en")) {
+    for (const [key, line] of tables[language].keys) {
+      if (key.startsWith(fixedPrefix)) {
+        report(errors, `Shell: "${key}" does not vary by language and belongs only in en`, tables[language].path, line);
+      }
+    }
+  }
+
+  for (const match of text.matchAll(/(?<![\w"])text\.([a-z][A-Za-z0-9]*)\b(?!\()/g)) use(match[1], match.index);
+  for (const match of text.matchAll(/\bLabel::k([A-Z][A-Za-z0-9]*)/g)) use(`${fixedPrefix}${lowerFirst(match[1])}`, match.index);
+
+  reportUsage("Shell", tables.en, used);
 }
 
 checkApp();
 checkWeb();
+checkPreview();
+checkShell();
 
 const print = (entry, level) => {
   const location = entry.file ? `${shown(entry.file)}:${entry.line ?? 1}` : "";

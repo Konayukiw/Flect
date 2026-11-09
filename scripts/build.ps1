@@ -27,8 +27,11 @@ if (-not $brand) { throw 'BrandName is missing from Directory.Build.props' }
 
 $shellDll = "${brand}Shell.dll"
 $dist = Join-Path $repoRoot 'dist'
+$stringsGenerator = Join-Path $repoRoot 'src\I18n\generate.mjs'
 
 Write-Host "Building $brand" -ForegroundColor Cyan
+
+if (-not (Get-Command node -ErrorAction SilentlyContinue)) { throw 'node was not found. Node.js is required to generate the UI strings.' }
 
 $vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
 if (-not (Test-Path $vswhere)) { throw 'vswhere.exe not found. Visual Studio Build Tools are required.' }
@@ -70,6 +73,12 @@ Copy-Item (Join-Path $repoRoot "build\preview\$Configuration\${brand}Preview.dll
 $previewWeb = Join-Path $dist 'preview\web'
 New-Item -ItemType Directory -Force -Path $previewWeb | Out-Null
 Copy-Item (Join-Path $repoRoot 'src\Preview\web\*') -Destination $previewWeb -Recurse -Force
+
+& node $stringsGenerator preview (Join-Path $previewWeb 'strings.js')
+if ($LASTEXITCODE -ne 0) { throw 'The preview strings failed to generate.' }
+
+& node $stringsGenerator web (Join-Path $repoRoot 'src\Web\js\strings.js')
+if ($LASTEXITCODE -ne 0) { throw 'The website strings failed to generate.' }
 
 $previewLibrary = Join-Path $repoRoot 'dependencies\preview\lib'
 if (Test-Path $previewLibrary) {

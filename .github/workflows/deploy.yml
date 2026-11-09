@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "src/Web/**"
+      - "src/I18n/**"
 
   workflow_dispatch:
 
@@ -23,6 +24,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+
+      - name: Generate website strings
+        run: node src/I18n/generate.mjs web src/Web/js/strings.js
 
       - name: Setup Pages
         uses: actions/configure-pages@v6
