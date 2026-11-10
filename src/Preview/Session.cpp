@@ -19,7 +19,7 @@ constexpr int kMaximumRestarts = 3;
 
 constexpr wchar_t kCommonArguments[] =
     L"--disable-background-networking --disable-component-update --disable-sync --disable-domain-reliability --no-pings "
-    L"--force-webrtc-ip-handling-policy=disable_non_proxied_udp";
+    L"--force-webrtc-ip-handling-policy=disable_non_proxied_udp --auth-server-allowlist=flect.invalid";
 constexpr wchar_t kOfflineArguments[] = L" --proxy-server=127.0.0.1:9 --proxy-bypass-list=<-loopback> --host-resolver-rules=\"MAP * ~NOTFOUND\"";
 
 thread_local ICoreWebView2Environment* t_environments[2] = {nullptr, nullptr};
@@ -34,6 +34,14 @@ const wchar_t* RuntimeNotice(const std::wstring& locale) {
   if (locale == L"ja") return PreviewStrings::kRuntimeNoticeJa;
   if (locale == L"zh") return PreviewStrings::kRuntimeNoticeZh;
   return PreviewStrings::kRuntimeNoticeEn;
+}
+
+void CALLBACK RaisePopup(HWINEVENTHOOK, DWORD, HWND window, LONG object, LONG child, DWORD, DWORD) {
+  if (object != OBJID_WINDOW || child != CHILDID_SELF || !window) return;
+  if (!(::GetWindowLongPtrW(window, GWL_STYLE) & WS_POPUP) || !::GetWindow(window, GW_OWNER)) return;
+  constexpr UINT flags = SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE;
+  ::SetWindowPos(window, HWND_TOPMOST, 0, 0, 0, 0, flags);
+  ::SetWindowPos(window, HWND_NOTOPMOST, 0, 0, 0, 0, flags);
 }
 
 }
@@ -105,6 +113,8 @@ void Session::Close() {
 }
 
 void Session::Discard() {
+  if (popupHook_) ::UnhookWinEvent(popupHook_);
+  popupHook_ = nullptr;
   if (controller_) controller_->Close();
   controller_.Reset();
   view_.Reset();
@@ -236,6 +246,9 @@ void Session::OnControllerReady(ICoreWebView2Environment* environment, ICoreWebV
   environment_ = environment;
   controller_ = controller;
   if (FAILED(controller_->get_CoreWebView2(&view_)) || !view_) return;
+
+  UINT32 browser = 0;
+  if (SUCCEEDED(view_->get_BrowserProcessId(&browser)) && browser) popupHook_ = ::SetWinEventHook(EVENT_OBJECT_SHOW, EVENT_OBJECT_SHOW, nullptr, RaisePopup, browser, 0, WINEVENT_OUTOFCONTEXT);
 
   ComPtr<ICoreWebView2Controller2> controller2;
   if (SUCCEEDED(controller_.As(&controller2))) {
@@ -464,6 +477,10 @@ void Session::OnCommand(const std::wstring& command) {
   }
 
   if (command == L"convert") {
+    if (restricted || context_.trust.marked) {
+      Post(L"{\"type\":\"convert-failed\"}");
+      return;
+    }
     if (conversion_ || context_.sniff.demuxer.empty() || !context_.mismatch.empty()) return;
     const bool audio = context_.type.kind == Kind::Audio;
     conversion_ = Conversion::Start(window_, kConvertedMessage, context_.path, context_.sniff.demuxer, audio);

@@ -16,6 +16,7 @@ internal static partial class PreviewAssociations
     private const string ClassesKey = @"Software\Classes\";
     private const string FileAssociationsKey = ClassesKey + @"SystemFileAssociations\";
     private const string ResourceName = "Flect.Preview.Extensions";
+    private const string HtmlKind = "html";
     private const int ShellExtensionString = 16;
     private const int ProgIdString = 20;
     private const int AssociationChanged = 0x08000000;
@@ -32,7 +33,7 @@ internal static partial class PreviewAssociations
             var replace = new HashSet<string>(settings.ThirdPartyOverrides, StringComparer.OrdinalIgnoreCase);
             foreach (var extension in Extensions)
             {
-                if (!disabled.Contains(extension.Kind)) ApplyOne(extension.Name, replace.Contains(extension.Name));
+                if (!disabled.Contains(extension.Kind)) ApplyOne(extension.Name, HandlerFor(extension), replace.Contains(extension.Name));
             }
         }
         Notify();
@@ -86,34 +87,38 @@ internal static partial class PreviewAssociations
     [GeneratedRegex("""ENTRY\("([^"]+)",\s*(\w+),""")]
     private static partial Regex EntryPattern();
 
-    private static void ApplyOne(string extension, bool replaceThirdParty)
+    private static string HandlerFor(PreviewExtension extension) =>
+        extension.Kind == HtmlKind ? Branding.PreviewHtmlClsid : Branding.PreviewClsid;
+
+    private static void ApplyOne(string extension, string handler, bool replaceThirdParty)
     {
         var current = Query(extension, ShellExtensionString);
-        if (IsFlect(current)) return;
-        if (current is not null && IsThirdParty(current) && !replaceThirdParty) return;
+        if (IsHandler(current, handler)) return;
+        if (current is not null && !IsFlect(current) && IsThirdParty(current) && !replaceThirdParty) return;
 
-        Write($@"{FileAssociationsKey}{extension}\shellex\{Marker}");
-        if (IsFlect(Query(extension, ShellExtensionString))) return;
+        Write($@"{FileAssociationsKey}{extension}\shellex\{Marker}", handler);
+        if (IsHandler(Query(extension, ShellExtensionString), handler)) return;
 
         var progId = Query(extension, ProgIdString);
         if (!string.IsNullOrEmpty(progId))
         {
-            Write($@"{ClassesKey}{progId}\shellex\{Marker}");
-            if (IsFlect(Query(extension, ShellExtensionString))) return;
+            Write($@"{ClassesKey}{progId}\shellex\{Marker}", handler);
+            if (IsHandler(Query(extension, ShellExtensionString), handler)) return;
         }
 
-        Write($@"{ClassesKey}{extension}\shellex\{Marker}");
+        Write($@"{ClassesKey}{extension}\shellex\{Marker}", handler);
     }
 
-    private static void Write(string key)
+    private static void Write(string key, string handler)
     {
         using var target = Registry.CurrentUser.CreateSubKey(key);
         var previous = target.GetValue(null) as string ?? string.Empty;
+        if (IsFlect(previous)) previous = string.Empty;
         using (var backup = Registry.CurrentUser.CreateSubKey(BackupKey))
         {
             if (backup.GetValue(key) is null) backup.SetValue(key, previous, RegistryValueKind.String);
         }
-        target.SetValue(null, Branding.PreviewClsid, RegistryValueKind.String);
+        target.SetValue(null, handler, RegistryValueKind.String);
     }
 
     private static void Restore(string key, string previous)
@@ -149,7 +154,10 @@ internal static partial class PreviewAssociations
     private static string Parent(string key) => key[..key.LastIndexOf('\\')];
 
     private static bool IsFlect(string? clsid) =>
-        string.Equals(clsid, Branding.PreviewClsid, StringComparison.OrdinalIgnoreCase);
+        IsHandler(clsid, Branding.PreviewClsid) || IsHandler(clsid, Branding.PreviewHtmlClsid);
+
+    private static bool IsHandler(string? clsid, string handler) =>
+        string.Equals(clsid, handler, StringComparison.OrdinalIgnoreCase);
 
     private static bool IsThirdParty(string clsid)
     {

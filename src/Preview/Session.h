@@ -49,6 +49,7 @@ class Session : public std::enable_shared_from_this<Session> {
   Microsoft::WRL::ComPtr<ICoreWebView2> view_;
   HWND window_ = nullptr;
   HBRUSH brush_ = nullptr;
+  HWINEVENTHOOK popupHook_ = nullptr;
   RECT rect_{};
   COLORREF background_ = RGB(255, 255, 255);
   std::wstring notice_;

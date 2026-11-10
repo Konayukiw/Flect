@@ -8,7 +8,7 @@ namespace {
 
 constexpr size_t kHeaderBytes = 8192;
 constexpr int kRootSearchDepth = 16;
-constexpr const wchar_t* kDocSuffix = L".flect-preview.invalid";
+constexpr const wchar_t* kDocSuffix = L".invalid";
 
 SRWLOCK g_consentLock = SRWLOCK_INIT;
 std::set<std::wstring> g_scriptConsent;
@@ -20,13 +20,39 @@ std::wstring ParentOf(const std::wstring& path) {
   return separator == std::wstring::npos ? std::wstring{} : path.substr(0, separator);
 }
 
+bool IsRemote(const std::wstring& path) {
+  if (path.size() >= 2 && path[0] == L'\\' && path[1] == L'\\') {
+    if (path.size() < 4 || path[2] != L'?' || path[3] != L'\\') return true;
+    return Text::SameFold(std::wstring_view(path).substr(4, 4), L"UNC\\");
+  }
+  if (path.size() < 2 || path[1] != L':') return true;
+  const wchar_t drive[] = {path[0], L':', L'\\', L'\0'};
+  const UINT type = ::GetDriveTypeW(drive);
+  return type == DRIVE_REMOTE || type == DRIVE_UNKNOWN || type == DRIVE_NO_ROOT_DIR;
+}
+
+std::wstring ProfileFolder() {
+  PWSTR raw = nullptr;
+  std::wstring folder;
+  if (SUCCEEDED(::SHGetKnownFolderPath(FOLDERID_Profile, 0, nullptr, &raw))) folder = raw;
+  if (raw) ::CoTaskMemFree(raw);
+  return folder;
+}
+
+bool IsRootFolder(const std::wstring& folder) {
+  std::wstring root = folder + L"\\";
+  return ::PathCchIsRoot(root.c_str()) != FALSE;
+}
+
 std::wstring FindRoot(const std::wstring& path) {
   const std::wstring start = ParentOf(path);
+  const std::wstring profile = ProfileFolder();
   std::wstring folder = start;
   for (int depth = 0; depth < kRootSearchDepth && !folder.empty(); ++depth) {
+    if (IsRootFolder(folder) || (!profile.empty() && Text::SameFold(folder, profile))) break;
     if (Exists(folder + L"\\.git") || Exists(folder + L"\\package.json")) return folder;
     const std::wstring parent = ParentOf(folder);
-    if (parent.empty() || parent.size() >= folder.size() || parent.back() == L':' ) break;
+    if (parent.empty() || parent.size() >= folder.size()) break;
     folder = parent;
   }
   return start;
@@ -134,7 +160,9 @@ bool Context::Build(const std::wstring& path, PreviewContext& context) {
 
   context.config = Config::Read();
   context.trust = Trust::Evaluate(path, context.config.trustedFolders);
-  context.root = FindRoot(path);
+  context.remote = IsRemote(path);
+  const bool searchRoot = !context.remote && context.trust.level != Trust::Level::Restricted;
+  context.root = searchRoot ? FindRoot(path) : ParentOf(path);
   context.relative = RelativeTo(context.root, path);
   context.docHost = L"d" + Text::RandomHex(12) + kDocSuffix;
 
@@ -143,7 +171,7 @@ bool Context::Build(const std::wstring& path, PreviewContext& context) {
   Classify(context);
 
   if (context.trust.level == Trust::Level::Trusted) {
-    context.allow.relative = true;
+    context.allow.relative = !context.remote;
     context.allow.scripts = true;
   } else if (context.trust.level == Trust::Level::Normal) {
     context.allow.scripts = HasScriptConsent(path);

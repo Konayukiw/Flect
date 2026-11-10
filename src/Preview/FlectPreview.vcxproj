@@ -115,6 +115,7 @@
       <_BrandLine Include="#pragma once" />
       <_BrandLine Include="#define BRAND_NAME L&quot;$(BrandName)&quot;" />
       <_BrandLine Include="#define BRAND_PREVIEW_CLSID_STR L&quot;$(BrandPreviewClsid)&quot;" />
+      <_BrandLine Include="#define BRAND_PREVIEW_HTML_CLSID_STR L&quot;$(BrandPreviewHtmlClsid)&quot;" />
       <_BrandLine Include="#define BRAND_PREVIEW_APPID_STR L&quot;$(BrandPreviewAppId)&quot;" />
     </ItemGroup>
     <WriteLinesToFile File="$(IntDir)Branding.g.h"

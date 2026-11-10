@@ -22,9 +22,27 @@ $classes = 'HKCU:\Software\Classes'
 $clsidKey = "$classes\CLSID\$clsid"
 $previewClsid = $group.BrandPreviewClsid
 $previewClsidKey = "$classes\CLSID\$previewClsid"
+$previewHtmlClsid = $group.BrandPreviewHtmlClsid
+$previewHtmlClsidKey = "$classes\CLSID\$previewHtmlClsid"
 $previewAppIdKey = "$classes\AppID\$($group.BrandPreviewAppId)"
 $previewMarker = '{8895b1c6-b41f-4c1c-a562-0d564250836f}'
 $previewSampleKey = "$classes\SystemFileAssociations\.py\shellex\$previewMarker"
+
+Add-Type -Namespace InstallerTest -Name Assoc -MemberDefinition '[DllImport("shlwapi.dll", CharSet = CharSet.Unicode)] public static extern int AssocQueryStringW(int flags, int kind, string association, string extra, System.Text.StringBuilder output, ref uint length);'
+
+function Get-PreviewHandler([string]$Extension) {
+    $buffer = New-Object System.Text.StringBuilder 260
+    [uint32]$length = 260
+    if ([InstallerTest.Assoc]::AssocQueryStringW(0, 16, $Extension, $previewMarker, $buffer, [ref]$length) -ne 0) { return $null }
+    return $buffer.ToString()
+}
+
+function Get-UntrustedFlag([string]$Key) {
+    if (-not (Test-Path -LiteralPath $Key)) { return $null }
+    $class = Get-Item -LiteralPath $Key
+    if ($class.GetValueNames() -notcontains 'AutomaticallyPreviewUntrustedFiles') { return $null }
+    return '{0} {1}' -f $class.GetValueKind('AutomaticallyPreviewUntrustedFiles'), $class.GetValue('AutomaticallyPreviewUntrustedFiles')
+}
 $handlerKeys = @("$classes\*\shellex\ContextMenuHandlers\$brand", "$classes\Directory\shellex\ContextMenuHandlers\$brand")
 $presetKey = "HKCU:\Software\$brand\Presets"
 $uninstallKey = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{$appId}_is1"
@@ -69,11 +87,18 @@ function Assert-Registered([string]$Stage) {
     Assert-That ($previewServer -and ($previewServer -ieq (Join-Path $app "${brand}Preview.dll"))) "$Stage - the preview CLSID points at the installed handler ($previewServer)"
     $surrogate = if (Test-Path -LiteralPath $previewAppIdKey) { (Get-Item -LiteralPath $previewAppIdKey).GetValue('DllSurrogate', $null, 'DoNotExpandEnvironmentNames') }
     Assert-That ($surrogate -eq '%SystemRoot%\system32\prevhost.exe') "$Stage - the preview runs in its own prevhost ($surrogate)"
-    $previewClass = if (Test-Path -LiteralPath $previewClsidKey) { Get-Item -LiteralPath $previewClsidKey }
-    $untrusted = if ($previewClass) { $previewClass.GetValue('AutomaticallyPreviewUntrustedFiles') }
-    $untrustedKind = if ($previewClass -and ($previewClass.GetValueNames() -contains 'AutomaticallyPreviewUntrustedFiles')) { $previewClass.GetValueKind('AutomaticallyPreviewUntrustedFiles') }
-    Assert-That (($untrusted -eq 1) -and ($untrustedKind -eq 'DWord')) "$Stage - the handler opts in to previewing untrusted files ($untrustedKind $untrusted)"
+    $untrusted = Get-UntrustedFlag $previewClsidKey
+    Assert-That ($untrusted -eq 'DWord 1') "$Stage - the handler opts in to previewing untrusted files ($untrusted)"
     Assert-That ((Get-DefaultValue $previewSampleKey) -eq $previewClsid) "$Stage - .py is associated with the preview handler"
+
+    $htmlServer = Get-DefaultValue "$previewHtmlClsidKey\InprocServer32"
+    Assert-That ($htmlServer -and ($htmlServer -ieq (Join-Path $app "${brand}Preview.dll"))) "$Stage - the HTML preview CLSID points at the installed handler ($htmlServer)"
+    $htmlUntrusted = Get-UntrustedFlag $previewHtmlClsidKey
+    Assert-That ($htmlUntrusted -eq 'DWord 0') "$Stage - the HTML handler leaves untrusted files to Windows ($htmlUntrusted)"
+    foreach ($extension in '.html', '.htm', '.xhtml') {
+        $handler = Get-PreviewHandler $extension
+        Assert-That ($handler -eq $previewHtmlClsid) "$Stage - $extension uses the HTML preview handler ($handler)"
+    }
 }
 
 $runtime = Join-Path ${env:ProgramW6432} 'dotnet\shared\Microsoft.WindowsDesktop.App'
@@ -139,6 +164,10 @@ Assert-That (-not (Test-Path (Join-Path $app "$brand.exe"))) 'uninstall - the wo
 Assert-That (-not (Test-Path (Join-Path $app "${brand}Shell.dll"))) 'uninstall - the shell extension is removed'
 Assert-That (-not (Test-Path (Join-Path $app "${brand}Preview.dll"))) 'uninstall - the preview handler is removed'
 Assert-That (-not (Test-Path -LiteralPath $previewClsidKey)) 'uninstall - the preview CLSID is removed'
+Assert-That (-not (Test-Path -LiteralPath $previewHtmlClsidKey)) 'uninstall - the HTML preview CLSID is removed'
+foreach ($extension in '.html', '.htm', '.xhtml') {
+    Assert-That ((Get-PreviewHandler $extension) -ne $previewHtmlClsid) "uninstall - the $extension association is restored"
+}
 Assert-That (-not (Test-Path -LiteralPath $previewAppIdKey)) 'uninstall - the preview AppID is removed'
 Assert-That ((Get-DefaultValue $previewSampleKey) -ne $previewClsid) 'uninstall - the .py association is restored'
 

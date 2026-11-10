@@ -4,6 +4,7 @@
     <BrandClsid>{4D038D4F-2125-48BE-8848-BA30A13AC7EA}</BrandClsid>
     <BrandAppId>{16C090EA-F07E-47B7-8811-B97D3BE26DDC}</BrandAppId>
     <BrandPreviewClsid>{CBB10B48-4759-440B-AC1B-464F22A79CDE}</BrandPreviewClsid>
+    <BrandPreviewHtmlClsid>{278E97FA-5FB2-4E65-8278-1F7A663C4EA4}</BrandPreviewHtmlClsid>
     <BrandPreviewAppId>{A9975779-3CE3-47B2-B696-2CD97D01A683}</BrandPreviewAppId>
     <BrandVersion>1.1</BrandVersion>
     <BrandDisplayVersion>$(BrandVersion)</BrandDisplayVersion>

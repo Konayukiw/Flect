@@ -70,6 +70,9 @@ PreviewConfig Config::Read() {
   DWORD size = 0;
   if (ReadDword(kPreviewKey, L"FontSize", size)) config.fontSize = std::clamp(static_cast<int>(size), kMinimumFontSize, kMaximumFontSize);
 
+  DWORD wrap = 0;
+  if (ReadDword(kPreviewKey, L"WordWrap", wrap)) config.wordWrap = wrap != 0;
+
   config.sampleText = ReadString(kPreviewKey, L"SampleText");
   config.trustedFolders = ReadList(kPreviewKey, L"TrustedFolders");
   config.locale = ResolveLocale(ReadString(kRootKey, L"Language"));

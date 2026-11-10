@@ -86,6 +86,15 @@ const CLSID& Clsid() {
   return clsid;
 }
 
+const CLSID& HtmlClsid() {
+  static const CLSID clsid = [] {
+    CLSID value{};
+    ::CLSIDFromString(BRAND_PREVIEW_HTML_CLSID_STR, &value);
+    return value;
+  }();
+  return clsid;
+}
+
 }
 
 BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID) {
@@ -96,7 +105,7 @@ BOOL APIENTRY DllMain(HMODULE module, DWORD reason, LPVOID) {
 STDAPI DllGetClassObject(REFCLSID rclsid, REFIID riid, void** ppv) {
   if (!ppv) return E_POINTER;
   *ppv = nullptr;
-  if (!::IsEqualCLSID(rclsid, Module::Clsid())) return CLASS_E_CLASSNOTAVAILABLE;
+  if (!::IsEqualCLSID(rclsid, Module::Clsid()) && !::IsEqualCLSID(rclsid, Module::HtmlClsid())) return CLASS_E_CLASSNOTAVAILABLE;
   return g_factory.QueryInterface(riid, ppv);
 }
 

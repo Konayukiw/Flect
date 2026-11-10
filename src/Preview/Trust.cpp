@@ -6,31 +6,28 @@ using Microsoft::WRL::ComPtr;
 
 namespace {
 
-constexpr int kInternetZone = 3;
-
 enum class Mark { Absent, Present, Unknown };
+
+bool Untrusted(int zone) { return zone < URLZONE_LOCAL_MACHINE || zone > URLZONE_TRUSTED; }
 
 Mark ReadMark(const std::wstring& path, int& zone) {
   const std::wstring stream = path + L":Zone.Identifier";
-  HANDLE file = ::CreateFileW(stream.c_str(), GENERIC_READ, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
+  HANDLE file = ::CreateFileW(stream.c_str(), FILE_READ_ATTRIBUTES, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE, nullptr,
                               OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
   if (file == INVALID_HANDLE_VALUE) {
     const DWORD error = ::GetLastError();
     return error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND ? Mark::Absent : Mark::Unknown;
   }
-
-  char buffer[4096]{};
-  DWORD read = 0;
-  const BOOL ok = ::ReadFile(file, buffer, sizeof(buffer) - 1, &read, nullptr);
   ::CloseHandle(file);
-  if (!ok) return Mark::Unknown;
 
-  const std::string_view text(buffer, read);
-  const size_t found = text.find("ZoneId=");
-  if (found == std::string_view::npos) return Mark::Unknown;
-  const size_t digit = found + 7;
-  if (digit >= text.size() || text[digit] < '0' || text[digit] > '9') return Mark::Unknown;
-  zone = text[digit] - '0';
+  ComPtr<IPersistFile> persist;
+  if (FAILED(::CoCreateInstance(CLSID_PersistentZoneIdentifier, nullptr, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&persist)))) return Mark::Unknown;
+  if (FAILED(persist->Load(path.c_str(), STGM_READ))) return Mark::Unknown;
+  ComPtr<IZoneIdentifier> identifier;
+  if (FAILED(persist.As(&identifier))) return Mark::Unknown;
+  DWORD id = 0;
+  if (FAILED(identifier->GetId(&id))) return Mark::Unknown;
+  zone = static_cast<int>(id);
   return Mark::Present;
 }
 
@@ -73,13 +70,17 @@ Trust::Result Trust::Evaluate(const std::wstring& path, const std::vector<std::w
   int markedZone = -1;
   const Mark mark = ReadMark(path, markedZone);
   if (mark == Mark::Unknown) return result;
-  result.marked = mark == Mark::Present && markedZone >= kInternetZone;
+  result.marked = mark == Mark::Present && Untrusted(markedZone);
+  if (result.marked) {
+    result.zone = markedZone;
+    return result;
+  }
 
   int mappedZone = -1;
   if (!MapZone(path, mappedZone)) return result;
 
   result.zone = std::max(mark == Mark::Present ? markedZone : 0, mappedZone);
-  if (result.zone >= kInternetZone) return result;
+  if (Untrusted(result.zone)) return result;
 
   result.level = Level::Normal;
   const std::wstring target = FinalPath(path);

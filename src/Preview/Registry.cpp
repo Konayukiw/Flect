@@ -7,8 +7,20 @@ namespace {
 constexpr const wchar_t* kClasses = L"Software\\Classes\\";
 constexpr const wchar_t* kPreviewHandlers = L"Software\\Microsoft\\Windows\\CurrentVersion\\PreviewHandlers";
 constexpr const wchar_t* kSurrogate = L"%SystemRoot%\\system32\\prevhost.exe";
+constexpr const wchar_t* kUntrustedValue = L"AutomaticallyPreviewUntrustedFiles";
 
-std::wstring ClsidKey() { return std::wstring(kClasses) + L"CLSID\\" + BRAND_PREVIEW_CLSID_STR; }
+struct HandlerClass {
+  const wchar_t* clsid;
+  const wchar_t* suffix;
+  DWORD untrusted;
+};
+
+constexpr HandlerClass kClassesToRegister[] = {
+    {BRAND_PREVIEW_CLSID_STR, L" Preview", 1},
+    {BRAND_PREVIEW_HTML_CLSID_STR, L" HTML Preview", 0},
+};
+
+std::wstring ClsidKey(const wchar_t* clsid) { return std::wstring(kClasses) + L"CLSID\\" + clsid; }
 
 std::wstring AppIdKey() { return std::wstring(kClasses) + L"AppID\\" + BRAND_PREVIEW_APPID_STR; }
 
@@ -33,26 +45,32 @@ LSTATUS WriteNumber(const std::wstring& subKey, const wchar_t* name, DWORD value
   return status;
 }
 
+LSTATUS RegisterHandler(const HandlerClass& handler, const std::wstring& dll) {
+  const std::wstring display = std::wstring(BRAND_NAME) + handler.suffix;
+  const std::wstring clsid = ClsidKey(handler.clsid);
+  const std::wstring server = clsid + L"\\InprocServer32";
+
+  LSTATUS status = Write(clsid, nullptr, REG_SZ, display);
+  if (status == ERROR_SUCCESS) status = Write(clsid, L"AppID", REG_SZ, BRAND_PREVIEW_APPID_STR);
+  if (status == ERROR_SUCCESS) status = Write(clsid, L"DisplayName", REG_SZ, display);
+  if (status == ERROR_SUCCESS) status = WriteNumber(clsid, kUntrustedValue, handler.untrusted);
+  if (status == ERROR_SUCCESS) status = Write(server, nullptr, REG_SZ, dll);
+  if (status == ERROR_SUCCESS) status = Write(server, L"ThreadingModel", REG_SZ, L"Apartment");
+  if (status == ERROR_SUCCESS) status = Write(kPreviewHandlers, handler.clsid, REG_SZ, display);
+  return status;
+}
+
 }
 
 HRESULT Registry::Register() {
   const std::wstring dll = Module::Path();
   if (dll.empty()) return E_FAIL;
 
-  const std::wstring display = std::wstring(BRAND_NAME) + L" Preview";
-  const std::wstring clsid = ClsidKey();
-  const std::wstring server = clsid + L"\\InprocServer32";
-  const std::wstring appId = AppIdKey();
-
-  LSTATUS status = Write(appId, nullptr, REG_SZ, display + L" Host");
-  if (status == ERROR_SUCCESS) status = Write(appId, L"DllSurrogate", REG_EXPAND_SZ, kSurrogate);
-  if (status == ERROR_SUCCESS) status = Write(clsid, nullptr, REG_SZ, display);
-  if (status == ERROR_SUCCESS) status = Write(clsid, L"AppID", REG_SZ, BRAND_PREVIEW_APPID_STR);
-  if (status == ERROR_SUCCESS) status = Write(clsid, L"DisplayName", REG_SZ, display);
-  if (status == ERROR_SUCCESS) status = WriteNumber(clsid, L"AutomaticallyPreviewUntrustedFiles", 1);
-  if (status == ERROR_SUCCESS) status = Write(server, nullptr, REG_SZ, dll);
-  if (status == ERROR_SUCCESS) status = Write(server, L"ThreadingModel", REG_SZ, L"Apartment");
-  if (status == ERROR_SUCCESS) status = Write(kPreviewHandlers, BRAND_PREVIEW_CLSID_STR, REG_SZ, display);
+  LSTATUS status = Write(AppIdKey(), nullptr, REG_SZ, std::wstring(BRAND_NAME) + L" Preview Host");
+  if (status == ERROR_SUCCESS) status = Write(AppIdKey(), L"DllSurrogate", REG_EXPAND_SZ, kSurrogate);
+  for (const HandlerClass& handler : kClassesToRegister) {
+    if (status == ERROR_SUCCESS) status = RegisterHandler(handler, dll);
+  }
   if (status != ERROR_SUCCESS) return HRESULT_FROM_WIN32(status);
 
   ::SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
@@ -64,12 +82,17 @@ HRESULT Registry::Unregister() {
 
   HKEY handlers = nullptr;
   if (::RegOpenKeyExW(HKEY_CURRENT_USER, kPreviewHandlers, 0, KEY_SET_VALUE, &handlers) == ERROR_SUCCESS) {
-    const LSTATUS status = ::RegDeleteValueW(handlers, BRAND_PREVIEW_CLSID_STR);
-    if (status != ERROR_SUCCESS && status != ERROR_FILE_NOT_FOUND) worst = status;
+    for (const HandlerClass& handler : kClassesToRegister) {
+      const LSTATUS status = ::RegDeleteValueW(handlers, handler.clsid);
+      if (status != ERROR_SUCCESS && status != ERROR_FILE_NOT_FOUND) worst = status;
+    }
     ::RegCloseKey(handlers);
   }
 
-  for (const std::wstring& key : {ClsidKey(), AppIdKey()}) {
+  std::vector<std::wstring> keys;
+  for (const HandlerClass& handler : kClassesToRegister) keys.push_back(ClsidKey(handler.clsid));
+  keys.push_back(AppIdKey());
+  for (const std::wstring& key : keys) {
     const LSTATUS status = ::RegDeleteTreeW(HKEY_CURRENT_USER, key.c_str());
     if (status != ERROR_SUCCESS && status != ERROR_FILE_NOT_FOUND) worst = status;
   }

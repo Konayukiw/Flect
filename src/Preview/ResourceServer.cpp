@@ -9,6 +9,7 @@ namespace {
 constexpr uint64_t kTextLimit = 4 * 1024 * 1024;
 constexpr uint64_t kRangeChunk = 16 * 1024 * 1024;
 constexpr std::wstring_view kViewerPrefix = L"/__flect/";
+constexpr std::wstring_view kViewerPage = L"/__flect/viewer/pdf.html";
 
 bool ValidSegment(std::wstring_view segment) {
   if (segment.empty() || segment.front() == L'.') return false;
@@ -25,6 +26,25 @@ bool ValidRelative(std::wstring_view path) {
     start = slash + 1;
   }
   return !path.empty();
+}
+
+bool WithoutLinks(const std::wstring& root, const std::wstring& relative) {
+  std::wstring current = root;
+  size_t start = 0;
+  while (start < relative.size()) {
+    const size_t separator = relative.find(L'\\', start);
+    const size_t stop = separator == std::wstring::npos ? relative.size() : separator;
+    current += L'\\';
+    current.append(relative, start, stop - start);
+    WIN32_FIND_DATAW entry{};
+    HANDLE search = ::FindFirstFileExW(current.c_str(), FindExInfoBasic, &entry, FindExSearchNameMatch, nullptr, 0);
+    if (search == INVALID_HANDLE_VALUE) return false;
+    ::FindClose(search);
+    if ((entry.dwFileAttributes & FILE_ATTRIBUTE_REPARSE_POINT) && IsReparseTagNameSurrogate(entry.dwReserved0)) return false;
+    if (separator == std::wstring::npos) break;
+    start = separator + 1;
+  }
+  return true;
 }
 
 bool ParseRange(std::wstring_view header, uint64_t size, uint64_t& begin, uint64_t& end) {
@@ -179,15 +199,16 @@ bool ResourceServer::AllowsFrame(const std::wstring& uri) const {
   Url url;
   if (!Parse(uri, url) || url.scheme != L"https" || url.host != context_.docHost) return false;
   const std::wstring decoded = Text::DecodePath(url.path);
-  if (std::wstring_view(decoded).substr(0, kViewerPrefix.size()) == kViewerPrefix) return true;
+  if (decoded == kViewerPage) return true;
   return Text::SameFold(std::wstring_view(decoded).substr(1), context_.relative);
 }
 
 std::wstring ResourceServer::ResolveProjectFile(const std::wstring& relative) const {
-  if (!ValidRelative(relative)) return {};
-  std::wstring path = relative;
-  std::replace(path.begin(), path.end(), L'/', L'\\');
-  path = context_.root + L"\\" + path;
+  if (context_.remote || !ValidRelative(relative)) return {};
+  std::wstring inside = relative;
+  std::replace(inside.begin(), inside.end(), L'/', L'\\');
+  if (!WithoutLinks(context_.root, inside)) return {};
+  const std::wstring path = context_.root + L"\\" + inside;
   uint64_t size = 0;
   if (!FileSize(path, size)) return {};
   const std::wstring root = Trust::FinalPath(context_.root);
@@ -265,6 +286,7 @@ ResourceServer::Reply ResourceServer::ServeSession() const {
   json += L",\"fallbackEncoding\":" + Text::Json(AnsiEncoding());
   json += L",\"fontFamily\":" + Text::Json(c.config.fontFamily);
   json += L",\"fontSize\":" + std::to_wstring(c.config.fontSize);
+  json += L",\"wordWrap\":" + std::wstring(Bool(c.config.wordWrap));
   json += L",\"sample\":" + Text::Json(c.config.sampleText);
   json += L",\"scripts\":" + std::wstring(Bool(c.allow.scripts));
   json += L",\"relative\":" + std::wstring(Bool(c.allow.relative));
@@ -272,7 +294,7 @@ ResourceServer::Reply ResourceServer::ServeSession() const {
   json += L",\"resume\":" + std::wstring(Bool(c.resume));
   json += L",\"canAllowScripts\":" + std::wstring(Bool(!restricted && c.trust.level == Trust::Level::Normal));
   json += L",\"canAllowNetwork\":" + std::wstring(Bool(!restricted && !c.trust.marked));
-  json += L",\"canConvert\":" + std::wstring(Bool(!c.sniff.demuxer.empty() && c.mismatch.empty()));
+  json += L",\"canConvert\":" + std::wstring(Bool(!restricted && !c.trust.marked && !c.sniff.demuxer.empty() && c.mismatch.empty()));
   json += L"}";
 
   Reply reply;

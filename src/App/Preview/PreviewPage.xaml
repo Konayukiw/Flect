@@ -64,6 +64,16 @@
     <Border Style="{StaticResource Settings.Section}">
       <StackPanel>
         <TextBlock Style="{StaticResource Settings.SectionTitle}"
+                   Text="{loc:T settings.preview.display}" />
+        <TextBlock Style="{StaticResource Settings.Hint}"
+                   Text="{loc:T settings.preview.display.hint}" />
+        <CheckBox x:Name="WordWrapBox" Content="{loc:T settings.preview.wordWrap}" />
+      </StackPanel>
+    </Border>
+
+    <Border Style="{StaticResource Settings.Section}">
+      <StackPanel>
+        <TextBlock Style="{StaticResource Settings.SectionTitle}"
                    Text="{loc:T settings.preview.sample}" />
         <TextBlock Style="{StaticResource Settings.Hint}"
                    Text="{loc:T settings.preview.sample.hint}" />

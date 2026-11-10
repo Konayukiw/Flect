@@ -130,6 +130,7 @@
       <_BrandLine Include="    public const string Name = &quot;$(BrandName)&quot;%3B" />
       <_BrandLine Include="    public const string Version = &quot;$(BrandDisplayVersion)&quot;%3B" />
       <_BrandLine Include="    public const string PreviewClsid = &quot;$(BrandPreviewClsid)&quot;%3B" />
+      <_BrandLine Include="    public const string PreviewHtmlClsid = &quot;$(BrandPreviewHtmlClsid)&quot;%3B" />
       <_BrandLine Include="}" />
     </ItemGroup>
     <WriteLinesToFile File="$(IntermediateOutputPath)Branding.g.cs"

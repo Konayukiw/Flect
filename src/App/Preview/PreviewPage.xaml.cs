@@ -52,6 +52,7 @@ public partial class PreviewPage : UserControl, ISettings
         EnabledBox.IsChecked = preview.Enabled;
         Binding.Select(FontBox, preview.FontFamily);
         Binding.ShowInt(FontSizeBox, preview.FontSize);
+        WordWrapBox.IsChecked = preview.WordWrap;
         SampleBox.Text = preview.SampleText;
         TrustedBox.Text = string.Join(Environment.NewLine, preview.TrustedFolders);
 
@@ -69,6 +70,7 @@ public partial class PreviewPage : UserControl, ISettings
         preview.Enabled = EnabledBox.IsChecked == true;
         preview.FontFamily = Binding.Selected(FontBox, preview.FontFamily);
         preview.FontSize = Binding.Int(FontSizeBox, preview.FontSize, MinimumFontSize, MaximumFontSize);
+        preview.WordWrap = WordWrapBox.IsChecked == true;
         preview.SampleText = SampleBox.Text;
         preview.TrustedFolders = ReadFolders(TrustedBox.Text);
         preview.DisabledKinds = _kindBoxes.Where(box => box.IsChecked != true).Select(box => (string)box.Tag).ToList();

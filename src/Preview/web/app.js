@@ -3,8 +3,8 @@ import { STRINGS } from "./strings.js";
 const SAMPLE_SIZES = [12, 16, 20, 28, 40, 64];
 const MARKDOWN_IMAGE_BYTES = 16 * 1024 * 1024;
 const MARKDOWN_IMAGE_COUNT = 64;
-const LANGUAGE_WORKERS = new Set(["json", "css", "scss", "less", "html", "handlebars", "razor", "typescript", "javascript"]);
-const ENCODINGS = ["utf-8", "utf-16le", "utf-16be", "shift_jis", "euc-jp", "iso-2022-jp", "gb18030", "big5", "euc-kr", "windows-1252"];
+const LANGUAGE_WORKERS = new Set(["JSON", "CSS", "SCSS", "LESS", "HTML", "Handlebars", "Razor", "TypeScript", "JavaScript"]);
+const ENCODINGS = ["UTF-8", "UTF-16LE", "UTF-16BE", "Shift_JIS", "EUC-JP", "ISO-2022-JP", "GB18030", "Big5", "EUC-KR", "Windows-1252"];
 
 const toolbar = document.getElementById("toolbar");
 const banners = document.getElementById("banners");
@@ -16,6 +16,7 @@ let generation = 0;
 let monacoReady = null;
 let textBytes = null;
 let textEncoding = null;
+let wordWrap = false;
 let onConverted = null;
 let onConvertFailed = null;
 const pending = new Map();
@@ -109,12 +110,12 @@ async function loadBytes() {
 }
 
 function detectEncoding(bytes) {
-  if (bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) return "utf-8";
-  if (bytes[0] === 0xff && bytes[1] === 0xfe) return "utf-16le";
-  if (bytes[0] === 0xfe && bytes[1] === 0xff) return "utf-16be";
+  if (bytes[0] === 0xef && bytes[1] === 0xbb && bytes[2] === 0xbf) return "UTF-8";
+  if (bytes[0] === 0xff && bytes[1] === 0xfe) return "UTF-16LE";
+  if (bytes[0] === 0xfe && bytes[1] === 0xff) return "UTF-16BE";
   try {
-    new TextDecoder("utf-8", { fatal: true }).decode(bytes, { stream: true });
-    return "utf-8";
+    new TextDecoder("UTF-8", { fatal: true }).decode(bytes, { stream: true });
+    return "UTF-8";
   } catch {
     return session.fallbackEncoding;
 
@@ -152,6 +153,10 @@ function fontStack() {
   return `"${family}", "HackGen Console", Consolas, monospace`;
 }
 
+function wrapMode() {
+  return wordWrap ? "on" : "off";
+}
+
 async function renderEditor(mine) {
   const monaco = await loadMonaco();
   await document.fonts.load(`${session.fontSize}px "HackGen Console"`);
@@ -169,6 +174,7 @@ async function renderEditor(mine) {
     automaticLayout: true,
     fontFamily: fontStack(),
     fontSize: session.fontSize,
+    wordWrap: wrapMode(),
     minimap: { enabled: false },
     scrollBeyondLastLine: false,
     renderControlCharacters: true,
@@ -430,18 +436,16 @@ function showMedia() {
   };
 
   const offerConversion = () => {
+    if (session.trust === "restricted" || session.marked) {
+      message.replaceChildren(t("cannotPlay"), node("br"), node("br"), t("convertRestricted"));
+      holder.replaceChildren(message);
+      return;
+    }
     if (!session.canConvert) {
       holder.replaceChildren(node("div", { className: "message", textContent: t("cannotConvert") }));
       return;
     }
-    const action = () => {
-      if (session.trust !== "restricted") {
-        beginConversion();
-        return;
-      }
-      message.replaceChildren(t("convertWarning"), node("br"), node("br"), button(t("convertConfirm"), beginConversion));
-    };
-    const start = button(t("convert"), action);
+    const start = button(t("convert"), beginConversion);
     start.className = "primary";
     message.replaceChildren(t("cannotPlay"), node("br"), node("br"), start);
     holder.replaceChildren(message);
@@ -476,6 +480,7 @@ async function main() {
   session = await (await fetch("/api/session")).json();
   document.documentElement.dataset.theme = session.theme;
   document.documentElement.lang = session.locale;
+  wordWrap = session.wordWrap;
 
   if (session.mismatch) addBanner(t("mismatch", declaredName(), detectedName()), true);
   if (session.trust === "restricted") addBanner(t("restricted"));

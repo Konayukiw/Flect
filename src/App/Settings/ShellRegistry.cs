@@ -29,6 +29,7 @@ internal static class ShellRegistry
             {
                 preview.SetValue("FontFamily", settings.Preview.FontFamily, RegistryValueKind.String);
                 preview.SetValue("FontSize", settings.Preview.FontSize, RegistryValueKind.DWord);
+                preview.SetValue("WordWrap", settings.Preview.WordWrap ? 1 : 0, RegistryValueKind.DWord);
                 preview.SetValue("SampleText", settings.Preview.SampleText, RegistryValueKind.String);
                 preview.SetValue("TrustedFolders", settings.Preview.TrustedFolders.ToArray(), RegistryValueKind.MultiString);
             }

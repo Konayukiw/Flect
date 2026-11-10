@@ -15,5 +15,6 @@ std::wstring Path();
 std::wstring Directory();
 
 const CLSID& Clsid();
+const CLSID& HtmlClsid();
 
 }

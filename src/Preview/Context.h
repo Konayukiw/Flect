@@ -24,6 +24,7 @@ struct PreviewContext {
   Sniff::Result sniff;
   std::wstring mismatch;
   bool binary = false;
+  bool remote = false;
   std::wstring docHost;
   PreviewConfig config;
   Allowances allow;

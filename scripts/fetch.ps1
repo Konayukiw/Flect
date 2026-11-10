@@ -29,7 +29,10 @@ $repoRoot = Split-Path -Parent $PSScriptRoot
 $destination = Join-Path $repoRoot 'dependencies'
 New-Item -ItemType Directory -Force -Path $destination | Out-Null
 
-$ffmpegUrl = 'https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip'
+$ffmpegVersion = '9.0.2'
+$ffmpegHash = '60F467265B1E312373DBCD92200C2618A74850F98D3D078E94296BB3FA2047BA'
+$ffmpegUrl = "https://github.com/GyanD/codexffmpeg/releases/download/$ffmpegVersion/ffmpeg-$ffmpegVersion-essentials_build.zip"
+$ffmpegStamp = Join-Path $destination '.stamps\ffmpeg.version'
 $cfrUrl = 'https://github.com/leibnitz27/cfr/releases/download/0.152/cfr-0.152.jar'
 
 $sevenZipVersion = '26.02'
@@ -64,12 +67,18 @@ function Download-File([string]$uri, [string]$outFile) {
 
 Write-Host "Fetching items into $destination"
 
-if (-not (Test-Present 'ffmpeg.exe') -or -not (Test-Present 'ffprobe.exe')) {
-    $archive = Join-Path ([System.IO.Path]::GetTempPath()) 'ffmpeg-release-essentials.zip'
+$ffmpegCurrent = (Test-Path -LiteralPath $ffmpegStamp) -and ((Get-Content -LiteralPath $ffmpegStamp -Raw).Trim() -eq $ffmpegVersion)
+if (-not $ffmpegCurrent -or -not (Test-Present 'ffmpeg.exe') -or -not (Test-Present 'ffprobe.exe')) {
+    $archive = Join-Path ([System.IO.Path]::GetTempPath()) "ffmpeg-$ffmpegVersion-essentials_build.zip"
     $staging = Join-Path ([System.IO.Path]::GetTempPath()) 'ffmpeg-staging'
 
-    Write-Host '  Downloading ffmpeg (about 110 MB)...'
-    Invoke-WebRequest -Uri $ffmpegUrl -OutFile $archive -UseBasicParsing
+    Write-Host "  Downloading ffmpeg $ffmpegVersion (about 110 MB)..."
+    Download-File $ffmpegUrl $archive
+    $digest = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash
+    if ($digest -ne $ffmpegHash) {
+        Remove-Item -Force $archive -ErrorAction SilentlyContinue
+        throw "Hash mismatch for $ffmpegUrl. Expected $ffmpegHash but got $digest."
+    }
 
     Remove-Item -Recurse -Force $staging -ErrorAction SilentlyContinue
     Expand-Archive -Path $archive -DestinationPath $staging
@@ -83,6 +92,8 @@ if (-not (Test-Present 'ffmpeg.exe') -or -not (Test-Present 'ffprobe.exe')) {
 
     Remove-Item -Recurse -Force $staging -ErrorAction SilentlyContinue
     Remove-Item -Force $archive -ErrorAction SilentlyContinue
+    New-Item -ItemType Directory -Force -Path (Split-Path -Parent $ffmpegStamp) | Out-Null
+    Set-Content -LiteralPath $ffmpegStamp -Value $ffmpegVersion -Encoding Ascii
 }
 
 if (-not (Test-Present 'cfr.jar')) {

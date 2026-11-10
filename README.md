@@ -153,17 +153,20 @@ Flect replaces original Windows preview. You choose what it controles under **Pr
 
 If the contents do not match the extension, the pane will warn. A `.txt` that is really an executable is flagged and not displayed.
 
-### Files from the Internet
+<details>
+<summary>Security policy for Preview</summary>
 
 **Flect never runs scripts in HTML files that came from the Internet.** 
 
 Selecting a file should not be enough to run a stranger's code, and an HTML page can also leak your Windows sign-in hash just by referencing a remote file. Those files open in a restricted mode: no scripts, no external content, no other files from the same folder. You can read the source and view the page as static HTML, and that is all.
 
-Explorer decides whether a file from the Internet can be previewed at all. When Windows blocks it, you see the Windows message and Flect does not try to get around it.
+Explorer decides whether a file from the Internet can be previewed at all. Recent Windows 11 updates let a preview handler take on files from the Internet, and Flect does so for every type except HTML, because those files open in the restricted mode above. HTML files from the Internet still go through the Windows check, the same as the built-in HTML preview. When Windows blocks a file, you see the Windows message and Flect does not try to get around it.
 
 For files on your own PC, HTML shows its source first. Rendering, running scripts and allowing network access each take a click.
 
-Everything is parsed inside the Chromium sandbox of the WebView2 Runtime in a low-integrity process, with network access disabled. FFmpeg is the one exception: it runs only when you ask for a conversion, with reduced rights, and only for files whose contents match a known format.
+Everything is parsed inside the Chromium sandbox of the WebView2 Runtime in a low-integrity process, with network access disabled. FFmpeg is the one exception: it runs only when you ask for a conversion, with reduced rights, and only for files whose contents match a known format. Files from the Internet are never converted.
+
+</details>
 
 ## Settings
 
