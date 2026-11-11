@@ -3,38 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="dark light">
-  <title data-i18n="meta.title">Flect - All-in-one file editor for Windows Explorer</title>
+  <meta name="color-scheme" content="light dark">
+  <title data-i18n="meta.title">Flect - All-in-one file editor that lives in Explorer</title>
   <link rel="icon" href="assets/Flect.png">
   <meta name="description" data-i18n="meta.desc" content="Right-click any file or folder in Windows Explorer to convert, compress, resize, analyze, run OCR, or remove duplicate images, videos, audio, and PDFs - everything finishes right there.">
-  <meta name="theme-color" content="#06090e">
+  <meta name="theme-color" content="#f3f3f3">
   <meta property="og:title" data-i18n="og.title" content="Flect - All-in-one tools with a right click">
-  <meta property="og:description" data-i18n="og.desc" content="From Windows Explorer: convert, compress, resize, analyze, OCR, and dedupe images, videos, audio, and PDFs. All in a single right click.">
+  <meta property="og:description" data-i18n="og.desc" content="From Explorer: convert, compress, resize, analyze, OCR, and dedupe images, videos, audio, and PDFs. All in a single right click.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://konayukiw.github.io/Flect/">
   <meta property="og:image" content="assets/og.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&family=Noto+Sans+JP:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;600&family=Noto+Sans+SC:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <div class="progress" id="progress" aria-hidden="true"></div>
+  <svg class="sprite" aria-hidden="true">
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h16"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-files" viewBox="0 0 24 24"><path d="M20 7h-3a2 2 0 0 1-2-2V2"/><path d="M9 18a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h7l4 4v10a2 2 0 0 1-2 2Z"/><path d="M3 7.6v12.8A1.6 1.6 0 0 0 4.6 22h9.8"/></symbol>
+    <symbol id="i-drive" viewBox="0 0 24 24"><path d="M22 12H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><path d="M6 16h.01"/><path d="M10 16h.01"/></symbol>
+    <symbol id="i-terminal" viewBox="0 0 24 24"><path d="m4 17 6-6-6-6"/><path d="M12 19h8"/></symbol>
+    <symbol id="i-left" viewBox="0 0 24 24"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></symbol>
+    <symbol id="i-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></symbol>
+    <symbol id="i-windows" viewBox="0 0 16 16"><rect x="1.5" y="1.5" width="6" height="6" rx="0.5"/><rect x="8.5" y="1.5" width="6" height="6" rx="0.5"/><rect x="1.5" y="8.5" width="6" height="6" rx="0.5"/><rect x="8.5" y="8.5" width="6" height="6" rx="0.5"/></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-.88-.01-1.72-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.9 1.57 2.35 1.12 2.92.85.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.38 9.38 0 0 1 12 6.84c.85 0 1.71.12 2.51.35 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.82 0 .27.18.59.69.49A10.26 10.26 0 0 0 22 12.26C22 6.58 17.52 2 12 2z"/></symbol>
+  </svg>
 
   <div class="dev-badge"><span>author: Konayukiw</span></div>
-
-  <div class="bg" aria-hidden="true">
-    <canvas id="ambientCanvas"></canvas>
-    <div class="bg-grid"></div>
-  </div>
 
   <header class="site-head" id="siteHead">
     <nav class="dynamic-island" id="dynamicIsland" aria-label="Primary">
       <a class="brand" href="#top" data-i18n-aria="brand.aria" aria-label="Back to top">
-        <span class="brand-mark" aria-hidden="true">
-          <img class="mark-a" src="assets/Flect.png" alt="">
-        </span>
+        <span class="brand-mark" aria-hidden="true"><img src="assets/Flect.png" alt=""></span>
         <span class="brand-name">Flect</span>
       </a>
       <div class="island-expand">
@@ -47,20 +55,29 @@
         <span class="island-sep" aria-hidden="true"></span>
         <div class="island-actions">
           <div class="lang-wrap">
-            <svg class="lang-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a14.5 14.5 0 0 1 0 18M12 3a14.5 14.5 0 0 0 0 18" fill="none" stroke="currentColor" stroke-width="1.7"/></svg>
+            <svg class="i" aria-hidden="true"><use href="#i-globe"/></svg>
             <select class="lang-select" id="langSelect" data-i18n-aria="lang.aria" aria-label="Select language">
               <option value="en">English</option>
               <option value="ja">日本語</option>
               <option value="zh">简体中文</option>
             </select>
           </div>
-          <button class="theme-toggle" id="themeToggle" type="button" data-i18n-aria="theme.aria" aria-label="Toggle theme">
-            <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <button class="icon-btn theme-toggle" id="themeToggle" type="button" data-i18n-aria="theme.aria" aria-label="Toggle theme">
+            <svg class="i icon-moon" aria-hidden="true"><use href="#i-moon"/></svg>
+            <svg class="i icon-sun" aria-hidden="true"><use href="#i-sun"/></svg>
+          </button>
+          <button class="icon-btn nav-toggle" id="navToggle" type="button" aria-label="Menu" aria-controls="navMenu" aria-expanded="false">
+            <svg class="i" aria-hidden="true"><use href="#i-menu"/></svg>
           </button>
         </div>
       </div>
     </nav>
+    <div class="nav-menu" id="navMenu">
+      <a href="#demo" data-i18n="nav.demo">Demo</a>
+      <a href="#features" data-i18n="nav.features">Features</a>
+      <a href="#install" data-i18n="nav.install">Install</a>
+      <a href="#faq" data-i18n="nav.faq">FAQ</a>
+    </div>
   </header>
 
   <main id="top">
@@ -68,32 +85,25 @@
     <section class="hero">
       <div class="hero-grid">
         <div class="hero-copy">
-          <div class="hero-meta">
-            <span class="win-pill">
-              <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="1.5" width="5.8" height="5.8" rx="0.8" fill="currentColor"/><rect x="8.7" y="1.5" width="5.8" height="5.8" rx="0.8" fill="currentColor"/><rect x="1.5" y="8.7" width="5.8" height="5.8" rx="0.8" fill="currentColor"/><rect x="8.7" y="8.7" width="5.8" height="5.8" rx="0.8" fill="currentColor"/></svg>
-              <span data-i18n="hero.kicker">Works on Windows 10 / 11</span>
-            </span>
-            <span class="arch-badge">C++ IContextMenu · .NET 10</span>
-          </div>
+          <h1 data-i18n="hero.title">One right <br class="sp-only">click for<br><span class="grad">everything</span></h1>
 
-          <h1 data-i18n="hero.title">One right <br class="sp-only">click for<br><span class="grad">Everything</span></h1>
-
-          <p class="lead" data-i18n="hero.lead">
-            No more hunting for converter websites in your browser, or squeezing videos in a dedicated editor.<br>
-            Just right-click a file in Explorer to convert, compress, resize, analyze, run OCR, or remove duplicates...<br>
-            Every task finishes <strong>right inside Explorer</strong>.
-          </p>
+          <p class="lead" data-i18n="hero.lead">No more hunting for converter websites in your browser, or squeezing videos in a dedicated editor. Just right-click a file in Explorer to convert, compress, resize, analyze, run OCR, or remove duplicates. Every task finishes <strong>right inside Explorer</strong>.</p>
 
           <div class="hero-actions">
             <a class="btn btn-primary" href="#install">
-              <span data-i18n="hero.btn.download">Download the Installer</span>
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v12m0 0l-4-4m4 4l4-4M4 20h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <svg class="i" aria-hidden="true"><use href="#i-download"/></svg>
+              <span data-i18n="hero.btn.download">Download</span>
             </a>
             <a class="btn btn-ghost" href="https://github.com/Konayukiw/Flect" target="_blank" rel="noopener">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.53 2.87 8.37 6.84 9.73.5.09.68-.22.68-.49 0-.24-.01-.88-.01-1.72-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.9 1.57 2.35 1.12 2.92.85.09-.66.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05A9.38 9.38 0 0 1 12 6.84c.85 0 1.71.12 2.51.35 1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.82 0 .27.18.59.69.49A10.26 10.26 0 0 0 22 12.26C22 6.58 17.52 2 12 2z" fill="currentColor"/></svg>
-              <span data-i18n="install.github">GitHub Repository</span>
+              <svg class="i i-fill" aria-hidden="true"><use href="#i-github"/></svg>
+              <span data-i18n="install.github">GitHub repository</span>
             </a>
           </div>
+
+          <p class="hero-meta">
+            <span class="hero-os"><svg class="i i-fill" aria-hidden="true"><use href="#i-windows"/></svg><span data-i18n="hero.kicker">Works on Windows 10 / 11</span></span>
+            <span class="hero-stack">C++ IContextMenu · .NET 10</span>
+          </p>
 
           <ul class="hero-stats">
             <li>
@@ -101,47 +111,40 @@
               <span data-i18n="stat.menuItems">Menu items</span>
             </li>
             <li>
-              <strong id="statStars">151</strong>
-              <span data-i18n="stat.stars">GitHub Stars</span>
+              <strong id="statStars">150+</strong>
+              <span data-i18n="stat.stars">GitHub stars</span>
             </li>
             <li>
-              <strong id="statDownloads">3,337</strong>
-              <span data-i18n="stat.downloads">Downloads</span>
+              <strong id="statDownloads">4,000+</strong>
+              <span data-i18n="stat.downloads">Total downloads</span>
             </li>
           </ul>
         </div>
 
-        <div class="hero-visual" aria-hidden="true">
-          <div class="hv-shell">
-            <div class="hv-top">
-              <div class="hv-dots"><i></i><i></i><i></i></div>
-              <div class="hv-tabs" id="heroPreviewTabs">
-                <button type="button" class="hv-tab active" data-hv="image">IMG</button>
-                <button type="button" class="hv-tab" data-hv="video">MP4</button>
-                <button type="button" class="hv-tab" data-hv="folder">DIR</button>
-                <button type="button" class="hv-tab" data-hv="pdf">PDF</button>
-              </div>
-            </div>
-            <div class="hv-body">
-              <div class="hv-shot-wrap">
-                <img id="hvShotImg" src="assets/En/Img.png" width="920" height="580" alt="">
-              </div>
-            </div>
+        <div class="hero-visual">
+          <div class="shot shot-hero" aria-hidden="true">
+            <img id="hvShotImg" src="assets/En/Img.png" width="920" height="580" alt="">
+          </div>
+          <div class="seg hv-tabs" id="heroPreviewTabs">
+            <button type="button" class="seg-tab hv-tab active" data-hv="image" data-i18n="feat.img.badge">Image</button>
+            <button type="button" class="seg-tab hv-tab" data-hv="video" data-i18n="feat.video.badge">Video &amp; Audio</button>
+            <button type="button" class="seg-tab hv-tab" data-hv="folder" data-i18n="feat.folder.badge">Folder</button>
+            <button type="button" class="seg-tab hv-tab" data-hv="pdf">PDF</button>
           </div>
         </div>
       </div>
     </section>
 
     <section class="demo" id="demo">
-      <div class="demo-header">
-        <div class="demo-title-col">
-          <h2 data-i18n="demo.title">Try the Demo</h2>
+      <div class="sec-head sec-head-split">
+        <div class="sec-title">
+          <h2 data-i18n="demo.title">Try the demo</h2>
           <p data-i18n="demo.desc">Right-click a file or folder on this desktop and open Flect from the menu.<br>To rename, select an item and press F2, or click its name once more.</p>
         </div>
-        <div class="demo-badge-col" aria-hidden="true">
-          <span class="demo-kbd-pill"><kbd>Right-Click</kbd> Context Menu</span>
-          <span class="demo-kbd-pill"><kbd>F2</kbd> Rename</span>
-          <span class="demo-kbd-pill"><kbd>Ctrl</kbd> + Click Multi-Select</span>
+        <div class="demo-hints" aria-hidden="true">
+          <span class="hint"><kbd>Right-click</kbd>Context menu</span>
+          <span class="hint"><kbd>F2</kbd>Rename</span>
+          <span class="hint"><kbd>Ctrl</kbd>+<kbd>Click</kbd>Multi-select</span>
         </div>
       </div>
 
@@ -149,7 +152,11 @@
         <div class="desk" id="desk" data-view="large">
           <div class="desk-bar">
             <h3 id="deskTitle" data-i18n="desk.title">Desktop</h3>
-            <div class="desk-nav" aria-hidden="true"><span>←</span><span>→</span><span class="nav-up">↑</span></div>
+            <div class="desk-nav" aria-hidden="true">
+              <span><svg class="i"><use href="#i-left"/></svg></span>
+              <span><svg class="i"><use href="#i-right"/></svg></span>
+              <span><svg class="i"><use href="#i-up"/></svg></span>
+            </div>
           </div>
           <div class="desk-icons" id="deskIcons" role="listbox" aria-multiselectable="true" aria-labelledby="deskTitle" tabindex="-1">
             <button class="icon" type="button" role="option" aria-selected="false" data-kind="file" data-name="Dance Video.mp4" data-bytes="1288490189" data-i18n-name="file.dance" tabindex="0">
@@ -184,150 +191,144 @@
 
     <section class="principles">
       <div class="principles-grid">
-        <div class="philo-panel reveal">
+        <div class="philo-panel">
           <p class="philo-line" data-i18n="philo.line">The time spent hunting for a converter,<br class="sp-only"> and the hassle of hopping between windows.<br><em>One right click eliminates both. </em></p>
           <p class="philo-sub" data-i18n="philo.sub">Flect is a native Windows app that integrates into Explorer as a shell extension. Built with C++ / .NET, it edits files locally, so nothing is ever sent to a server.</p>
         </div>
 
         <div class="pillars">
-          <div class="pillar reveal">
-            <div class="pillar-head">
-              <span class="pillar-icon">
-                <svg viewBox="0 0 24 24" class="p-ic" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3 7-7 10-4-3-7-5-7-10V6l7-3z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </span>
-              <h3 data-i18n="pillar.safe.t">Your Originals Are Safe</h3>
+          <div class="pillar">
+            <svg class="i" aria-hidden="true"><use href="#i-shield"/></svg>
+            <div>
+              <h3 data-i18n="pillar.safe.t">Your originals are safe</h3>
+              <p data-i18n="pillar.safe.d">Results are always written out as <strong>new files</strong> - nothing is overwritten or deleted. If a name is already taken, a suffix like "(1)" is added.</p>
             </div>
-            <p data-i18n="pillar.safe.d">Results are always written out as <strong>new files</strong> - nothing is overwritten or deleted. If a name is already taken, a suffix like "(1)" is added.</p>
           </div>
 
-          <div class="pillar reveal">
-            <div class="pillar-head">
-              <span class="pillar-icon">
-                <svg viewBox="0 0 24 24" class="p-ic" aria-hidden="true"><path d="M4 12h16M12 4v16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M6 8l-2 4 2 4M18 8l2 4-2 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </span>
-              <h3 data-i18n="pillar.batch.t">Batch Editing</h3>
+          <div class="pillar">
+            <svg class="i" aria-hidden="true"><use href="#i-files"/></svg>
+            <div>
+              <h3 data-i18n="pillar.batch.t">Batch editing</h3>
+              <p data-i18n="pillar.batch.d">Select hundreds of files at once. The whole selection is handled in a single run - no manual, one-by-one work.</p>
             </div>
-            <p data-i18n="pillar.batch.d">Select hundreds of files at once. The whole selection is handled in a single run - no manual, one-by-one work.</p>
           </div>
 
-          <div class="pillar reveal">
-            <div class="pillar-head">
-              <span class="pillar-icon">
-                <svg viewBox="0 0 24 24" class="p-ic" aria-hidden="true"><path d="M12 3L2 8l10 5 10-5-10-5z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M4 12l8 4 8-4M4 16l8 4 8-4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </span>
-              <h3 data-i18n="pillar.offline.t">Fully Offline</h3>
+          <div class="pillar">
+            <svg class="i" aria-hidden="true"><use href="#i-drive"/></svg>
+            <div>
+              <h3 data-i18n="pillar.offline.t">Fully offline</h3>
+              <p data-i18n="pillar.offline.d">All external dependencies are downloaded automatically by the installer. No uploads, no log collection - your files never leave your PC.</p>
             </div>
-            <p data-i18n="pillar.offline.d">All external dependencies are downloaded automatically by the installer. No uploads, no log collection - your files never leave your PC.</p>
           </div>
         </div>
       </div>
     </section>
 
     <section class="features" id="features">
-      <div class="features-top">
-        <div class="features-head-copy">
-          <h2 data-i18n="features.title">The Right Menu, Wherever You Need It</h2>
+      <div class="sec-head">
+        <div class="sec-title">
+          <h2 data-i18n="features.title">The right menu, wherever you need it</h2>
           <p data-i18n="features.desc">For every file type, only the operations it actually needs show up in the right-click menu. Analyze on a single file follows the contents, so a renamed or spoofed extension still shows what the file really is.</p>
         </div>
-        <div class="feat-tabs" id="featTabs" role="tablist" aria-label="Feature categories">
-          <button type="button" class="feat-tab active" data-feat-tab="all">All</button>
-          <button type="button" class="feat-tab" data-feat-tab="img" data-i18n="feat.img.badge">Image</button>
-          <button type="button" class="feat-tab" data-feat-tab="video" data-i18n="feat.video.badge">Video &amp; Audio</button>
-          <button type="button" class="feat-tab" data-feat-tab="folder" data-i18n="feat.folder.badge">Folder</button>
-          <button type="button" class="feat-tab" data-feat-tab="text" data-i18n="feat.text.badge">Text &amp; Documents</button>
+        <div class="seg feat-tabs" id="featTabs" role="tablist" aria-label="Feature categories">
+          <button type="button" class="seg-tab feat-tab active" data-feat-tab="all">All</button>
+          <button type="button" class="seg-tab feat-tab" data-feat-tab="img" data-i18n="feat.img.badge">Image</button>
+          <button type="button" class="seg-tab feat-tab" data-feat-tab="video" data-i18n="feat.video.badge">Video &amp; Audio</button>
+          <button type="button" class="seg-tab feat-tab" data-feat-tab="folder" data-i18n="feat.folder.badge">Folder</button>
+          <button type="button" class="seg-tab feat-tab" data-feat-tab="text" data-i18n="feat.text.badge">Text &amp; Documents</button>
         </div>
       </div>
 
-      <div class="feat-bento" id="featBento">
+      <div class="feat-rows" id="featBento">
 
-        <article class="feat-card reveal" data-feat-cat="img">
-          <div class="fc-header">
-            <span class="feat-badge" data-i18n="feat.img.badge">Image</span>
-            <h3 data-i18n="feat.img.title">Images: From Resizing to Background Removal</h3>
-          </div>
+        <article class="feat-row" data-feat-cat="img">
           <figure class="fc-visual">
-            <div class="fcv-shot" aria-hidden="true">
+            <div class="shot" aria-hidden="true">
               <img data-shot-kind="img" src="assets/En/Img.png" width="920" height="580" loading="lazy" alt="">
             </div>
             <figcaption data-i18n="feat.img.cap">Right-click an image → Flect menu</figcaption>
           </figure>
-          <ul class="feat-list">
-            <li data-i18n="feat.img.1"><strong>Resize</strong> - by ratio or exact pixels, with preset sizes selectable in one click from the menu.</li>
-            <li data-i18n="feat.img.2"><strong>Compress</strong> - down to a target size while keeping quality as high as possible.</li>
-            <li data-i18n="feat.img.3"><strong>Rotate</strong> - to any angle. Corners become transparent, or are filled with a chosen color for formats without alpha.</li>
-            <li data-i18n="feat.img.4"><strong>Convert</strong> - between PNG, JPG, WEBP, HEIC, ICO, GIF, and SVG.</li>
-            <li data-i18n="feat.img.5"><strong>OCR</strong> - extract text from images, then save or copy it.</li>
-            <li data-i18n="feat.img.6"><strong>Metadata removal</strong> - strip EXIF, GPS location, comments, and camera info for safe sharing on social media.</li>
-            <li data-i18n="feat.img.7"><strong>Background removal</strong> - chroma-key out a single color such as a green screen.</li>
-          </ul>
+          <div class="fc-text">
+            <span class="feat-badge" data-i18n="feat.img.badge">Image</span>
+            <h3 data-i18n="feat.img.title">Images: from resizing to background removal</h3>
+            <ul class="feat-list">
+              <li data-i18n="feat.img.1"><strong>Resize</strong> - By ratio or exact pixels, with preset sizes selectable in one click from the menu.</li>
+              <li data-i18n="feat.img.2"><strong>Compress</strong> - Down to a target size while keeping quality as high as possible.</li>
+              <li data-i18n="feat.img.3"><strong>Rotate</strong> - To any angle. Corners become transparent, or are filled with a chosen color for formats without alpha.</li>
+              <li data-i18n="feat.img.4"><strong>Convert</strong> - Between PNG, JPG, WEBP, HEIC, ICO, GIF, and SVG.</li>
+              <li data-i18n="feat.img.5"><strong>OCR</strong> - Extract text from images, then save or copy it.</li>
+              <li data-i18n="feat.img.6"><strong>Metadata removal</strong> - Strip EXIF, GPS location, comments, and camera info for safe sharing on social media.</li>
+              <li data-i18n="feat.img.7"><strong>Background removal</strong> - Chroma-key out a single color such as a green screen.</li>
+            </ul>
+          </div>
         </article>
 
-        <article class="feat-card reveal" data-feat-cat="video">
-          <div class="fc-header">
-            <span class="feat-badge" data-i18n="feat.video.badge">Video &amp; Audio</span>
-            <h3 data-i18n="feat.video.title">Video: Cuts Without Re-encoding</h3>
-          </div>
+        <article class="feat-row" data-feat-cat="video">
           <figure class="fc-visual">
-            <div class="fcv-shot" aria-hidden="true">
+            <div class="shot" aria-hidden="true">
               <img data-shot-kind="video" src="assets/En/Video.png" width="920" height="580" loading="lazy" alt="">
             </div>
             <figcaption data-i18n="feat.video.cap">Process a single clip or thousands of audio files in one go</figcaption>
           </figure>
-          <ul class="feat-list">
-            <li data-i18n="feat.video.1"><strong>Trim</strong> - cut one video or audio file the moment you click. No re-encoding by default, so exports are fast.</li>
-            <li data-i18n="feat.video.2"><strong>Thumbnail</strong> - export any single frame as a PNG or JPG image.</li>
-            <li data-i18n="feat.video.3"><strong>Compress</strong> - automatically adjust to a target size with minimal quality or FPS loss.</li>
-            <li data-i18n="feat.video.4"><strong>Resize / rotate</strong> - by ratio or exact pixels, with presets one click away in the menu.</li>
-            <li data-i18n="feat.video.5"><strong>Convert</strong> - between MP4, MOV, MKV, M4A, AVI, WEBM, FLV, and GIF.</li>
-            <li data-i18n="feat.video.6"><strong>Audio extraction</strong> - pull the audio track out of any video.</li>
-            <li data-i18n="feat.video.7"><strong>Quality and speed</strong> - switch codecs (H.264 / H.265 / VP9 / AV1) and hardware encoding (NVENC / Quick Sync / AMF) in settings.</li>
-          </ul>
+          <div class="fc-text">
+            <span class="feat-badge" data-i18n="feat.video.badge">Video &amp; Audio</span>
+            <h3 data-i18n="feat.video.title">Video: cuts without re-encoding</h3>
+            <ul class="feat-list">
+              <li data-i18n="feat.video.1"><strong>Trim</strong> - Cut one video or audio file the moment you click. No re-encoding by default, so exports are fast.</li>
+              <li data-i18n="feat.video.2"><strong>Thumbnail</strong> - Export any single frame as a PNG or JPG image.</li>
+              <li data-i18n="feat.video.3"><strong>Compress</strong> - Automatically adjust to a target size with minimal quality or FPS loss.</li>
+              <li data-i18n="feat.video.4"><strong>Resize / Rotate</strong> - By ratio or exact pixels, with presets one click away in the menu.</li>
+              <li data-i18n="feat.video.5"><strong>Convert</strong> - Between MP4, MOV, MKV, M4A, AVI, WEBM, FLV, and GIF.</li>
+              <li data-i18n="feat.video.6"><strong>Audio extraction</strong> - Pull the audio track out of any video.</li>
+              <li data-i18n="feat.video.7"><strong>Quality and speed</strong> - Switch codecs (H.264 / H.265 / VP9 / AV1) and hardware encoding (NVENC / Quick Sync / AMF) in settings.</li>
+            </ul>
+          </div>
         </article>
 
-        <article class="feat-card reveal" data-feat-cat="folder">
-          <div class="fc-header">
-            <span class="feat-badge" data-i18n="feat.folder.badge">Folder</span>
-            <h3 data-i18n="feat.folder.title">Folders: All the Dirty Work of Tidying Up</h3>
-          </div>
+        <article class="feat-row" data-feat-cat="folder">
           <figure class="fc-visual">
-            <div class="fcv-shot" aria-hidden="true">
+            <div class="shot" aria-hidden="true">
               <img data-shot-kind="folder" src="assets/En/Folder.png" width="920" height="580" loading="lazy" alt="">
             </div>
             <figcaption data-i18n="feat.folder.cap">Right-click a folder → Flect menu</figcaption>
           </figure>
-          <ul class="feat-list">
-            <li data-i18n="feat.folder.1"><strong>Duplicate removal</strong> - delete files that match by size, hash, and bytes in bulk.</li>
-            <li data-i18n="feat.folder.2"><strong>Empty folder cleanup</strong> - remove accumulated empty folders with one click.</li>
-            <li data-i18n="feat.folder.3"><strong>Tree view</strong> - visualize the folder structure to make organizing easier.</li>
-            <li data-i18n="feat.folder.4"><strong>Batch rename</strong> - rename all files inside a folder at once.</li>
-            <li data-i18n="feat.folder.5"><strong>Analyze</strong> - visualize which files take up space and where duplicates hide.</li>
-            <li data-i18n="feat.folder.6"><strong>Compress</strong> - bundle the folder into a ZIP / 7z / TAR / tar.gz archive.</li>
-            <li data-i18n="feat.folder.7"><strong>Extract</strong> - unpack ZIP / 7z / TAR / tar.gz / RAR into a new folder.</li>
-          </ul>
+          <div class="fc-text">
+            <span class="feat-badge" data-i18n="feat.folder.badge">Folder</span>
+            <h3 data-i18n="feat.folder.title">Folders: all the dirty work of tidying up</h3>
+            <ul class="feat-list">
+              <li data-i18n="feat.folder.1"><strong>Duplicate removal</strong> - Delete files that match by size, hash, and bytes in bulk.</li>
+              <li data-i18n="feat.folder.2"><strong>Empty folder cleanup</strong> - Remove accumulated empty folders with one click.</li>
+              <li data-i18n="feat.folder.3"><strong>Tree view</strong> - Visualize the folder structure to make organizing easier.</li>
+              <li data-i18n="feat.folder.4"><strong>Batch rename</strong> - Rename all files inside a folder at once.</li>
+              <li data-i18n="feat.folder.5"><strong>Analyze</strong> - Visualize which files take up space and where duplicates hide.</li>
+              <li data-i18n="feat.folder.6"><strong>Compress</strong> - Bundle the folder into a ZIP / 7z / TAR / tar.gz archive.</li>
+              <li data-i18n="feat.folder.7"><strong>Extract</strong> - Unpack ZIP / 7z / TAR / tar.gz / RAR into a new folder.</li>
+            </ul>
+          </div>
         </article>
 
-        <article class="feat-card reveal" data-feat-cat="text">
-          <div class="fc-header">
-            <span class="feat-badge" data-i18n="feat.text.badge">Text &amp; Documents</span>
-            <h3 data-i18n="feat.text.title">Text: CSV, JSON, PDF</h3>
-          </div>
+        <article class="feat-row" data-feat-cat="text">
           <figure class="fc-visual">
-            <div class="fcv-shot" aria-hidden="true">
+            <div class="shot" aria-hidden="true">
               <img data-shot-kind="text" src="assets/En/Text.png" width="920" height="580" loading="lazy" alt="">
             </div>
             <figcaption data-i18n="feat.text.cap">Preview, merge, and export PDFs with ease - no Adobe Acrobat Reader required.</figcaption>
           </figure>
-          <ul class="feat-list">
-            <li data-i18n="feat.text.1"><strong>PDF</strong> - preview, merge multiple files, and export to PNG / JPG / TXT.</li>
-            <li data-i18n="feat.text.2"><strong>Text</strong> - convert file types, change character encodings (UTF-8 / UTF-16 / Shift_JIS...), and switch line endings (CRLF / LF).</li>
-            <li data-i18n="feat.text.3"><strong>JSON</strong> - beautify and reorder keys with rules.</li>
-            <li data-i18n="feat.text.4"><strong>JAR</strong> - decompile in one click and export the source code to a new folder.</li>
-          </ul>
+          <div class="fc-text">
+            <span class="feat-badge" data-i18n="feat.text.badge">Text &amp; Documents</span>
+            <h3 data-i18n="feat.text.title">Text: CSV, JSON, PDF</h3>
+            <ul class="feat-list">
+              <li data-i18n="feat.text.1"><strong>PDF</strong> - Preview, merge multiple files, and export to PNG / JPG / TXT.</li>
+              <li data-i18n="feat.text.2"><strong>Text</strong> - Convert file types, change character encodings (UTF-8 / UTF-16 / Shift_JIS...), and switch line endings (CRLF / LF).</li>
+              <li data-i18n="feat.text.3"><strong>JSON</strong> - Beautify and reorder keys with rules.</li>
+              <li data-i18n="feat.text.4"><strong>JAR</strong> - Decompile in one click and export the source code to a new folder.</li>
+            </ul>
+          </div>
         </article>
 
       </div>
 
-      <div class="table-wrap reveal">
+      <div class="table-wrap">
         <table class="conv-table">
           <caption data-i18n="table.caption">Supported conversions</caption>
           <thead>
@@ -353,65 +354,63 @@
     </section>
 
     <section class="install" id="install">
-      <div class="install-header reveal">
-        <div>
-          <h2 data-i18n="install.title">Installs in 3 Steps</h2>
+      <div class="sec-head sec-head-split">
+        <div class="sec-title">
+          <h2 data-i18n="install.title">Installs in 3 steps</h2>
           <p data-i18n="install.desc">Download, run, and start right-clicking.</p>
         </div>
-        <div class="install-tabs" id="installTabs" role="tablist" aria-label="Installation method">
-          <button type="button" class="install-tab active" data-install-tab="installer" role="tab" aria-selected="true">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0l-4-4m4 4l4-4M4 19h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <div class="seg install-tabs" id="installTabs" role="tablist" aria-label="Installation method">
+          <button type="button" class="seg-tab install-tab active" data-install-tab="installer" role="tab" aria-selected="true">
+            <svg class="i" aria-hidden="true"><use href="#i-download"/></svg>
             <span data-i18n="install.tab.installer">Installer</span>
           </button>
-          <button type="button" class="install-tab" data-install-tab="powershell" role="tab" aria-selected="false">
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6l6 6-6 6M12 18h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <button type="button" class="seg-tab install-tab" data-install-tab="powershell" role="tab" aria-selected="false">
+            <svg class="i" aria-hidden="true"><use href="#i-terminal"/></svg>
             <span data-i18n="install.tab.ps">PowerShell</span>
           </button>
         </div>
       </div>
 
-      <div class="install-hub reveal">
+      <div class="install-hub">
         <div class="install-panel" data-install-panel="installer">
-          <div class="install-panel-top">
-            <div class="install-cta">
-              <a class="btn btn-primary btn-lg" href="https://github.com/Konayukiw/Flect/releases/latest">
-                <span data-i18n="install.download">Download from Releases</span>
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </a>
-              <a class="btn btn-ghost btn-lg" href="https://github.com/Konayukiw/Flect" target="_blank" rel="noopener">
-                <span data-i18n="install.github">GitHub Repository</span>
-              </a>
-            </div>
-          </div>
-
           <ol class="steps-grid">
             <li>
               <span class="step-num">01</span>
-              <h3 data-i18n="step.1t">Get the Installer</h3>
+              <h3 data-i18n="step.1t">Get the installer</h3>
               <p data-i18n="step.1d">Download the latest <code>Flect-Setup.exe</code> from <a class="link" href="https://github.com/Konayukiw/Flect/releases/latest">Releases</a>. If <code>.NET 10 Desktop Runtime</code> is missing, the setup detects it and guides you through.</p>
             </li>
             <li>
               <span class="step-num">02</span>
-              <h3 data-i18n="step.2t">Run the Setup</h3>
+              <h3 data-i18n="step.2t">Run the setup</h3>
               <p data-i18n="step.2d">Just run the downloaded installer - every conversion and analysis engine is bundled with it. Explorer may restart during setup, which is normal.</p>
             </li>
             <li>
               <span class="step-num">03</span>
-              <h3 data-i18n="step.3t">Try a Right Click</h3>
+              <h3 data-i18n="step.3t">Try a right click</h3>
               <p data-i18n="step.3d">Right-click a file and open "Show more options" to find the Flect menu. Tune menu items and compression presets in the settings app.</p>
             </li>
           </ol>
+
+          <div class="install-cta">
+            <a class="btn btn-primary" href="https://github.com/Konayukiw/Flect/releases/latest">
+              <svg class="i" aria-hidden="true"><use href="#i-download"/></svg>
+              <span data-i18n="install.download">Download from Releases</span>
+            </a>
+            <a class="btn btn-ghost" href="https://github.com/Konayukiw/Flect" target="_blank" rel="noopener">
+              <svg class="i i-fill" aria-hidden="true"><use href="#i-github"/></svg>
+              <span data-i18n="install.github">GitHub repository</span>
+            </a>
+          </div>
 
           <p class="note install-reg-note" data-i18n="step.3note">Run <code>reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve</code> in Command Prompt and restart Explorer to show Flect in the first-level context menu. To undo, delete the registry key and restart.</p>
         </div>
 
         <div class="install-panel hidden-panel" data-install-panel="powershell">
           <div class="ps-main">
-            <h3 data-i18n="install.ps.title">Or Install from PowerShell</h3>
+            <h3 data-i18n="install.ps.title">Or install from PowerShell</h3>
             <p data-i18n="install.ps.desc">Paste this into PowerShell. It downloads the latest Setup from Releases, checks version and installs it silently. If the .NET 10 Desktop Runtime is missing, it asks before installing that too.</p>
             <div class="code-card">
               <div class="code-head">
-                <span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span>
                 <span class="code-title">PowerShell</span>
                 <button class="copy-btn" type="button" data-copy-target="psInstall"><span data-i18n="install.ps.copy">Copy</span></button>
               </div>
@@ -421,18 +420,18 @@
 
           <div class="ps-dev" id="pkg">
             <div class="pkg-inline-head">
-              <h3 data-i18n="pkg.title">For Developers</h3>
+              <h3 data-i18n="pkg.title">For developers</h3>
               <p data-i18n="pkg.desc">Build with just a few PowerShell scripts.</p>
             </div>
             <div class="code-card">
-              <div class="code-head"><span class="code-dot r"></span><span class="code-dot y"></span><span class="code-dot g"></span><span class="code-title">scripts</span></div>
+              <div class="code-head"><span class="code-title">scripts</span></div>
               <pre class="code-body"><code>.\scripts\fetch.ps1<span class="cm"> / </span>.\scripts\build.ps1<span class="cm"> / </span>.\scripts\package.ps1</code></pre>
             </div>
           </div>
         </div>
 
         <details class="reqs-strip">
-          <summary><span data-i18n="reqs.title">System Requirements</span></summary>
+          <summary><span data-i18n="reqs.title">System requirements</span></summary>
           <div class="reqs-strip-body">
             <ul>
               <li data-i18n="reqs.1">64-bit Windows 11 / Windows 10</li>
@@ -449,14 +448,14 @@
 
     <section class="arch" id="arch">
       <div class="arch-layout">
-        <div class="arch-intro reveal">
-          <h2 data-i18n="arch.title">How It Works</h2>
+        <div class="arch-intro">
+          <h2 data-i18n="arch.title">How it works</h2>
           <p data-i18n="arch.desc">A C++ shell extension renders the menu inside Explorer, while a .NET application handles the actual work.</p>
           <div class="arch-diagram" aria-hidden="true">
             <div class="ad-step">
               <span>01</span>
               <strong>Explorer.exe</strong>
-              <code>Right-Click</code>
+              <code>Right-click</code>
             </div>
             <div class="ad-line"></div>
             <div class="ad-step ad-hi">
@@ -468,18 +467,18 @@
             <div class="ad-step ad-hi">
               <span>03</span>
               <strong>Flect.exe</strong>
-              <code>.NET 10 Pipeline</code>
+              <code>.NET 10 executor</code>
             </div>
           </div>
         </div>
 
         <div class="arch-grid">
-          <div class="arch-card reveal">
+          <div class="arch-card">
             <div class="arch-card-top">
               <span class="arch-x">C++</span>
               <code class="arch-mod">src/Shell</code>
             </div>
-            <h3 data-i18n="arch.shell.t">Shell Extension</h3>
+            <h3 data-i18n="arch.shell.t">Shell extension</h3>
             <p data-i18n="arch.shell.d">The front end that renders the right-click menu inside Explorer. As a native Windows <code>IContextMenu</code> handler it stays lightweight and reads the selected file's info on the spot.</p>
             <ul>
               <li data-i18n="arch.shell.1">Runs as a standard Explorer menu</li>
@@ -488,7 +487,7 @@
             </ul>
           </div>
 
-          <div class="arch-card reveal">
+          <div class="arch-card">
             <div class="arch-card-top">
               <span class="arch-x">.NET</span>
               <code class="arch-mod">src/App</code>
@@ -507,49 +506,49 @@
 
     <section class="faq" id="faq">
       <div class="faq-layout">
-        <div class="faq-sidebar reveal">
-          <h2 data-i18n="faq.title">Frequently Asked Questions</h2>
+        <div class="faq-sidebar">
+          <h2 data-i18n="faq.title">Frequently asked questions</h2>
           <div class="faq-foot" data-i18n="faq.foot">If your question isn't answered here, report it on <a class="link" href="https://github.com/Konayukiw/Flect/issues" target="_blank" rel="noopener">GitHub Issues</a> - attaching the activity log helps a lot.</div>
         </div>
 
         <div class="faq-list">
-          <details class="reveal">
+          <details>
             <summary data-i18n="faq.q1">The Flect menu is buried under "Show more options"</summary>
             <p data-i18n="faq.a1">Developers can install the optional <a class="link" href="https://github.com/Konayukiw/Flect/blob/main/README.md#better-windows-11-context-menu" target="_blank" rel="noopener">Windows 11 extension</a> to add Flect directly to the modern menu. It is separate from the standard installer. Alternatively, switch the context menu back to the Windows 10 style and Flect appears directly in it. Run <code>reg add "HKCU\Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32" /f /ve</code> in Command Prompt and restart Explorer. This affects the whole system, so delete the key if you'd rather not keep it.</p>
           </details>
-          <details class="reveal">
+          <details>
             <summary data-i18n="faq.q2">Where do converted files go?</summary>
             <p data-i18n="faq.a2">As new files next to the originals - nothing is modified or deleted. If a name already exists, a sequential number like (1) is added.</p>
           </details>
-          <details class="reveal">
+          <details>
             <summary data-i18n="faq.q3">Can I restore deleted files?</summary>
             <p data-i18n="faq.a3">By default, deleted files go to the Recycle Bin, so yes. Only if you switch to permanent deletion in settings can they no longer be restored.</p>
           </details>
-          <details class="reveal">
+          <details>
             <summary data-i18n="faq.q4">Why does "to HEIC" fail?</summary>
             <p data-i18n="faq.a4">HEIC export requires Microsoft's <strong>HEVC Video Extensions</strong> (reading doesn't). Flect can't bundle this codec, so it uses Windows' WIC encoder for HEIC export only.</p>
           </details>
-          <details class="reveal">
+          <details>
             <summary data-i18n="faq.q5">OCR warns me about a missing language</summary>
             <p data-i18n="faq.a5">Flect uses Windows' built-in OCR. Check installed languages under Settings → OCR, where adding a language pack is also guided. Language packs can be large, and adding one may require administrator rights.</p>
           </details>
-          <details class="reveal">
+          <details>
             <summary data-i18n="faq.q6">Trimmed video starts a bit before the marked point</summary>
             <p data-i18n="faq.a6">That's the result of not re-encoding. Video is stored by keyframes, and cutting by copy has to rewind to the nearest keyframe, which can shift the start by a few seconds. For precise cuts, switch Settings → Video → Trim to "Match the marked position" - it trades a bit of speed. The same trim is available for a single audio file and follows this setting.</p>
           </details>
-          <details class="reveal">
+          <details>
             <summary data-i18n="faq.q7">Aaah! Too many items in the right-click menu!</summary>
             <p data-i18n="faq.a7">Open the settings app and uncheck the items you want to hide under General → Right-Click Menu Items.</p>
           </details>
-          <details class="reveal">
+          <details>
             <summary data-i18n="faq.q8">I want to uninstall</summary>
             <p data-i18n="faq.a8">Uninstall like any other app from Windows Settings → Apps.</p>
           </details>
-          <details class="reveal">
+          <details>
             <summary data-i18n="faq.q9">Where are settings stored?</summary>
             <p data-i18n="faq.a9">In <code>%APPDATA%\Flect\settings.json</code>. Some values needed by the Explorer menu itself are also stored in <code>HKCU\Software\Flect</code>. "Reset settings" clears both while keeping shell registration and learned encoder results.</p>
           </details>
-          <details class="reveal">
+          <details>
             <summary data-i18n="faq.q10">My antivirus flags Flect as a virus</summary>
             <p data-i18n="faq.a10">Flect's installer and executables are not code-signed, so Windows SmartScreen and some antivirus products may warn about them or quarantine them as unknown software. This is a false positive caused by the missing signature, not by anything Flect does. An installer that bundles tools such as ffmpeg is also more likely to trip heuristic detection.<br><br>Flect is distributed only through GitHub Releases and the official site (flect.konayuki.xyz). Each release publishes the SHA-256 of its files, so you can compare it with your download to confirm it has not been altered. If the hashes match, choose <strong>More info</strong> and then <strong>Run anyway</strong> on the warning, or add Flect's install folder to your antivirus exclusions. You do not need to turn off your antivirus.</p>
           </details>
@@ -558,15 +557,15 @@
     </section>
 
     <section class="final">
-      <div class="final-card reveal">
+      <div class="final-card">
         <div class="final-copy">
           <p class="final-word" data-i18n="final.word">That one chore of file organizing,<br>reduced to a single right click.</p>
           <p class="final-note" data-i18n="final.note">An open-source project under the Apache License 2.0.<br>Contributions - including new features - are welcome.</p>
         </div>
         <div class="final-actions">
-          <a class="btn btn-primary btn-lg" href="https://github.com/Konayukiw/Flect/releases/latest">
-            <span data-i18n="final.download">Download Free</span>
-            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <a class="btn btn-primary" href="https://github.com/Konayukiw/Flect/releases/latest">
+            <svg class="i" aria-hidden="true"><use href="#i-download"/></svg>
+            <span data-i18n="final.download">Download free</span>
           </a>
         </div>
       </div>
@@ -577,9 +576,7 @@
   <footer class="site-foot">
     <div class="foot-top">
       <a class="brand" href="#top">
-        <span class="brand-mark" aria-hidden="true">
-          <img src="assets/Flect.png" alt="">
-        </span>
+        <span class="brand-mark" aria-hidden="true"><img src="assets/Flect.png" alt=""></span>
         <span class="brand-name">Flect</span>
       </a>
       <div class="foot-cols">
@@ -589,7 +586,7 @@
           <a href="#features" data-i18n="nav.features">Features</a>
           <a href="#install" data-i18n="nav.install">Install</a>
           <a href="#faq" data-i18n="nav.faq">FAQ</a>
-          <a href="https://konayuki.xyz" target="_blank" rel="noopener" data-i18n="nav.homepage">My Homepage</a>
+          <a href="https://konayuki.xyz" target="_blank" rel="noopener" data-i18n="nav.homepage">My homepage</a>
         </div>
         <div class="foot-col">
           <span class="foot-h" data-i18n="foot.links">Links</span>
@@ -600,7 +597,7 @@
       </div>
     </div>
     <div class="foot-bottom">
-      <p>© <span id="year">2025</span> Konayukiw · Licensed under <a class="link" href="https://github.com/Konayukiw/Flect/blob/main/LICENSE" target="_blank" rel="noopener">Apache License 2.0</a></p>
+      <p>© <span id="year">2026</span> Konayukiw · Licensed under <a class="link" href="https://github.com/Konayukiw/Flect/blob/main/LICENSE" target="_blank" rel="noopener">Apache License 2.0</a></p>
       <p class="foot-vibe" data-i18n="foot.vibe">This page was generated by Qwen 3.8 Max, modified by Claude Opus 5.5, enhanced by Gemini 4 Argon.</p>
     </div>
   </footer>

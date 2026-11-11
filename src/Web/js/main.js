@@ -4,11 +4,15 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const applyTheme = (th) => { document.documentElement.dataset.theme = th; };
+let themeFadeTimer = 0;
 try {
   const saved = localStorage.getItem("flect-theme");
   applyTheme(saved === "light" || saved === "dark" ? saved : "light");
   $("#themeToggle").addEventListener("click", () => {
     const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    document.documentElement.classList.add("theme-fade");
+    clearTimeout(themeFadeTimer);
+    themeFadeTimer = setTimeout(() => document.documentElement.classList.remove("theme-fade"), 400);
     applyTheme(next);
     try { localStorage.setItem("flect-theme", next); } catch {}
   });
@@ -53,16 +57,17 @@ if (island) {
   });
 }
 
-const revealEls = $$(".reveal");
-if ("IntersectionObserver" in window) {
-  const io = new IntersectionObserver((entries) => {
-    for (const e of entries) {
-      if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
-    }
-  }, { threshold: 0.1 });
-  revealEls.forEach((el) => io.observe(el));
-} else {
-  revealEls.forEach((el) => el.classList.add("in"));
+const siteHead = $("#siteHead");
+const navToggle = $("#navToggle");
+if (siteHead && navToggle) {
+  const setNav = (open) => {
+    siteHead.classList.toggle("nav-open", open);
+    navToggle.setAttribute("aria-expanded", String(open));
+  };
+  navToggle.addEventListener("click", () => setNav(!siteHead.classList.contains("nav-open")));
+  for (const link of $$(".nav-menu a")) link.addEventListener("click", () => setNav(false));
+  addEventListener("keydown", (e) => { if (e.key === "Escape") setNav(false); });
+  addEventListener("pointerdown", (e) => { if (!e.target.closest("#siteHead")) setNav(false); });
 }
 
 const desk = $("#desk");
@@ -1459,18 +1464,6 @@ const closeModal = () => {
 
 $("#year").textContent = new Date().getFullYear();
 
-const progressEl = $("#progress");
-if (progressEl) {
-  const setProgress = () => {
-    const doc = document.documentElement;
-    const max = doc.scrollHeight - innerHeight;
-    progressEl.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
-  };
-  addEventListener("scroll", setProgress, { passive: true });
-  addEventListener("resize", setProgress);
-  setProgress();
-}
-
 for (const btn of $$(".copy-btn")) {
   let timer = 0;
   btn.addEventListener("click", async () => {
@@ -1529,9 +1522,7 @@ if (hvTabsWrap) {
   const hvShotImg = $("#hvShotImg");
   const hvOutCode = $("#hvOutCode");
   const hvButtons = $$("[data-hv]", hvTabsWrap);
-  const hvOrder = ["image", "video", "folder", "pdf"];
   let hvCurrent = "image";
-  let hvTimer = 0;
 
   const hvConfigs = {
     image: () => ({
@@ -1560,34 +1551,12 @@ if (hvTabsWrap) {
     if (hvOutCode) hvOutCode.textContent = cfg.out;
   };
 
-  const startHvCycle = () => {
-    clearInterval(hvTimer);
-    hvTimer = setInterval(() => {
-      const nextIdx = (hvOrder.indexOf(hvCurrent) + 1) % hvOrder.length;
-      renderHv(hvOrder[nextIdx]);
-    }, 1500);
-  };
-
   for (const btn of hvButtons) {
-    btn.addEventListener("click", () => {
-      renderHv(btn.dataset.hv);
-      startHvCycle();
-    });
-    btn.addEventListener("pointerenter", () => {
-      renderHv(btn.dataset.hv);
-      clearInterval(hvTimer);
-    });
-  }
-
-  const hvShell = hvTabsWrap.closest(".hv-shell");
-  if (hvShell) {
-    hvShell.addEventListener("pointerenter", () => clearInterval(hvTimer));
-    hvShell.addEventListener("pointerleave", startHvCycle);
+    btn.addEventListener("click", () => renderHv(btn.dataset.hv));
   }
 
   addEventListener("langchange", () => renderHv(hvCurrent));
   renderHv(hvCurrent);
-  startHvCycle();
 }
 
 (() => {
@@ -1726,73 +1695,4 @@ if (featTabsWrap && featBento) {
       }
     });
   }
-}
-
-const ambientCanvas = $("#ambientCanvas");
-if (ambientCanvas) {
-  const ctx = ambientCanvas.getContext("2d");
-  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
-  let width = 0;
-  let height = 0;
-  let pointerX = 0.5;
-  let pointerY = 0.25;
-  let smoothX = 0.5;
-  let smoothY = 0.25;
-
-  const resizeCanvas = () => {
-    const dpr = Math.min(devicePixelRatio || 1, 1.5);
-    width = innerWidth;
-    height = innerHeight;
-    ambientCanvas.width = Math.round(width * dpr);
-    ambientCanvas.height = Math.round(height * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-  };
-
-  addEventListener("resize", resizeCanvas);
-  addEventListener("pointermove", (e) => {
-    pointerX = e.clientX / Math.max(1, width);
-    pointerY = e.clientY / Math.max(1, height);
-  }, { passive: true });
-  resizeCanvas();
-
-  const drawAmbient = (time) => {
-    const isLight = document.documentElement.dataset.theme === "light";
-    smoothX += (pointerX - smoothX) * 0.05;
-    smoothY += (pointerY - smoothY) * 0.05;
-    ctx.clearRect(0, 0, width, height);
-
-    const tSec = time * 0.00035;
-    const orbs = [
-      {
-        x: width * (0.22 + Math.cos(tSec) * 0.08),
-        y: height * (0.18 + Math.sin(tSec * 1.2) * 0.06),
-        r: Math.max(width, height) * 0.42,
-        c: isLight ? "rgba(0, 148, 212, 0.10)" : "rgba(0, 200, 255, 0.11)",
-      },
-      {
-        x: width * (0.78 + Math.sin(tSec * 0.9) * 0.07),
-        y: height * (0.32 + Math.cos(tSec * 1.1) * 0.07),
-        r: Math.max(width, height) * 0.38,
-        c: isLight ? "rgba(0, 168, 120, 0.08)" : "rgba(0, 229, 163, 0.08)",
-      },
-      {
-        x: width * smoothX,
-        y: height * smoothY,
-        r: Math.max(width, height) * 0.28,
-        c: isLight ? "rgba(0, 160, 220, 0.07)" : "rgba(46, 216, 255, 0.075)",
-      },
-    ];
-
-    for (const orb of orbs) {
-      const grad = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.r);
-      grad.addColorStop(0, orb.c);
-      grad.addColorStop(1, "rgba(0, 0, 0, 0)");
-      ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, width, height);
-    }
-
-    if (!reducedMotion.matches) requestAnimationFrame(drawAmbient);
-  };
-
-  requestAnimationFrame(drawAmbient);
 }

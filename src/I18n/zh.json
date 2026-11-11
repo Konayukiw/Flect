@@ -730,7 +730,7 @@
       "背景抠图",
       "反编译"
     ],
-    "hero.lead": "再也不用在浏览器里寻找转换网站，也不用打开视频软件手动压缩。<br>只需在资源管理器中右键点击文件，转换、压缩、调整大小、分析、OCR、去重……<br>所有操作都<strong>在资源管理器中</strong>完成。",
+    "hero.lead": "再也不用在浏览器里寻找转换网站，也不用打开视频软件手动压缩。只需在资源管理器中右键点击文件，转换、压缩、调整大小、分析、OCR、去重……所有操作都<strong>在资源管理器中</strong>完成。",
     "hero.btn.download": "下载安装程序",
     "stat.menuItems": "菜单项",
     "stat.stars": "GitHub 星标",
@@ -872,7 +872,7 @@
     "foot.more": "更多",
     "foot.links": "链接",
     "nav.homepage": "Flect 作者主页",
-    "foot.vibe": "本页面由 Qwen 3.8 Max 生成，并由 Claude Opus 5.5 修正，Gemini 4 Argon 强化设计。",
+    "foot.vibe": "本页面由 Qwen 3.8 Max 生成，经 Claude Opus 5.5 修改，由 Gemini 4 Argon 增强，并由 Claude Fable 5.2 进行了精修。",
     "menu.resize": "调整尺寸",
     "menu.compress": "压缩",
     "menu.rotate": "旋转",
