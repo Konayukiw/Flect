@@ -162,6 +162,8 @@ Selecting a file should not be enough to run a stranger's code, and an HTML page
 
 Explorer decides whether a file from the Internet can be previewed at all. Recent Windows 11 updates let a preview handler take on files from the Internet, and Flect does so for every type except HTML, because those files open in the restricted mode above. HTML files from the Internet still go through the Windows check, the same as the built-in HTML preview. When Windows blocks a file, you see the Windows message and Flect does not try to get around it.
 
+This needs a change Microsoft is rolling out gradually on Windows 11. If files from the Internet still show the Windows warning, turn on **Get the latest updates as soon as they're available** in Settings > Windows Update. It may take a while to arrive.
+
 For files on your own PC, HTML shows its source first. Rendering, running scripts and allowing network access each take a click.
 
 Everything is parsed inside the Chromium sandbox of the WebView2 Runtime in a low-integrity process, with network access disabled. FFmpeg is the one exception: it runs only when you ask for a conversion, with reduced rights, and only for files whose contents match a known format. Files from the Internet are never converted.

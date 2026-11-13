@@ -865,6 +865,8 @@
     "faq.a9": "保存在 <code>%APPDATA%\\Flect\\settings.json</code> 中。资源管理器菜单自身需要的部分值还会保存在 <code>HKCU\\Software\\Flect</code> 中。“重置设置”会清除这两处，但会保留外壳注册和已学习的编码器结果。",
     "faq.q10": "杀毒软件把 Flect 判定为病毒",
     "faq.a10": "Flect 的安装程序和可执行文件没有代码签名，因此 Windows SmartScreen 和部分杀毒软件可能会把它们当作未知程序并发出警告或进行隔离。这是缺少签名导致的误报，Flect 本身并不包含病毒。安装程序中打包了 ffmpeg 等外部工具，也更容易触发启发式检测。<br><br>Flect 只通过 GitHub Releases 和官方网站（flect.konayuki.xyz）分发。每个 Release 都会公布文件的 SHA-256，你可以将下载文件的哈希与它比对，确认文件没有被篡改。如果哈希一致，可以在警告界面选择 <strong>更多信息</strong>，然后选择 <strong>仍要运行</strong>，或者把 Flect 的安装目录加入杀毒软件的排除项。不需要关闭整个杀毒软件。",
+    "faq.q11": "来自互联网的文件无法在文件资源管理器中预览",
+    "faq.a11": "在微软逐步推出的一项更改到达你的电脑之前，Windows 会阻止预览下载的文件。请在 设置 → Windows 更新 中打开 <strong>在最新更新可用时立即获取</strong>。该更改可能需要一段时间才会到达。到达后，Flect 会以受限模式预览这些文件。HTML 文件需要先在 Windows 的提示中确认才会显示。",
     "faq.foot": "如果 FAQ 未能解决你的问题，请到 <a class=\"link\" href=\"https://github.com/Konayukiw/Flect/issues\" target=\"_blank\" rel=\"noopener\">GitHub Issues</a> 提交问题，附上操作日志会更有帮助。",
     "final.word": "整理文件时的那件麻烦事，<br>一次右键就搞定。",
     "final.download": "免费下载",
