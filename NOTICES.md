@@ -15,10 +15,10 @@ repository.
 | --- | --- | --- |
 | Magick.NET-Q8-x64 | 14.16.0 | Apache-2.0 |
 | ImageMagick | Bundled with Magick.​NET 14.16.0 | ImageMagick License |
-| PDFtoImage | 5.3.0 | MIT |
+| PDFtoImage | 5.4.0 | MIT |
 | PDFium | 152.0.7961 | BSD-3-Clause |
 | SkiaSharp (Dependency of PDFtoImage) | 4.150.1 | MIT |
-| PdfPig | 0.1.15 | Apache-2.0 |
+| PdfPig | 0.1.16 | Apache-2.0 |
 | System.IO.Hashing | 10.0.10 | MIT |
 | UTF.Unknown | 2.6.0 | MPL-1.1 (alternatively GPL-2.0-or-later or LGPL-2.1-or-later) |
 | FFmpeg / FFprobe | Fetched by `scripts/fetch.ps1` | GPL-3.0 |
